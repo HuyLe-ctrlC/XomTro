@@ -3,9 +3,9 @@ import axiosClient from "./axiosClient";
 const module = "category";
 
 const categoryApi = {
-  getAll: () => {
-    const url = `/${module}`;
-    return axiosClient.get(url);
+  getAll: (params) => {
+    const url = `/${module}/search`;
+    return axiosClient.get(url, { params });
   },
   getById: (id) => {
     const url = `/${module}/getbyid/${id}`;

@@ -12,7 +12,7 @@ const categoryRoutes = express.Router();
 
 categoryRoutes.get("/search", authMiddleware, searchCategoryCtrl);
 categoryRoutes.post("/", authMiddleware, createCategoryCtrl);
-categoryRoutes.get("/", authMiddleware, fetchCategoriesCtrl);
+// categoryRoutes.get("/", authMiddleware, fetchCategoriesCtrl);
 categoryRoutes.get("/:id", authMiddleware, fetchCategoryCtrl);
 categoryRoutes.put("/:id", authMiddleware, updateCategoryCtrl);
 categoryRoutes.delete("/:id", authMiddleware, deleteCategoryCtrl);

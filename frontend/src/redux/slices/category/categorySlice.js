@@ -40,11 +40,11 @@ export const updateDataAction = createAsyncThunk(
 //get all action
 export const getAllAction = createAsyncThunk(
   "category/getAll",
-  async (category, { rejectWithValue, getState, dispatch }) => {
+  async (params, { rejectWithValue, getState, dispatch }) => {
     //http call
     try {
-      const data = await categoryApi.getAll();
-      console.log("data", data);
+      const data = await categoryApi.getAll(params);
+      // console.log("data", data);
       return data;
     } catch (error) {
       if (!error) {
@@ -115,13 +115,14 @@ const categorySlices = createSlice({
         state.appError = action?.payload?.message;
         state.serverError = action?.error?.message;
       });
+    //get All
     builder
       .addCase(getAllAction.pending, (state, action) => {
         state.loading = true;
       })
       .addCase(getAllAction.fulfilled, (state, action) => {
         state.loading = false;
-        state.categoryList = action?.payload;
+        state.data = action?.payload;
         state.appError = undefined;
         state.serverError = undefined;
       })

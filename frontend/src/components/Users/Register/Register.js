@@ -12,10 +12,10 @@ import { useNavigate } from "react-router-dom";
 
 //TODO => Form Schema
 const formSchema = Yup.object({
-  firstName: Yup.string().required("First Name is required"),
-  lastName: Yup.string().required("Last Name is required"),
-  email: Yup.string().required("Email is required"),
-  password: Yup.string().required("Password is required"),
+  firstName: Yup.string().required("*Dữ liệu là bắt buộc!"),
+  lastName: Yup.string().required("*Dữ liệu là bắt buộc!"),
+  email: Yup.string().required("*Dữ liệu là bắt buộc!"),
+  password: Yup.string().required("*Dữ liệu là bắt buộc!"),
 });
 
 //TODO => Register
@@ -57,10 +57,10 @@ const Register = () => {
             <div className="w-full lg:w-1/2 px-4 mb-16 lg:mb-0">
               <div className="max-w-md">
                 <span className="text-lg text-blue-400 font-bold">
-                  Register Account
+                  Đăng ký tài khoản
                 </span>
                 <h3 className="mt-8 mb-12 text-5xl font-bold font-heading text-white">
-                  Create an account and start pending down your ideas
+                  Tạo một tài khoản và bắt đầu quản lý trọ
                 </h3>
               </div>
             </div>
@@ -68,7 +68,7 @@ const Register = () => {
               <div className="px-6 py-12 lg:px-20 lg:py-24 bg-gray-600 rounded-lg">
                 <form onSubmit={formik.handleSubmit}>
                   <h3 className="mb-6 text-2xl text-white font-bold font-heading">
-                    Register Account
+                    Đăng ký tài khoản
                   </h3>
                   {/* display error message*/}
                   {appError || serverError ? (
@@ -155,14 +155,14 @@ const Register = () => {
                       disabled
                       className="py-4 w-full bg-gray-500 text-white font-bold rounded-full transition duration-200"
                     >
-                      Loading please wait...
+                      Đang tải vui lòng chờ...
                     </button>
                   ) : (
                     <button
                       type="submit"
                       className="py-4 w-full bg-blue-500 text-white hover:bg-blue-600 font-bold rounded-full transition duration-200"
                     >
-                      Register
+                      Đăng ký
                     </button>
                   )}
                 </form>

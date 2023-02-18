@@ -1,13 +1,14 @@
 import React, { useState } from "react";
+import { HiPencilAlt } from "react-icons/hi";
+import { BsTrash } from "react-icons/bs";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { deleteAction } from "../../redux/slices/category/categorySlice";
-// import { format } from "date-fns";
+import DateFormatter from "../../utils/DateFormatter";
 
 export const ListItem = ({ data, openFormUpdate }) => {
-  const [checked, setChecked] = useState();
   const dispatch = useDispatch();
-  // console.log('data', data);
 
   const handleOpenFormUpdate = (id) => {
     openFormUpdate(id);
@@ -56,31 +57,39 @@ export const ListItem = ({ data, openFormUpdate }) => {
   return (
     <>
       {data?.map((item) => (
-        <tr className="text-center" key={item.id}>
-          <td>{item.id}</td>
-          <td>{item.name}</td>
-          {/* <td className="text-center">
-            {format(
-              new Date(
-                item?.updated_at == null || item?.updated_at === 0
-                  ? item.created_at
-                  : item.updated_at
-              ),
-              "dd/MM/yyyy"
-            )}
-          </td> */}
-          <td className="px-6 whitespace-nowrap text-sm text-gray-500 text-center">
+        <tr className="bg-gray-50" key={item._id}>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 h-10 w-10">
+                <img
+                  className="h-10 w-10 rounded-full"
+                  src={item?.user?.profilePhoto}
+                  alt="item profile"
+                />
+              </div>
+              <div className="ml-4">
+                <div className="text-sm font-medium text-gray-900">
+                  {item?.user?.firstName} {item?.user?.lastName}
+                </div>
+                <div className="text-sm text-gray-500">{item?.user?.email}</div>
+              </div>
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            {item.title}
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            {<DateFormatter date={item?.createdAt} />}
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
             <button
-              className="btn btn-info btn-circle"
+              className="text-4xl"
               onClick={() => handleOpenFormUpdate(item.id)}
             >
-              <i className="fa-solid fa-pencil"></i>
+              <HiPencilAlt className="h-6 text-blue-500 text-center" />
             </button>
-            <button
-              onClick={() => handleDelete(item.id)}
-              className="btn btn-danger btn-circle ml-2"
-            >
-              <i className="fa-solid fa-trash-can"></i>
+            <button className="text-4xl" onClick={() => handleDelete(item.id)}>
+              <BsTrash className="h-6 text-red-500 text-center" />
             </button>
           </td>
         </tr>

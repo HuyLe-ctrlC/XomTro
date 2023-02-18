@@ -1,53 +1,55 @@
-import React, { useState } from 'react';
-import { useFormik } from 'formik';
-import dataType from '../../constants/publish/publishConstant';
-
+import React, { useState } from "react";
+import { useFormik } from "formik";
+import { HiSearch } from "react-icons/hi";
+import { Reload } from "../Reload";
 export const Search = (props) => {
-    const [keySearch, setKeySearch] = useState('');
-    const { handleSearch } = props;
-    const [publishSelected, setPublishSelected] = useState('');
+  const [keySearch, setKeySearch] = useState("");
+  const { handleSearch } = props;
+  //   const [publishSelected, setPublishSelected] = useState("");
 
-    // search event
-    const handleClickSearch = () => {
-        handleSearch(keySearch.trim(), formik.values.publishSelected);
-    };
+  // search event
+  const handleClickSearch = () => {
+    handleSearch(keySearch.trim());
+  };
 
-    //formik
-    const formik = useFormik({
-        enableReinitialize: true,
-        initialValues: {
-            publishSelected: publishSelected,
-        },
-    });
-    return (
-        <div className="d-flex">
-            <select
-                className="form-select form-control w-50 border-0 p-n5 rounded color-sort mr-2 "
-                value={formik.values.publishSelected}
-                onChange={formik.handleChange('publishSelected')}
-                onBlur={formik.handleBlur('publishSelected')}
-            >
-                <option value="">-- Chọn trạng thái--</option>
-                {dataType?.map((item, index) => (
-                    <option value={item.value} key={index}>
-                        {item.label}
-                    </option>
-                ))}
-            </select>
-            <div className="input-group">
-                <input
-                    type="text"
-                    className="form-control bg-light ml-0 small"
-                    placeholder="Tìm kiếm..."
-                    onChange={(e) => setKeySearch(e.target.value)}
-                    value={keySearch}
-                />
-                <div className="input-group-append">
-                    <button type="button" className="btn btn-primary" onClick={() => handleClickSearch()}>
-                        <i className="fas fa-search fa-sm" />
-                    </button>
-                </div>
-            </div>
+  //   //formik
+  //   const formik = useFormik({
+  //     enableReinitialize: true,
+  //     initialValues: {
+  //       publishSelected: publishSelected,
+  //     },
+  //   });
+  return (
+    <div className="h-16 flex items-center w-full bg-slate-100 mt-3">
+      <form className="w-1/2">
+        <label
+          htmlFor="default-search"
+          className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+        >
+          Tìm
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <HiSearch className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          </div>
+          <input
+            type="text"
+            className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:outline "
+            placeholder="Nhập từ khóa ..."
+            required
+            onChange={(e) => setKeySearch(e.target.value)}
+            value={keySearch}
+          />
+          <button
+            type="button"
+            className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 "
+            onClick={() => handleClickSearch()}
+          >
+            Tìm
+          </button>
         </div>
-    );
+      </form>
+      <Reload />
+    </div>
+  );
 };

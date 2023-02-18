@@ -110,6 +110,12 @@ userSchema.virtual("posts", {
   foreignField: "user",
   localField: "_id",
 });
+/*-------------------
+//! Virtual method to concatenate firstName and lastName
+-------------------*/
+userSchema.virtual("fullName").get(function () {
+  return this.firstName + " " + this.lastName;
+});
 
 /*-------------------
 //? Hash password

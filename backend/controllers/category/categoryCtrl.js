@@ -36,23 +36,78 @@ const fetchCategoriesCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 const searchCategoryCtrl = expressAsyncHandler(async (req, res) => {
   try {
+    //.populate("user", "email lastName firstName profilePhoto")
     const keyword = req.query.keyword;
     const offset = req.query.offset;
     const limit = req.query.limit;
     // Do something with the parameters
-
-    // console.log("keyword", keyword);
-    // console.log("offset", offset);
-    // console.log("limit", limit);
-    const searchResult = await Category.find({
-      $or: [{ title: { $regex: keyword, $options: "i" } }],
-    })
-      .skip(parseInt(offset))
-      .limit(parseInt(limit));
-    const searchCount = await Category.countDocuments({
-      title: { $regex: keyword, $options: "i" },
-    });
-    res.json({ totalPage: searchCount, data: searchResult });
+    console.log("keyword", keyword);
+    console.log("offset", offset);
+    console.log("limit", limit);
+    let searchResult = [];
+    if (keyword == "") {
+      searchResult = await Category.find({
+        $or: [{ title: { $regex: keyword, $options: "i" } }],
+      })
+        .populate("user", "email lastName firstName profilePhoto")
+        .skip(parseInt(offset))
+        .limit(parseInt(limit))
+        .lean()
+        .sort("-createdAt");
+    } else {
+      console.log(123);
+      searchResult = await Category.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "user",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $match: {
+            $or: [
+              { title: { $regex: keyword, $options: "i" } },
+              { "user.firstName": { $regex: keyword, $options: "i" } },
+              { "user.lastName": { $regex: keyword, $options: "i" } },
+            ],
+          },
+        },
+        {
+          $project: {
+            title: 1,
+            user: {
+              //convert array to Object for every field
+              $arrayToObject: [
+                [
+                  {
+                    //key & value
+                    k: "firstName",
+                    v: { $arrayElemAt: ["$user.firstName", 0] },
+                  },
+                  { k: "lastName", v: { $arrayElemAt: ["$user.lastName", 0] } },
+                  { k: "email", v: { $arrayElemAt: ["$user.email", 0] } },
+                  {
+                    k: "profilePhoto",
+                    v: { $arrayElemAt: ["$user.profilePhoto", 0] },
+                  },
+                ],
+              ],
+            },
+          },
+        },
+        { $skip: parseInt(offset) },
+        { $limit: parseInt(limit) },
+      ]);
+    }
+    console.log("searchResult", Object.keys(searchResult).length);
+    const searchCount = Object.keys(searchResult).length;
+    // const searchCount = await Category.countDocuments({
+    //   title: { $regex: keyword, $options: "i" },
+    // });
+    const totalPage = Math.ceil(searchCount / limit);
+    res.json({ totalPage: totalPage, data: searchResult });
   } catch (err) {
     res.json(err);
   }
