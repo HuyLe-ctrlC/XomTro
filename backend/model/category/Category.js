@@ -5,6 +5,7 @@ const categorySchema = new mongoose.Schema(
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
+      on_delete: "cascade",
       required: true,
     },
     title: {

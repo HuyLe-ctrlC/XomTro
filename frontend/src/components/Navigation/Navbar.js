@@ -13,9 +13,9 @@ export const Navbar = () => {
   return (
     <div>
       {!userAuth ? (
-        <PublicNavbar />
+        <PublicNavbar isLogin={userAuth} />
       ) : isAdmin ? (
-        <AdminNavbar />
+        <AdminNavbar isLogin={userAuth} />
       ) : (
         <PrivateNavbar isLogin={userAuth} />
       )}

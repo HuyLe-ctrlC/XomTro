@@ -1,72 +1,61 @@
-import React, { useEffect, useState } from "react";
-import "./style.css";
+import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectCategory,
-  getAllAction,
   addDataAction,
+  getAllAction,
   getByIdAction,
+  selectCategory,
   updateDataAction,
 } from "../../redux/slices/category/categorySlice";
+import { HiOutlinePlusSm, HiSearch } from "react-icons/hi";
+import { AiOutlineReload } from "react-icons/ai";
 import { openForm, closeForm, selectForm } from "../../redux/slices/formSlices";
 import { ListItem } from "./ListItem";
-import { Form } from "./Form";
-import { Paging } from "../../components/Paging";
+import { Paging } from "../Paging/Paging";
 import { Search } from "./Search";
 import Swal from "sweetalert2";
-import { Navigate } from "react-router-dom";
-import * as ROUTES from "../../constants/routes/routes";
-import { ServerNotFound } from "../ServerNotFound/ServerNotFound";
-
-export const City = () => {
-  const title = "Quản lý thể loại";
+import { Form } from "./Form";
+import { Transition } from "@headlessui/react";
+export const Category = () => {
+  //redux
   const dispatch = useDispatch();
-  const { formStatus } = useSelector(selectForm);
+
   const [formStatusState, setFormStatusState] = useState(false);
+  const title = "Quản lý thể loại";
   const [isUpdate, setIsUpdate] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [publish, setPublish] = useState("");
+  const [active, setActive] = useState("");
   const [limit, setLimit] = useState(10);
   const [keyword, setKeyword] = useState("");
-
-  // config general
-  let start = currentPage - 1;
-  // let limit = 10;
-  let orderBy = "desc";
-  // let keyword = '';
+  //set offset
+  let offset = currentPage - 1;
+  //set params
   const params = {
-    start: start,
-    limit: limit,
     keyword: keyword,
-    orderBy: orderBy,
-    publish: publish,
+    offset: offset,
+    limit: limit,
   };
-  // get all data
+
   const getData = () => {
-    // console.log(params);
     document.title = title;
+    // console.log("keyword", params.keyword);
     dispatch(getAllAction(params));
   };
 
   useEffect(() => {
     getData();
   }, []);
-  // select state to store
-  const categoryData = useSelector(selectCategory);
-  const { data, totalPage, loading, appError, serverError, msgSuccess } =
-    categoryData;
-  // console.log(totalPage);
 
-  // Refresh page
-  const handleRefreshPage = () => {
-    window.location.reload(false);
-  };
+  //get data from redux
+  const category = useSelector(selectCategory);
+  const { data, loading, totalPage, appError, serverError } = category;
+  // console.log("data", data);
   // ==== paging ==== //
   // prev page events
   const handlePrevClick = () => {
     if (currentPage > 1) {
       let prevPage = currentPage - 1;
-      params.start = (prevPage - 1) * limit;
+      params.offset = (prevPage - 1) * limit;
       setCurrentPage(prevPage);
       getData();
     }
@@ -75,28 +64,23 @@ export const City = () => {
   const handleNextClick = () => {
     if (currentPage < totalPage) {
       let nextPage = currentPage + 1;
-      params.start = (nextPage - 1) * limit;
+      params.offset = (nextPage - 1) * limit;
       setCurrentPage(nextPage);
       getData();
     }
   };
   // change page event
   const handleChangePage = (page) => {
-    params.start = (page - 1) * limit;
+    params.offset = (page - 1) * limit;
     setCurrentPage(page);
     getData();
-    // console.log('params', params);
   };
   // ==== paging END ==== //
   // search data
-  const handleSearch = (keyword, publish, cityID) => {
+  const handleSearch = (keyword) => {
     params.keyword = keyword;
-    params.publish = publish;
-    params.cityID = cityID;
-    setPublish(publish);
     setKeyword(keyword);
-    setCurrentPage(1);
-    params.start = 0;
+    params.offset = 0;
     getData();
   };
 
@@ -113,9 +97,9 @@ export const City = () => {
     const dataJson = JSON.stringify(data);
 
     const action = await dispatch(addDataAction(dataJson));
+    const msg = action.payload;
+    // console.log("msg", msg);
     if (addDataAction.fulfilled.match(action)) {
-      // const msg = resultAction.payload;
-      // console.log(msg);
       const Toast = Swal.mixin({
         toast: true,
         position: "bottom-end",
@@ -127,10 +111,9 @@ export const City = () => {
 
       Toast.fire({
         icon: "success",
-        title: "Cập nhật dữ liệu thành công!",
+        title: msg.message,
       });
     } else {
-      // console.log(resultAction.payload);
       const Toast = Swal.mixin({
         toast: true,
         position: "bottom-end",
@@ -142,7 +125,7 @@ export const City = () => {
 
       Toast.fire({
         icon: "error",
-        title: "Cập nhật dữ liệu thất bại!",
+        title: msg.message ?? (serverError && "Máy chủ đang bận!"),
       });
     }
   };
@@ -156,11 +139,12 @@ export const City = () => {
       id: id,
       data: dataJson,
     };
-    // console.log(dataJson);
+    // console.log("datas", datas);
     const updateAction = await dispatch(updateDataAction(datas));
+    const msg = updateAction.payload;
+    // console.log("msg", msg);
+
     if (updateDataAction.fulfilled.match(updateAction)) {
-      const msg = updateAction.payload.msg;
-      // console.log(msg);
       const Toast = Swal.mixin({
         toast: true,
         position: "bottom-end",
@@ -172,11 +156,9 @@ export const City = () => {
 
       Toast.fire({
         icon: "success",
-        title: msg,
+        title: msg.message,
       });
     } else {
-      const msg = updateAction.payload;
-      // console.log(msg);
       const Toast = Swal.mixin({
         toast: true,
         position: "bottom-end",
@@ -188,7 +170,7 @@ export const City = () => {
 
       Toast.fire({
         icon: "error",
-        title: msg || (serverError && "Máy chủ đang bận!"),
+        title: msg.message ?? (serverError && "Máy chủ đang bận!"),
       });
     }
   };
@@ -200,7 +182,6 @@ export const City = () => {
     dispatch(action);
     setIsUpdate(true);
     // get data by ID
-    // console.log(id);
     dispatch(getByIdAction(id));
   };
 
@@ -219,85 +200,116 @@ export const City = () => {
           closeForm={handleCloseForm}
           isUpdate={isUpdate}
           addData={handleAddData}
-          updateDate={handleUpdateData}
+          updateData={handleUpdateData}
         />
       );
     }
   };
-
   return (
     <>
-      <div className="container-fluid">
-        {displayForm()}
-        <div className="card shadow mb-4">
-          {/* Page Heading */}
-          <div className="card-header py-3">
-            <h6 className="m-0 font-weight-normal text-primary">{title}</h6>
-          </div>
-          <div className="card-body">
-            <div className="top_tools d-flex mb-3">
-              <Search handleSearch={handleSearch} />
-              <button
-                onClick={() => handleOpenFormAdd()}
-                className="btn btn-primary btn-icon-split ml-2"
-              >
-                <span className="text">
-                  <i className="fa-solid fa-plus"></i> Thêm mới
-                </span>
-              </button>
-              <button
-                onClick={() => handleRefreshPage()}
-                className="btn btn-primary btn-icon-split ml-2"
-              >
-                <span className="text">
-                  <i className="fa-solid fa-rotate"></i>
-                </span>
-              </button>
+      <div className="bg-blue-100 h-screen ">
+        <Transition
+          show={formStatusState}
+          enter="transition-opacity duration-75"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity duration-150"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          {displayForm()}
+        </Transition>
+
+        <div className="flex flex-col bg-slate-50 mx-2 rounded-2xl p-4">
+          <div className="flex flex-row ml-2">
+            <div className="absolute left-5 w-1 bg-green-400 h-14"></div>
+            <div className="flex-none flex-shrink-0">
+              <p className="font-sans font-semibold text-3xl">{title}</p>
+              <p className="font-sans text-sm italic">
+                Tất cả {title} Nhà trọ XomTro
+              </p>
             </div>
-            {/* { showToast() } */}
-            <table className="table table-bordered">
-              <thead>
-                <tr>
-                  <th className="text-center">ID</th>
-                  <th className="text-center">Tên</th>
-                  <th className="text-center">Ngày tạo</th>
-                  <th className="text-center">Hiển thị</th>
-                  <th className="text-center">Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan={5} className="text-center">
-                      Đang tải dữ liệu...
-                    </td>
-                  </tr>
-                ) : (data && data.length <= 0) || data == null ? (
-                  <tr>
-                    <td colSpan={5} className="text-center">
-                      Không tìm thấy dữ liệu
-                    </td>
-                  </tr>
-                ) : (
-                  <ListItem
-                    data={data}
-                    openFormUpdate={(id) => handleOpenFormUpdate(id)}
-                  />
-                )}
-              </tbody>
-            </table>
-            {/* paging */}
-            {totalPage > 1 ? (
-              <Paging
-                totalPage={totalPage}
-                onchangePage={handleChangePage}
-                onPrevClickPage={handlePrevClick}
-                onNextClickPage={handleNextClick}
-                currentPage={currentPage}
+            {/* Add button */}
+            <div className="flex items-center grow justify-end flex-shrink-0">
+              <HiOutlinePlusSm
+                onClick={() => handleOpenFormAdd()}
+                className="text-4xl bg-green-600 rounded-full text-white hover:bg-green-500 cursor-pointer "
               />
-            ) : (
-              ""
-            )}
+            </div>
+          </div>
+          <Search handleSearch={handleSearch} />
+          {/* Table */}
+          <div>
+            <div className="flex flex-col">
+              <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                  <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <table className="min-w-full divide-y divide-gray-200 table-auto">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Tác giả
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Tên thể loại
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Ngày tạo
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Hành động
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {loading ? (
+                          <tr>
+                            <td colSpan={4} className="text-center">
+                              Đang tải dữ liệu...
+                            </td>
+                          </tr>
+                        ) : (data && data?.length <= 0) || data == null ? (
+                          <tr>
+                            <td colSpan={4} className="text-center">
+                              Không tìm thấy dữ liệu
+                            </td>
+                          </tr>
+                        ) : (
+                          <ListItem
+                            data={data}
+                            openFormUpdate={(id) => handleOpenFormUpdate(id)}
+                          />
+                        )}
+                      </tbody>
+                    </table>
+                    {/* paging */}
+                    {totalPage > 1 ? (
+                      <Paging
+                        totalPage={totalPage}
+                        onchangePage={handleChangePage}
+                        onPrevClickPage={handlePrevClick}
+                        onNextClickPage={handleNextClick}
+                        currentPage={currentPage}
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

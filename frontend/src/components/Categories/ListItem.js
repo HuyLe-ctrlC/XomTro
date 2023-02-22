@@ -23,17 +23,17 @@ export const ListItem = ({ data, openFormUpdate }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         const action = await dispatch(deleteAction(id));
+        const message = action.payload;
+        console.log("msg", message);
         if (deleteAction.fulfilled.match(action)) {
-          const msg = action.payload;
           Swal.fire({
             position: "center",
             icon: "success",
-            title: msg.msg,
+            title: message?.message,
             showConfirmButton: false,
             timer: 1500,
           });
         } else {
-          const msg = action.payload;
           const Toast = Swal.mixin({
             toast: true,
             position: "bottom-end",
@@ -45,7 +45,7 @@ export const ListItem = ({ data, openFormUpdate }) => {
 
           Toast.fire({
             icon: "error",
-            title: msg,
+            title: message?.message,
           });
         }
       } else if (result.isDenied) {
@@ -84,11 +84,11 @@ export const ListItem = ({ data, openFormUpdate }) => {
           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
             <button
               className="text-4xl"
-              onClick={() => handleOpenFormUpdate(item.id)}
+              onClick={() => handleOpenFormUpdate(item._id)}
             >
               <HiPencilAlt className="h-6 text-blue-500 text-center" />
             </button>
-            <button className="text-4xl" onClick={() => handleDelete(item.id)}>
+            <button className="text-4xl" onClick={() => handleDelete(item._id)}>
               <BsTrash className="h-6 text-red-500 text-center" />
             </button>
           </td>

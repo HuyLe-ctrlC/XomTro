@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 
+const imageSchema = new mongoose.Schema({
+  image: {
+    type: String,
+    default:
+      "https://res.cloudinary.com/huyleminh/image/upload/v1675929721/avatar-default_yxdthk.png",
+  },
+});
+
 const postSchema = new mongoose.Schema(
   {
     title: {
@@ -11,6 +19,22 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: [true, "Category is required"],
       default: "All",
+    },
+    price: {
+      type: String,
+      required: [true, "Price is required"],
+    },
+    acreage: {
+      type: String,
+      required: [true, "Acreage is required"],
+    },
+    electricityPrice: {
+      type: String,
+      required: [true, "Electricity Price is required"],
+    },
+    waterPrice: {
+      type: String,
+      required: [true, "Water Price is required"],
     },
     isLiked: {
       type: Boolean,
@@ -44,6 +68,18 @@ const postSchema = new mongoose.Schema(
     description: {
       type: String,
       required: [true, "Post description is required"],
+    },
+    city: {
+      type: String,
+      required: [true, "City is required"],
+    },
+    district: {
+      type: String,
+      required: [true, "District is required"],
+    },
+    ward: {
+      type: String,
+      required: [true, "Ward is required"],
     },
     image: {
       type: String,

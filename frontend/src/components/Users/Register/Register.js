@@ -59,8 +59,8 @@ const Register = () => {
                 <span className="text-lg text-blue-400 font-bold">
                   Đăng ký tài khoản
                 </span>
-                <h3 className="mt-8 mb-12 text-5xl font-bold font-heading text-white">
-                  Tạo một tài khoản và bắt đầu quản lý trọ
+                <h3 className="mt-8 mb-12 text-5xl font-bold font-heading text-white leading-tight">
+                  Tạo tài khoản và bắt đầu quản lý trọ
                 </h3>
               </div>
             </div>

@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import classNames from "classnames";
+import React, { useState, useEffect } from "react";
 
 export const Paging = ({
   totalPage,
@@ -8,104 +7,145 @@ export const Paging = ({
   onNextClickPage,
   currentPage,
 }) => {
-  const [displayRange, setDisplayRange] = useState({ start: 1, end: 5 });
+  const [visiblePages, setVisiblePages] = useState(5);
+  const [startPage, setStartPage] = useState(1);
+  const [endPage, setEndPage] = useState(visiblePages);
 
-  const handleClickPage = (page) => {
-    onchangePage(page);
+  useEffect(() => {
+    updateVisiblePages();
+    updateTotalPages();
+  }, [totalPage, visiblePages, currentPage]);
 
-    if (page < displayRange.start || page > displayRange.end) {
-      const newStart = Math.max(1, page - 2);
-      const newEnd = Math.min(totalPage, page + 2);
-
-      setDisplayRange({ start: newStart, end: newEnd });
-    }
+  const handleClickPage = (pageNumber) => {
+    onchangePage(pageNumber);
   };
 
   const handlePrevClick = () => {
-    const newStart = Math.max(1, displayRange.start - 5);
-    const newEnd = displayRange.start - 1;
-
-    onPrevClickPage();
-    setDisplayRange({ start: newStart, end: newEnd });
+    onPrevClickPage(currentPage - 1);
   };
 
   const handleNextClick = () => {
-    const newStart = displayRange.end + 1;
-    const newEnd = Math.min(totalPage, displayRange.end + 5);
-
-    onNextClickPage();
-    setDisplayRange({ start: newStart, end: newEnd });
+    onNextClickPage(currentPage + 1);
   };
 
-  const isCurrentPage = (page) => {
-    return page === currentPage;
-  };
+  const updateVisiblePages = () => {
+    const halfVisiblePages = Math.floor(visiblePages / 2);
+    let newStartPage = currentPage - halfVisiblePages;
+    let newEndPage = currentPage + halfVisiblePages;
 
-  const getPageRange = () => {
-    const pageRange = [];
-
-    for (let i = displayRange.start; i <= displayRange.end; i++) {
-      pageRange.push(i);
+    if (newStartPage < 1) {
+      newEndPage += Math.abs(newStartPage) + 1;
+      newStartPage = 1;
     }
 
-    return pageRange;
-  };
-
-  const getPageList = () => {
-    const pageList = [];
-
-    if (totalPage > 5) {
-      const pageRange = getPageRange();
-
-      if (pageRange[0] > 1) {
-        pageList.push(
-          <li key="prev" className="inline-block">
-            <button onClick={handlePrevClick}>{"<"}</button>
-          </li>
-        );
-      }
-
-      pageList.push(
-        ...pageRange.map((page) => (
-          <li
-            key={page}
-            className={classNames("inline-block", {
-              "text-blue-700 font-bold": isCurrentPage(page),
-            })}
-          >
-            <button onClick={() => handleClickPage(page)}>{page}</button>
-          </li>
-        ))
-      );
-
-      if (pageRange[pageRange.length - 1] < totalPage) {
-        pageList.push(
-          <li key="next" className="inline-block">
-            <button onClick={handleNextClick}>{">"}</button>
-          </li>
-        );
-      }
-    } else {
-      for (let i = 1; i <= totalPage; i++) {
-        pageList.push(
-          <li
-            key={i}
-            className={classNames("inline-block", {
-              "text-blue-700 font-bold": isCurrentPage(i),
-            })}
-          >
-            <button onClick={() => handleClickPage(i)}>{i}</button>
-          </li>
-        );
-      }
+    if (newEndPage > totalPage) {
+      newStartPage -= newEndPage - totalPage;
+      newEndPage = totalPage;
     }
 
-    return pageList;
+    if (newStartPage < 1) {
+      newStartPage = 1;
+    }
+
+    if (newEndPage > totalPage) {
+      newEndPage = totalPage;
+    }
+
+    setStartPage(newStartPage);
+    setEndPage(newEndPage);
+  };
+
+  const updateTotalPages = () => {
+    const totalVisiblePages = endPage - startPage + 1;
+    let newVisiblePages = visiblePages;
+
+    if (totalPage < newVisiblePages) {
+      newVisiblePages = totalPage;
+    }
+
+    if (totalVisiblePages < newVisiblePages) {
+      const missingPages = newVisiblePages - totalVisiblePages;
+      const halfMissingPages = Math.floor(missingPages / 2);
+
+      if (
+        startPage - halfMissingPages > 0 &&
+        endPage + halfMissingPages < totalPage
+      ) {
+        setStartPage(startPage - halfMissingPages);
+        setEndPage(endPage + halfMissingPages);
+      } else if (startPage - missingPages > 0) {
+        setStartPage(startPage - missingPages);
+      } else if (endPage + missingPages < totalPage) {
+        setEndPage(endPage + missingPages);
+      }
+    }
+  };
+
+  const handleVisiblePagesChange = (event) => {
+    setVisiblePages(parseInt(event.target.value));
   };
 
   return (
-    <div className="flex justify-center mt-4">
-      <ul className="pagination">{getPageList()}</ul>
+    <div className="flex items-center justify-center mb-2">
+      <button
+        className={`${
+          currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+        } bg-gray-100 px-4 py-2 rounded-lg`}
+        onClick={handlePrevClick}
+        disabled={currentPage === 1}
+      >
+        Previous
+      </button>
+      <div className="flex items-center space-x-2 mx-4">
+        {startPage > 1 && (
+          <button
+            className="hidden md:inline-block text-gray-400"
+            onClick={() => handleClickPage(1)}
+          >
+            1
+          </button>
+        )}
+        {startPage > 2 && (
+          <span className="hidden md:inline-block text-gray-400">...</span>
+        )}
+        {Array.from(
+          { length: endPage - startPage + 1 },
+          (_, i) => startPage + i
+        ).map((pageNumber) => (
+          <button
+            key={pageNumber}
+            className={`${
+              currentPage === pageNumber
+                ? "text-white bg-blue-500 hover:bg-blue-600 cursor-not-allowed"
+                : "text-gray-700 bg-gray-100 hover:bg-gray-200"
+            } px-4 py-2 rounded-lg`}
+            onClick={() => handleClickPage(pageNumber)}
+            disabled={currentPage === pageNumber}
+          >
+            {pageNumber}
+          </button>
+        ))}
+        {endPage < totalPage - 1 && (
+          <span className="hidden md:inline-block text-gray-400">...</span>
+        )}
+        {endPage < totalPage && (
+          <button
+            className="hidden md:inline-block text-gray-400"
+            onClick={() => handleClickPage(totalPage)}
+          >
+            {totalPage}
+          </button>
+        )}
+      </div>
+      <button
+        className={`${
+          currentPage === totalPage ? "opacity-50 cursor-not-allowed" : ""
+        } bg-gray-100 px-4 py-2 rounded-lg`}
+        onClick={handleNextClick}
+        disabled={currentPage === totalPage}
+      >
+        Next
+      </button>
     </div>
   );
 };

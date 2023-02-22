@@ -37,11 +37,12 @@ const Login = () => {
   //todo: useNavigate
   const store = useSelector(selectUser);
   const { userAuth, loading, serverError, appError } = store;
-  // useEffect(() => {
-  //   if (userAuth) {
-  //     navigate(`/profile/${userAuth?._id}`);
-  //   }
-  // }, [navigate, userAuth]);
+  useEffect(() => {
+    if (userAuth) {
+      // navigate(`/profile/${userAuth?._id}`);
+      navigate(`/`);
+    }
+  }, [navigate, userAuth]);
 
   return (
     <>

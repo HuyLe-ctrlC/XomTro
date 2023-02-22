@@ -195,7 +195,7 @@ export const AdminNavbar = ({ isLogin }) => {
                   {/* Image */}
                   <img
                     className="h-10 w-10 rounded-full"
-                    src={isLogin?.profile}
+                    src={isLogin?.profilePhoto}
                     alt={isLogin?.firstName}
                   />
                 </div>

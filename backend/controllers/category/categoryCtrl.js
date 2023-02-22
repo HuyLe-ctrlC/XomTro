@@ -1,16 +1,29 @@
 const expressAsyncHandler = require("express-async-handler");
 const Category = require("../../model/category/Category");
 const validateMongodbId = require("../../utils/validateMongodbID");
+const MESSAGE = require("../../utils/constantsMessage");
 /*-------------------
 //TODO: Create a Category
 //-------------------*/
 const createCategoryCtrl = expressAsyncHandler(async (req, res) => {
   try {
-    const category = await Category.create({
-      user: req?.user?._id,
-      title: req?.body?.title,
-    });
-    res.json(category);
+    if (req?.body?.title) {
+      // const { firstName, lastName, email, profilePhoto } = req?.user;
+      const category = await Category.create({
+        user: req?.user,
+        title: req?.body?.title,
+      });
+      res.json({
+        result: true,
+        data: category,
+        message: MESSAGE.MESSAGE_SUCCESS,
+      });
+    } else {
+      res.json({
+        result: false,
+        message: MESSAGE.MESSAGE_FAILED,
+      });
+    }
   } catch (error) {
     res.json(error);
   }
@@ -41,11 +54,15 @@ const searchCategoryCtrl = expressAsyncHandler(async (req, res) => {
     const offset = req.query.offset;
     const limit = req.query.limit;
     // Do something with the parameters
-    console.log("keyword", keyword);
-    console.log("offset", offset);
-    console.log("limit", limit);
+    // console.log("keyword", keyword);
+    // console.log("offset", offset);
+    // console.log("limit", limit);
     let searchResult = [];
+    let searchCount = 0;
     if (keyword == "") {
+      searchCount = await Category.countDocuments({
+        title: { $regex: keyword, $options: "i" },
+      });
       searchResult = await Category.find({
         $or: [{ title: { $regex: keyword, $options: "i" } }],
       })
@@ -55,7 +72,6 @@ const searchCategoryCtrl = expressAsyncHandler(async (req, res) => {
         .lean()
         .sort("-createdAt");
     } else {
-      console.log(123);
       searchResult = await Category.aggregate([
         {
           $lookup: {
@@ -100,12 +116,30 @@ const searchCategoryCtrl = expressAsyncHandler(async (req, res) => {
         { $skip: parseInt(offset) },
         { $limit: parseInt(limit) },
       ]);
+      const count = await Category.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "user",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $match: {
+            $or: [
+              { title: { $regex: keyword, $options: "i" } },
+              { "user.firstName": { $regex: keyword, $options: "i" } },
+              { "user.lastName": { $regex: keyword, $options: "i" } },
+            ],
+          },
+        },
+        { $count: "total" },
+      ]);
+      searchCount = count[0].total;
     }
-    console.log("searchResult", Object.keys(searchResult).length);
-    const searchCount = Object.keys(searchResult).length;
-    // const searchCount = await Category.countDocuments({
-    //   title: { $regex: keyword, $options: "i" },
-    // });
+    // const searchCount = Object.keys(searchResult).length;
+
     const totalPage = Math.ceil(searchCount / limit);
     res.json({ totalPage: totalPage, data: searchResult });
   } catch (err) {
@@ -135,14 +169,25 @@ const updateCategoryCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
   try {
-    const updateCategory = await Category.findByIdAndUpdate(
-      id,
-      {
-        title: req?.body?.title,
-      },
-      { new: true, runValidators: true }
-    );
-    res.json(updateCategory);
+    if (req?.body?.title) {
+      const updateCategory = await Category.findByIdAndUpdate(
+        id,
+        {
+          title: req?.body?.title,
+        },
+        { new: true, runValidators: true }
+      ).populate("user", "email lastName firstName profilePhoto");
+      res.json({
+        result: true,
+        message: MESSAGE.MESSAGE_SUCCESS,
+        newData: updateCategory,
+      });
+    } else {
+      res.json({
+        result: false,
+        message: MESSAGE.MESSAGE_FAILED,
+      });
+    }
   } catch (error) {
     res.json(error);
   }
@@ -157,7 +202,16 @@ const deleteCategoryCtrl = expressAsyncHandler(async (req, res) => {
   validateMongodbId(id);
   try {
     const deleteCategory = await Category.findByIdAndDelete(id);
-    res.json(deleteCategory);
+    if (deleteCategory) {
+      // res.json(deleteCategory);
+      res.json({
+        result: true,
+        message: MESSAGE.MESSAGE_SUCCESS,
+        _id: deleteCategory._id,
+      });
+    } else {
+      res.json({ result: false, message: MESSAGE.MESSAGE_FAILED });
+    }
   } catch (error) {
     res.json(error);
   }

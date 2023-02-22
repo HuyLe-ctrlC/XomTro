@@ -8,7 +8,7 @@ const categoryApi = {
     return axiosClient.get(url, { params });
   },
   getById: (id) => {
-    const url = `/${module}/getbyid/${id}`;
+    const url = `/${module}/${id}`;
     return axiosClient.get(url);
   },
   add: (data) => {
@@ -20,7 +20,7 @@ const categoryApi = {
     return axiosClient.put(url, body);
   },
   delete: (id) => {
-    const url = `/${module}/delete/${id}`;
+    const url = `/${module}/${id}`;
     return axiosClient.delete(url);
   },
   status: (id, body) => {

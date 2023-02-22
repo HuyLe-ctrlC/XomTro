@@ -26,7 +26,7 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
     );
   }
   //1. Get the path to img
-  const localPath = `public/images/posts/${req.file.filename}`;
+  const localPath = `public/images/posts/${req?.file?.filename}`;
   //2. Upload to cloudinary
   //cloudinaryUploadImg return promise so I need to "await"
   const imgUploaded = await cloudinaryUploadImg(localPath);

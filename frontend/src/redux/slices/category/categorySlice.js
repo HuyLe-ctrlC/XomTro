@@ -4,11 +4,16 @@ import categoryApi from "../../../api/categoryApi";
 //add action
 export const addDataAction = createAsyncThunk(
   "category/create",
-  async (category, { rejectWithValue, getState, dispatch }) => {
+  async (data, { rejectWithValue, getState, dispatch }) => {
     //http call
     try {
-      const { data } = await categoryApi.add(category);
-      return data;
+      // console.log("category", category);
+      const response = await categoryApi.add(data);
+      const results = {
+        data: response.data,
+        message: response.message,
+      };
+      return results;
     } catch (error) {
       if (!error) {
         throw error;
@@ -20,14 +25,25 @@ export const addDataAction = createAsyncThunk(
 
 //add action
 export const updateDataAction = createAsyncThunk(
-  "category/create",
-  async (categories, { rejectWithValue, getState, dispatch }) => {
+  "category/update",
+  async (data, { rejectWithValue, getState, dispatch }) => {
     //http call
-    const id = categories.id;
-    const title = categories.title;
+    const id = data.id;
+    const dataCategory = data.data;
     try {
-      const { data } = await categoryApi.put(id, title);
-      return data;
+      const response = await categoryApi.update(id, dataCategory);
+      // console.log("response", response);
+      if (response.result) {
+        const results = {
+          id: id,
+          newData: response.newData,
+          message: response.message,
+        };
+        // console.log('results', results);
+        return results;
+      } else {
+        return rejectWithValue(response.errors[0].msg);
+      }
     } catch (error) {
       if (!error) {
         throw error;
@@ -43,9 +59,13 @@ export const getAllAction = createAsyncThunk(
   async (params, { rejectWithValue, getState, dispatch }) => {
     //http call
     try {
-      const data = await categoryApi.getAll(params);
+      const response = await categoryApi.getAll(params);
       // console.log("data", data);
-      return data;
+      const results = {
+        data: response.data,
+        totalPage: response.totalPage,
+      };
+      return results;
     } catch (error) {
       if (!error) {
         throw error;
@@ -62,7 +82,7 @@ export const getByIdAction = createAsyncThunk(
     try {
       // call Api
       const response = await categoryApi.getById(id);
-      // console.log(response.data);
+      // console.log(response);
       return response;
     } catch (error) {
       if (!error.response) {
@@ -76,15 +96,19 @@ export const getByIdAction = createAsyncThunk(
 //delete data by id
 export const deleteAction = createAsyncThunk(
   "category/delete",
-  async (id, { rejectWithValue, getState, dispatch }) => {
+  async (_id, { rejectWithValue, getState, dispatch }) => {
     try {
       // call api
-      const response = await categoryApi.delete(id);
-      const result = {
-        id,
-        msg: response.data[0].msg,
-      };
-      return result;
+      const response = await categoryApi.delete(_id);
+      if (response.result) {
+        const result = {
+          _id,
+          message: response.message,
+        };
+        return result;
+      } else {
+        return rejectWithValue(response);
+      }
     } catch (error) {
       // console.log('Failed to fetch data list: ', error);
       if (!error.response) {
@@ -98,15 +122,36 @@ export const deleteAction = createAsyncThunk(
 
 const categorySlices = createSlice({
   name: "category",
-  initialState: {},
+  initialState: { data: [], totalPage: 0, dataUpdate: [] },
   extraReducers: (builder, state) => {
+    //get All
+    builder
+      .addCase(getAllAction.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(getAllAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action?.payload.data;
+        state.totalPage = action?.payload?.totalPage;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(getAllAction.rejected, (state, action) => {
+        state.loading = false;
+        state.appError = action?.payload?.message;
+        state.serverError = action?.error?.message;
+      });
+    //create
     builder
       .addCase(addDataAction.pending, (state, action) => {
-        state.loading = true;
+        // state.loading = true;
       })
       .addCase(addDataAction.fulfilled, (state, action) => {
         state.loading = false;
-        state.category = action?.payload;
+        const { data } = action?.payload;
+        state.data = state.data?.length > 0 ? state.data : [];
+        state.data = [data, ...state.data];
+        // state.data = action?.payload;
         state.appError = undefined;
         state.serverError = undefined;
       })
@@ -115,20 +160,66 @@ const categorySlices = createSlice({
         state.appError = action?.payload?.message;
         state.serverError = action?.error?.message;
       });
-    //get All
+    //get data by ID
     builder
-      .addCase(getAllAction.pending, (state, action) => {
-        state.loading = true;
-      })
-      .addCase(getAllAction.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = action?.payload;
+      .addCase(getByIdAction.pending, (state, action) => {
+        // state.loading = true;
         state.appError = undefined;
         state.serverError = undefined;
       })
-      .addCase(getAllAction.rejected, (state, action) => {
-        state.loading = false;
+      .addCase(getByIdAction.fulfilled, (state, action) => {
+        // state.loading = false;
+        state.dataUpdate = action?.payload;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(getByIdAction.rejected, (state, action) => {
+        // state.loading = false;
         state.appError = action?.payload?.message;
+        state.serverError = action?.error?.message;
+      });
+    //update data
+    builder
+      .addCase(updateDataAction.pending, (state, action) => {
+        // state.loading = true;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(updateDataAction.fulfilled, (state, action) => {
+        // state.loading = false;
+        // find and update row data in store
+        const checkIndex = state.data.findIndex(
+          (row) => row._id.toString() == action?.payload?.id.toString()
+        );
+        if (checkIndex >= 0) {
+          state.data[checkIndex] = action?.payload?.newData;
+        }
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(updateDataAction.rejected, (state, action) => {
+        // state.loading = false;
+        state.msgSuccess = undefined;
+        state.appError = action?.payload;
+        state.serverError = action?.error?.message;
+      });
+    //delete data by id
+    builder
+      .addCase(deleteAction.pending, (state, action) => {
+        // state.loading = true;
+      })
+      .addCase(deleteAction.fulfilled, (state, action) => {
+        // state.loading = false;
+        // delete row data in store
+        state.data = state.data.filter(
+          (arrow) => arrow._id !== action.payload._id
+        );
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(deleteAction.rejected, (state, action) => {
+        // state.loading = false;
+        state.appError = action?.payload;
         state.serverError = action?.error?.message;
       });
   },
