@@ -12,6 +12,7 @@ import PrivateProtectRoute from "./utils/ProtectRoutes/PrivateProtectRoute";
 import { useSelector } from "react-redux";
 import { selectUser } from "./redux/slices/users/usersSlice";
 import AdminProtectRoute from "./utils/ProtectRoutes/AdminProtectRoute";
+import CreatePost from "./components/Posts";
 function App() {
   const user = useSelector(selectUser);
   const userAuth = user?.userAuth;
@@ -29,6 +30,14 @@ function App() {
               <AdminProtectRoute userAuth={userAuth}>
                 <Category />
               </AdminProtectRoute>
+            }
+          />
+          <Route
+            path={ROUTES.CREATE_POST}
+            element={
+              <PrivateProtectRoute userAuth={userAuth}>
+                <CreatePost />
+              </PrivateProtectRoute>
             }
           />
           <Route path="*" element={<NotFound />} />

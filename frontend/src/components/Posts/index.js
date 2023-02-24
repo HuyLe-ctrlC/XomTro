@@ -4,9 +4,9 @@ import {
   addDataAction,
   getAllAction,
   getByIdAction,
-  selectCategory,
+  selectPosts,
   updateDataAction,
-} from "../../redux/slices/category/categorySlice";
+} from "../../redux/slices/posts/postsSlices";
 import { HiOutlinePlusSm } from "react-icons/hi";
 import { openForm, closeForm } from "../../redux/slices/formSlices";
 import { ListItem } from "./ListItem";
@@ -15,12 +15,14 @@ import { Search } from "./Search";
 import Swal from "sweetalert2";
 import { Form } from "./Form";
 import { Transition } from "@headlessui/react";
-export const Category = () => {
+import React from "react";
+
+export default function CreatePost() {
   //redux
   const dispatch = useDispatch();
 
   const [formStatusState, setFormStatusState] = useState(false);
-  const title = "Quản lý thể loại";
+  const title = "Quản lý bài viết";
   const [isUpdate, setIsUpdate] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [active, setActive] = useState("");
@@ -46,9 +48,9 @@ export const Category = () => {
   }, []);
 
   //get data from redux
-  const category = useSelector(selectCategory);
-  const { data, loading, totalPage, appError, serverError } = category;
-  // console.log("data", data);
+  const posts = useSelector(selectPosts);
+  const { data, loading, totalPage, appError, serverError } = posts;
+  // console.log("posts", posts);
   // ==== paging ==== //
   // prev page events
   const handlePrevClick = () => {
@@ -239,10 +241,10 @@ export const Category = () => {
           <Search handleSearch={handleSearch} />
           {/* Table */}
           <div>
-            <div className="flex flex-col">
+            <div className="flex flex-col overflow-hidden">
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                  <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                  <div className="shadow overflow-hidden border border-gray-200 sm:rounded-lg ">
                     <table className="min-w-full divide-y divide-gray-200 table-auto">
                       <thead className="bg-gray-50">
                         <tr>
@@ -256,13 +258,37 @@ export const Category = () => {
                             scope="col"
                             className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
-                            Tên thể loại
+                            Tên bài viết
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Thể loại
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Thông tin phòng
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Địa chỉ
                           </th>
                           <th
                             scope="col"
                             className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
                             Ngày tạo
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Hình ảnh
                           </th>
                           <th
                             scope="col"
@@ -314,4 +340,4 @@ export const Category = () => {
       </div>
     </>
   );
-};
+}

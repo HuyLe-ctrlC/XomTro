@@ -1,10 +1,13 @@
 const mongoose = require("mongoose");
 
 const imageSchema = new mongoose.Schema({
-  image: {
+  img: {
     type: String,
     default:
       "https://res.cloudinary.com/huyleminh/image/upload/v1675929721/avatar-default_yxdthk.png",
+  },
+  publicId: {
+    type: String,
   },
 });
 
@@ -81,11 +84,12 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: [true, "Ward is required"],
     },
-    image: {
-      type: String,
-      default:
-        "https://res.cloudinary.com/huyleminh/image/upload/v1675929721/avatar-default_yxdthk.png",
-    },
+    image: [imageSchema],
+    // image: {
+    //   type: String,
+    //   default:
+    //     "https://res.cloudinary.com/huyleminh/image/upload/v1675929721/avatar-default_yxdthk.png",
+    // },
   },
   {
     toJSON: {

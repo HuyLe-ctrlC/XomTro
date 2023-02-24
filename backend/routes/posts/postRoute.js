@@ -20,7 +20,8 @@ const postRoutes = express.Router();
 postRoutes.post(
   "/",
   authMiddleware,
-  photoUpload.single("image"),
+  // photoUpload.single("image"),
+  photoUpload.array("image", 4),
   postImgResize,
   createPostCtrl
 );
@@ -28,9 +29,15 @@ postRoutes.post(
 postRoutes.put("/likes", authMiddleware, toggleAddLikeToPostCtrl);
 postRoutes.put("/dislikes", authMiddleware, toggleAddDislikeToPostCtrl);
 
-postRoutes.get("/", fetchPostsCtrl);
+postRoutes.get("/search", fetchPostsCtrl);
 postRoutes.get("/:id", fetchPostCtrl);
-postRoutes.put("/:id", authMiddleware, updatePostCtrl);
+postRoutes.put(
+  "/:id",
+  authMiddleware,
+  photoUpload.array("image", 4),
+  postImgResize,
+  updatePostCtrl
+);
 postRoutes.delete("/:id", authMiddleware, deletePostCtrl);
 
 module.exports = postRoutes;

@@ -4,7 +4,12 @@ const fs = require("fs");
 const Post = require("../../model/post/Post");
 const User = require("../../model/user/User");
 const validateMongodbId = require("../../utils/validateMongodbID");
-const cloudinaryUploadImg = require("../../utils/cloudinary");
+const {
+  cloudinaryUploadImg,
+  cloudinaryDeleteImg,
+  cloudinaryUploadMultiImg,
+  cloudinaryUpdateImg,
+} = require("../../utils/cloudinary");
 const { json } = require("express");
 
 /*-------------------
@@ -12,33 +17,53 @@ const { json } = require("express");
 //-------------------*/
 const createPostCtrl = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
+  //Display message if user is blocked
+  //! blockUser(req.user); later
   //validateMongodbId(req.body.user);
-  //check for bad words
+  //Check for bad words
   const filter = new Filter();
   const isProfane = filter.isProfane(req.body.title, req.body.description);
-  //Block User
+  //Block user
   if (isProfane) {
     await User.findByIdAndUpdate(_id, {
       isBlocked: true,
     });
     throw new Error(
-      "Creating failed because it contains profane words and have been blocked"
+      "Creating Failed because it contains profane words and you have been blocked"
     );
   }
-  //1. Get the path to img
-  const localPath = `public/images/posts/${req?.file?.filename}`;
-  //2. Upload to cloudinary
-  //cloudinaryUploadImg return promise so I need to "await"
-  const imgUploaded = await cloudinaryUploadImg(localPath);
+  //get files in request
+  const files = req.files;
+
+  // ---------------------
+  let localPath = [];
+  //push file name in to a array, file is created in public folder
+  files.map(async (file) => {
+    localPath.push(`public/images/posts/${file.filename}`);
+  });
+  //----------------------
+  // console.log("localPath", localPath);
+  // //2.Upload to cloudinary
+  const imgUploaded = await cloudinaryUploadMultiImg(localPath);
   try {
     const post = await Post.create({
       ...req.body,
-      image: imgUploaded?.url,
       user: _id,
+      image: imgUploaded,
     });
+    // const post = await Post.create({
+    //   ...req.body,
+    //   user: _id,
+    //   image: imgUploaded?.url,
+    // });
+
+    // Remove uploaded img
+    localPath.map((item) => {
+      fs.unlinkSync(item);
+    });
+
+    // res.json(post);
     res.json(post);
-    //Remove uploaded img
-    fs.unlinkSync(localPath);
   } catch (error) {
     res.json(error);
   }
@@ -50,10 +75,97 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
 
 const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
   try {
-    const posts = await Post.find({}).populate("user");
-    res.json(posts);
-  } catch (error) {
-    res.json(error);
+    const keyword = req.query.keyword;
+    const offset = req.query.offset;
+    const limit = req.query.limit;
+    // Do something with the parameters
+    let searchResult = [];
+    let searchCount = 0;
+    if (keyword == "") {
+      searchCount = await Post.countDocuments({
+        title: { $regex: keyword, $options: "i" },
+      });
+      searchResult = await Post.find({
+        $or: [{ title: { $regex: keyword, $options: "i" } }],
+      })
+        .populate("user", "email lastName firstName profilePhoto")
+        .skip(parseInt(offset))
+        .limit(parseInt(limit))
+        .lean()
+        .sort("-createdAt");
+    } else {
+      searchResult = await Post.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "user",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $match: {
+            $or: [
+              { title: { $regex: keyword, $options: "i" } },
+              { "user.firstName": { $regex: keyword, $options: "i" } },
+              { "user.lastName": { $regex: keyword, $options: "i" } },
+            ],
+          },
+        },
+        {
+          $project: {
+            title: 1,
+            user: {
+              //convert array to Object for every field
+              $arrayToObject: [
+                [
+                  {
+                    //key & value
+                    k: "firstName",
+                    v: { $arrayElemAt: ["$user.firstName", 0] },
+                  },
+                  { k: "lastName", v: { $arrayElemAt: ["$user.lastName", 0] } },
+                  { k: "email", v: { $arrayElemAt: ["$user.email", 0] } },
+                  {
+                    k: "profilePhoto",
+                    v: { $arrayElemAt: ["$user.profilePhoto", 0] },
+                  },
+                ],
+              ],
+            },
+          },
+        },
+        { $skip: parseInt(offset) },
+        { $limit: parseInt(limit) },
+      ]);
+      const count = await Post.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "user",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $match: {
+            $or: [
+              { title: { $regex: keyword, $options: "i" } },
+              { "user.firstName": { $regex: keyword, $options: "i" } },
+              { "user.lastName": { $regex: keyword, $options: "i" } },
+            ],
+          },
+        },
+        { $count: "total" },
+      ]);
+      searchCount = count[0].total;
+    }
+    // const searchCount = Object.keys(searchResult).length;
+
+    const totalPage = Math.ceil(searchCount / limit);
+    res.json({ totalPage: totalPage, data: searchResult });
+  } catch (err) {
+    res.json(err);
   }
 });
 
@@ -90,15 +202,37 @@ const fetchPostCtrl = expressAsyncHandler(async (req, res) => {
 const updatePostCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
+  let publicIDs = [];
+  const getPublicID = await Post.findById(id);
+  getPublicID?.image.map((file) => {
+    publicIDs.push(file.publicId);
+  });
+  console.log("publicIDs", publicIDs);
+  //get files in request
+  const files = req.files;
+  // ---------------------
+  let localPath = [];
+  //push file name in to a array, file is created in public folder
+  files.map((file) => {
+    localPath.push(`public/images/posts/${file.filename}`);
+  });
+  //----------------------
+  // Upload to cloudinary
+  const imgUploaded = await cloudinaryUpdateImg(publicIDs, localPath);
   try {
     const postUpdate = await Post.findByIdAndUpdate(
       id,
       {
         ...req.body,
         user: req.user?._id,
+        image: imgUploaded
       },
       { new: true }
     );
+    // Remove uploaded img
+    localPath.map((item) => {
+      fs.unlinkSync(item);
+    });
     res.json(postUpdate);
   } catch (error) {
     res.json(error);
@@ -112,6 +246,8 @@ const deletePostCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
   try {
+    //!change this code
+    // cloudinaryDeleteImg("ahbxnfgnf0j7u6lcifhc");
     const posts = await Post.findOneAndDelete(id);
     res.json(posts);
   } catch (error) {

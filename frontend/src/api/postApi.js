@@ -1,8 +1,8 @@
 import axiosClient from "./axiosClient";
 
-const module = "category";
+const module = "posts";
 
-const categoryApi = {
+const postsApi = {
   getAll: (params) => {
     const url = `/${module}/search`;
     return axiosClient.get(url, { params });
@@ -25,4 +25,4 @@ const categoryApi = {
   },
 };
 
-export default categoryApi;
+export default postsApi;
