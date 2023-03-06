@@ -11,6 +11,8 @@ const {
   cloudinaryUpdateImg,
 } = require("../../utils/cloudinary");
 const { json } = require("express");
+const path = require("path");
+const MESSAGE = require("../../utils/constantsMessage");
 
 /*-------------------
 //TODO: Create a Post
@@ -32,38 +34,47 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
       "Creating Failed because it contains profane words and you have been blocked"
     );
   }
-  //get files in request
-  const files = req.files;
+  //upload to cloudinary
+  // const files = req.files;
 
   // ---------------------
-  let localPath = [];
-  //push file name in to a array, file is created in public folder
-  files.map(async (file) => {
-    localPath.push(`public/images/posts/${file.filename}`);
-  });
+  // let localPath = [];
+  // //push file name in to a array, file is created in public folder
+  // files.map(async (file) => {
+  //   localPath.push(`public/images/posts/${file.filename}`);
+  // });
   //----------------------
   // console.log("localPath", localPath);
   // //2.Upload to cloudinary
-  const imgUploaded = await cloudinaryUploadMultiImg(localPath);
+  // const imgUploaded = await cloudinaryUploadMultiImg(localPath);
+
+  const files = req.resizedAndFormattedImages;
+  // console.log("req.body", req.body);
+
+  const imgUploaded = [];
+
+  for (const file of files) {
+    const filename = file.filename;
+    const type = file.type;
+    const filepath = `public/images/posts/${file.filename}`;
+    const fileBuffer = file.buffer;
+    const preview = fileBuffer.toString("base64");
+
+    imgUploaded.push({ filename, preview, type });
+    fs.unlinkSync(filepath);
+  }
+  // console.log("imgUploaded", imgUploaded);
   try {
     const post = await Post.create({
       ...req.body,
-      user: _id,
+      user: req?.user,
       image: imgUploaded,
     });
-    // const post = await Post.create({
-    //   ...req.body,
-    //   user: _id,
-    //   image: imgUploaded?.url,
-    // });
-
-    // Remove uploaded img
-    localPath.map((item) => {
-      fs.unlinkSync(item);
+    res.json({
+      result: true,
+      data: post,
+      message: MESSAGE.MESSAGE_SUCCESS,
     });
-
-    // res.json(post);
-    res.json(post);
   } catch (error) {
     res.json(error);
   }
@@ -202,42 +213,129 @@ const fetchPostCtrl = expressAsyncHandler(async (req, res) => {
 const updatePostCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
-  let publicIDs = [];
-  const getPublicID = await Post.findById(id);
-  getPublicID?.image.map((file) => {
-    publicIDs.push(file.publicId);
-  });
-  console.log("publicIDs", publicIDs);
-  //get files in request
-  const files = req.files;
-  // ---------------------
-  let localPath = [];
-  //push file name in to a array, file is created in public folder
-  files.map((file) => {
-    localPath.push(`public/images/posts/${file.filename}`);
-  });
-  //----------------------
-  // Upload to cloudinary
-  const imgUploaded = await cloudinaryUpdateImg(publicIDs, localPath);
-  try {
+
+  const files = req.resizedAndFormattedImages;
+  if (!files.length) {
     const postUpdate = await Post.findByIdAndUpdate(
       id,
+
       {
         ...req.body,
-        user: req.user?._id,
-        image: imgUploaded
+        user: req?.user,
       },
       { new: true }
-    );
-    // Remove uploaded img
-    localPath.map((item) => {
-      fs.unlinkSync(item);
+    ).populate("user", "email lastName firstName profilePhoto");
+
+    return res.json({
+      result: true,
+      message: MESSAGE.UPDATE_SUCCESS,
+      newData: postUpdate,
     });
-    res.json(postUpdate);
-  } catch (error) {
-    res.json(error);
   }
+  console.log("files", files)
+  const imgUploaded = files.map((file) => {
+    if (file?.preview?.startsWith("/")) {
+      const filename = file.filename;
+      const type = file.type;
+      const preview = file.preview;
+      return { filename, preview, type };
+    } else {
+      const filename = file.filename;
+      const type = file.type;
+      const preview = file.buffer.toString("base64");
+      const filepath = `public/images/posts/${filename}`;
+      fs.unlinkSync(filepath);
+      return { filename, preview, type };
+    }
+  });
+
+  const postUpdate = await Post.findByIdAndUpdate(
+    id,
+    {
+      ...req.body,
+      user: req?.user,
+      image: imgUploaded,
+    },
+    { new: true }
+  ).populate("user", "email lastName firstName profilePhoto");
+
+  res.json({
+    result: true,
+    message: MESSAGE.UPDATE_SUCCESS,
+    newData: postUpdate,
+  });
 });
+
+/*-------------------
+//TODO: Update a cloudinary
+//-------------------*/
+
+// const updatePostCtrl = expressAsyncHandler(async (req, res) => {
+//   const { id } = req.params;
+//   validateMongodbId(id);
+//   let publicIDs = [];
+//   const getPublicID = await Post.findById(id);
+//   getPublicID?.image.map((file) => {
+//     publicIDs.push(file.publicId);
+//   });
+//   // console.log("publicIDs", publicIDs);
+//   //get files in request
+//   const files = req.resizedAndFormattedImages;
+//   console.log("files.length", files.length);
+//   let localPath = [];
+//   if (files.length !== 0) {
+//     // //push file name in to a array, file is created in public folder
+//     // files.map((file) => {
+//     //   localPath.push(`public/images/posts/${file.filename}`);
+//     // });
+//     // // Upload to cloudinary
+//     // const imgUploaded = await cloudinaryUpdateImg(publicIDs, localPath);
+
+//     const imgUploaded = [];
+
+//     for (const file of files) {
+//       const filename = file.filename;
+//       const filepath = `public/images/posts/${file.filename}`;
+//       const fileBuffer = file.buffer;
+//       const data = fileBuffer.toString("base64");
+
+//       imgUploaded.push({ filename, data });
+//       fs.unlinkSync(filepath);
+//     }
+//     try {
+//       const postUpdate = await Post.findByIdAndUpdate(
+//         id,
+//         {
+//           ...req.body,
+//           user: req.user?._id,
+//           image: imgUploaded,
+//         },
+//         { new: true }
+//       );
+//       // Remove uploaded img
+//       localPath.map((item) => {
+//         fs.unlinkSync(item);
+//       });
+//       res.json(postUpdate);
+//     } catch (error) {
+//       res.json(error);
+//     }
+//   } else {
+//     try {
+//       const postUpdate = await Post.findByIdAndUpdate(
+//         id,
+//         {
+//           ...req.body,
+//           user: req.user?._id,
+//         },
+//         { new: true }
+//       );
+//       res.json(postUpdate);
+//     } catch (error) {
+//       res.json(error);
+//     }
+//   }
+// });
 
 /*-------------------
 //TODO: Delete a Post
@@ -247,9 +345,16 @@ const deletePostCtrl = expressAsyncHandler(async (req, res) => {
   validateMongodbId(id);
   try {
     //!change this code
-    // cloudinaryDeleteImg("ahbxnfgnf0j7u6lcifhc");
     const posts = await Post.findOneAndDelete(id);
-    res.json(posts);
+    if (posts) {
+      res.json({
+        result: true,
+        _id: posts._id,
+        message: MESSAGE.DELETE_SUCCESS,
+      });
+    } else {
+      res.json({ result: false, message: MESSAGE.MESSAGE_FAILED });
+    }
   } catch (error) {
     res.json(error);
   }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { HiPencilAlt } from "react-icons/hi";
 import { BsTrash } from "react-icons/bs";
 import { useDispatch } from "react-redux";
@@ -6,11 +6,14 @@ import Swal from "sweetalert2";
 import { deleteAction } from "../../redux/slices/posts/postsSlices";
 import DateFormatter from "../../utils/DateFormatter";
 
-export const ListItem = ({ data, openFormUpdate }) => {
+export const ListItem = ({ data, openFormUpdate, openSlide }) => {
   const dispatch = useDispatch();
-
+  const [show, setShow] = useState(true);
   const handleOpenFormUpdate = (id) => {
     openFormUpdate(id);
+  };
+  const openSlideShow = (id) => {
+    openSlide(id);
   };
   // delete data event
   const handleDelete = (id) => {
@@ -52,7 +55,6 @@ export const ListItem = ({ data, openFormUpdate }) => {
       }
     });
   };
-
   return (
     <>
       {data?.map((item) => (
@@ -99,10 +101,17 @@ export const ListItem = ({ data, openFormUpdate }) => {
             </div>
           </td>
           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            {item.ward}&#160;{item.district}&#160;{item.city}
+            {item.ward.prefix}&#160;{item.ward.name}&#160;{item.district.name}
+            &#160;{item.city.name}
           </td>
           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            <img src={item.image} alt="thumb" className="w-20 h-20" />
+            {/* <img src={item.image[0].img} alt="thumb" className="w-20 h-20" /> */}
+            <button
+              onClick={() => openSlideShow(item?._id)}
+              className="bg-blue-500 p-3 text-white rounded-md"
+            >
+              Xem image
+            </button>
           </td>
           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
             {<DateFormatter date={item?.createdAt} />}

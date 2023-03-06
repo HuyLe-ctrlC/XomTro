@@ -52,7 +52,7 @@ export const AdminNavbar = ({ isLogin }) => {
   ];
   const dispatch = useDispatch();
   return (
-    <Disclosure as="nav" className="bg-green-800">
+    <Disclosure as="nav" className="bg-[#15a05c]">
       {({ open }) => (
         <>
           <div className="max-w-7xl mx-auto px-4 ">
@@ -81,7 +81,7 @@ export const AdminNavbar = ({ isLogin }) => {
                       className={classNames(
                         item.current
                           ? "bg-gray-900 text-white"
-                          : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                          : "text-white hover:bg-gray-700 hover:text-white",
                         "px-3 py-2 rounded-md text-sm font-medium"
                       )}
                       aria-current={item.current ? "page" : undefined}

@@ -56,13 +56,13 @@ const getCityCtrl = expressAsyncHandler(async (req, res) => {
       {},
       {
         name: 1,
-        _id: 1,
+        id: 1,
       }
     );
     const result = [];
     data.forEach((location) => {
-      const { _id, name } = location;
-      result.push({ _id, name });
+      const { id, name } = location;
+      result.push({ id, name });
     });
     res.json({
       result: true,
@@ -78,9 +78,9 @@ const getCityCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 
 const getDistrictCtrl = expressAsyncHandler(async (req, res) => {
-  const _id = req.params.id;
+  const id = req.params.id;
   try {
-    const data = await Location.findOne({ _id: _id });
+    const data = await Location.findOne({ id: id });
     const districtNames = data?.districts?.map((district) => ({
       id: district.id,
       name: district.name,
@@ -101,24 +101,46 @@ const getDistrictCtrl = expressAsyncHandler(async (req, res) => {
 const getWardByIDCtrl = expressAsyncHandler(async (req, res) => {
   const cityId = req?.query?.cityId;
   const districtId = req?.query?.districtId;
+  // console.log("cityId", cityId);
+  // console.log("districtId", districtId);
   try {
-    const data = await Location.findOne({ cityId: cityId });
-    // const wardsName = data?.districts?.filter((district) => district.id == districtId);
-    const wardsName = data?.districts?.filter((district) => {
-      if (district.id == districtId) {
-        const { wards } = district;
-        const wardNames = [];
-        wards.forEach((ward) => {
-          // const { id, name, prefix } = ward;
-          wardNames.push(ward);
-        });
-        res.json({
-          result: true,
-          data: wardNames,
-          message: MESSAGE.MESSAGE_SUCCESS,
-        });
-      }
-    });
+    // const data = await Location.findOne({ cityId: cityId });
+    // // const wardsName = data?.districts?.filter((district) => district.id == districtId);
+    // const wardsName = data?.districts?.filter((district) => {
+    //   if (district.id == districtId) {
+    //     const { wards } = district;
+    //     const wardNames = [];
+    //     wards.forEach((ward) => {
+    //       // const { id, name, prefix } = ward;
+    //       wardNames.push(ward);
+    //     });
+    //     res.json({
+    //       result: true,
+    //       data: wardNames,
+    //       message: MESSAGE.MESSAGE_SUCCESS,
+    //     });
+    //   }
+    // });
+
+    const data = await Location.findOne({ id: cityId });
+    const wardNames = data?.districts
+      ?.filter((district) => district.id == districtId)
+      .map((district) => district.wards);
+    let resultData;
+    if (!wardNames || !wardNames.length) {
+      res.json({
+        result: false,
+        message: MESSAGE.DATA_NOT_FOUND,
+      });
+    } else {
+      resultData = wardNames.flat();
+      res.json({
+        result: true,
+        data: resultData,
+        message: MESSAGE.MESSAGE_SUCCESS,
+      });
+    }
+
     // res.json({
     //   result: false,
     //   message: MESSAGE.MESSAGE_FAILED,

@@ -10,7 +10,6 @@ export const registerUserAction = createAsyncThunk(
       return data;
     } catch (error) {
       //below equal to !error && !error.response
-      console.log("error", error);
       if (!error?.response) {
         throw error;
       }

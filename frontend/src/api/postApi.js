@@ -1,4 +1,4 @@
-import axiosClient from "./axiosClient";
+import axiosClient, { axiosUpload } from "./axiosClient";
 
 const module = "posts";
 
@@ -13,11 +13,11 @@ const postsApi = {
   },
   add: (data) => {
     const url = `/${module}`;
-    return axiosClient.post(url, data);
+    return axiosUpload.post(url, data);
   },
   update: (id, body) => {
     const url = `/${module}/${id}`;
-    return axiosClient.put(url, body);
+    return axiosUpload.put(url, body);
   },
   delete: (id) => {
     const url = `/${module}/${id}`;

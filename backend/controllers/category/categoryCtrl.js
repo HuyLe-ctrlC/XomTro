@@ -179,7 +179,7 @@ const updateCategoryCtrl = expressAsyncHandler(async (req, res) => {
       ).populate("user", "email lastName firstName profilePhoto");
       res.json({
         result: true,
-        message: MESSAGE.MESSAGE_SUCCESS,
+        message: MESSAGE.UPDATE_SUCCESS,
         newData: updateCategory,
       });
     } else {

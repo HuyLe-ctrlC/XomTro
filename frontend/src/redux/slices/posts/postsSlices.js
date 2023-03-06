@@ -1,17 +1,16 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import postsApi from "../../../api/postApi";
-
 //add action
 export const addDataAction = createAsyncThunk(
   "posts/create",
   async (data, { rejectWithValue, getState, dispatch }) => {
     //http call
     try {
-      // console.log("posts", posts);
       const response = await postsApi.add(data);
+      // console.log("response", response);
       const results = {
-        data: response.data,
-        message: response.message,
+        data: response?.data?.data,
+        message: response?.data?.message,
       };
       return results;
     } catch (error) {
@@ -26,20 +25,19 @@ export const addDataAction = createAsyncThunk(
 //add action
 export const updateDataAction = createAsyncThunk(
   "posts/update",
-  async (data, { rejectWithValue, getState, dispatch }) => {
+  async (dataUpdate, { rejectWithValue, getState, dispatch }) => {
     //http call
-    const id = data.id;
-    const dataposts = data.data;
+    const id = dataUpdate.id;
+    const dataPosts = dataUpdate.data;
     try {
-      const response = await postsApi.update(id, dataposts);
+      const response = await postsApi.update(id, dataPosts);
       // console.log("response", response);
-      if (response.result) {
+      if (response?.data?.result) {
         const results = {
           id: id,
-          newData: response.newData,
-          message: response.message,
+          newData: response?.data?.newData,
+          message: response?.data?.message,
         };
-        // console.log('results', results);
         return results;
       } else {
         return rejectWithValue(response.errors[0].msg);
@@ -82,7 +80,7 @@ export const getByIdAction = createAsyncThunk(
     try {
       // call Api
       const response = await postsApi.getById(id);
-      // console.log(response);
+      // console.log("response", response);
       return response;
     } catch (error) {
       if (!error.response) {
@@ -119,11 +117,16 @@ export const deleteAction = createAsyncThunk(
   }
 );
 //slices = reducer
-
+//action to redirect
+export const resetEditAction = createAction("posts/reset");
 const postsSlices = createSlice({
   name: "posts",
   initialState: { data: [], totalPage: 0, dataUpdate: [] },
   extraReducers: (builder, state) => {
+    //Dispatch action
+    builder.addCase(resetEditAction, (state, action) => {
+      state.dataUpdate = [];
+    });
     //get All
     builder
       .addCase(getAllAction.pending, (state, action) => {

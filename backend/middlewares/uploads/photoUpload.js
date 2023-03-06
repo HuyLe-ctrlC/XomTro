@@ -45,30 +45,73 @@ const profilePhotoResize = async (req, res, next) => {
 
 //Post Image Resizing
 const postImgResize = async (req, res, next) => {
-  //check if there is no file
-  const files = req.files;
-  // // console.log("files", files);
-  if (!req.files) {
-    return next();
+  // //check if there is no file
+  // const files = req.files;
+  // // // console.log("files", files);
+  // if (!req.files) {
+  //   return next();
+  // }
+  // //store file in public folder and resize it
+  // await files.map(async (file) => {
+  //   file.filename = `user-${Date.now()}-${file.originalname}`;
+  //   await sharp(file.buffer)
+  //     .resize(500, 500)
+  //     .toFormat("jpeg")
+  //     .jpeg({ quality: 90 })
+  //     .toFile(path.join(`public/images/posts/${file.filename}`));
+  //   console.log("file middleware", file);
+  // });
+
+  // next();
+
+  const images = req.files;
+  const body = req.body.image;
+  // console.log("images", images);
+  const resizedAndFormattedImages = [];
+  try {
+    for (const image of images) {
+      const resizedAndFormatted = await sharp(image.buffer)
+        .resize({
+          width: 800,
+          fit: sharp.fit.inside,
+        })
+        .toFormat("jpeg")
+        .jpeg({ quality: 70 })
+        .toBuffer();
+      // const filename = `resized_${image.filename}`;
+      const filename = `user-${Date.now()}-${image.originalname}`;
+      const type = image.mimetype;
+      const data = { filename, buffer: resizedAndFormatted, type };
+
+      resizedAndFormattedImages.push(data);
+      await sharp(resizedAndFormatted).toFile(
+        path.join(`public/images/posts/${filename}`)
+      );
+    }
+    if (Array.isArray(req?.body?.image?.filename)) {
+      for (let index = 0; index < req.body.image?.type?.length; index++) {
+        resizedAndFormattedImages.push({
+          preview: req.body.image?.preview[index],
+          filename: req.body.image?.filename[index],
+          type: req.body.image?.type[index],
+        });
+      }
+    } else {
+      for (let index = 0; index < 1; index++) {
+        resizedAndFormattedImages.push({
+          preview: req.body.image?.preview,
+          filename: req.body.image?.filename,
+          type: req.body.image?.type,
+        });
+      }
+    }
+
+    req.resizedAndFormattedImages = resizedAndFormattedImages;
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error resizing and formatting images");
   }
-  //store file in public folder and resize it
-  files.map(async (file) => {
-    file.filename = `user-${Date.now()}-${file.originalname}`;
-    await sharp(file.buffer)
-      .resize(500, 500)
-      .toFormat("jpeg")
-      .jpeg({ quality: 90 })
-      .toFile(path.join(`public/images/posts/${file.filename}`));
-  });
-
-  // req.file.filename = `user-${Date.now()}-${req.file.originalname}`;
-  // await sharp(req.file.buffer)
-  //   .resize(500, 500)
-  //   .toFormat("jpeg")
-  //   .jpeg({ quality: 90 })
-  //   .toFile(path.join(`public/images/posts/${req.file.filename}`));
-
-  next();
 };
 
 module.exports = {

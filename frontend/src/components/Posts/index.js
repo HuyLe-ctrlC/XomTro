@@ -5,6 +5,7 @@ import {
   getAllAction,
   getByIdAction,
   selectPosts,
+  resetEditAction,
   updateDataAction,
 } from "../../redux/slices/posts/postsSlices";
 import { HiOutlinePlusSm } from "react-icons/hi";
@@ -16,6 +17,11 @@ import Swal from "sweetalert2";
 import { Form } from "./Form";
 import { Transition } from "@headlessui/react";
 import React from "react";
+import Slider from "../Slider";
+import {
+  getCity,
+  selectLocation,
+} from "../../redux/slices/location/locationSlices";
 
 export default function CreatePost() {
   //redux
@@ -41,6 +47,7 @@ export default function CreatePost() {
     document.title = title;
     // console.log("keyword", params.keyword);
     dispatch(getAllAction(params));
+    dispatch(getCity());
   };
 
   useEffect(() => {
@@ -50,6 +57,9 @@ export default function CreatePost() {
   //get data from redux
   const posts = useSelector(selectPosts);
   const { data, loading, totalPage, appError, serverError } = posts;
+
+  const locations = useSelector(selectLocation);
+  const { dataDistrict, dataWard, dataCity } = locations;
   // console.log("posts", posts);
   // ==== paging ==== //
   // prev page events
@@ -95,9 +105,9 @@ export default function CreatePost() {
   // create data event
   const handleAddData = async (data) => {
     setFormStatusState(false);
-    const dataJson = JSON.stringify(data);
+    // const dataJson = JSON.stringify(data);
 
-    const action = await dispatch(addDataAction(dataJson));
+    const action = await dispatch(addDataAction(data));
     const msg = action.payload;
     // console.log("msg", msg);
     if (addDataAction.fulfilled.match(action)) {
@@ -135,13 +145,12 @@ export default function CreatePost() {
   const handleUpdateData = async (id, data) => {
     setFormStatusState(false);
     setIsUpdate(false);
-    const dataJson = JSON.stringify(data);
-    const datas = {
+    const dataUpdate = {
       id: id,
-      data: dataJson,
+      data,
     };
-    // console.log("datas", datas);
-    const updateAction = await dispatch(updateDataAction(datas));
+    // console.log("dataUpdate", dataUpdate);
+    const updateAction = await dispatch(updateDataAction(dataUpdate));
     const msg = updateAction.payload;
     // console.log("msg", msg);
 
@@ -171,7 +180,8 @@ export default function CreatePost() {
 
       Toast.fire({
         icon: "error",
-        title: msg.message ?? (serverError && "Máy chủ đang bận!"),
+        title: "Máy chủ đang bận!",
+        // title: msg.message ?? (appError.msg && "Máy chủ đang bận!"),
       });
     }
   };
@@ -202,13 +212,37 @@ export default function CreatePost() {
           isUpdate={isUpdate}
           addData={handleAddData}
           updateData={handleUpdateData}
+          dataCity={dataCity}
         />
       );
     }
   };
+
+  const [slideStatusState, setSlideStatusState] = useState(false);
+
+  // close form event
+  const handleCloseSlide = () => {
+    setSlideStatusState(false);
+    const action = closeForm();
+    dispatch(action);
+    dispatch(resetEditAction());
+  };
+
+  const handleOpenSlide = (id) => {
+    setSlideStatusState(true);
+    const action = openForm();
+    dispatch(action);
+    dispatch(getByIdAction(id));
+  };
+  const showSlide = () => {
+    if (slideStatusState) {
+      // console.log("images", images);
+      return <Slider closeForm={handleCloseSlide} />;
+    }
+  };
   return (
     <>
-      <div className="bg-blue-100 h-screen ">
+      <div className="bg-blue-100 h-screen">
         <Transition
           show={formStatusState}
           enter="transition-opacity duration-75"
@@ -220,7 +254,7 @@ export default function CreatePost() {
         >
           {displayForm()}
         </Transition>
-
+        {showSlide()}
         <div className="flex flex-col bg-slate-50 mx-2 rounded-2xl p-4">
           <div className="flex flex-row ml-2">
             <div className="absolute left-5 w-1 bg-green-400 h-14"></div>
@@ -239,6 +273,7 @@ export default function CreatePost() {
             </div>
           </div>
           <Search handleSearch={handleSearch} />
+
           {/* Table */}
           <div>
             <div className="flex flex-col overflow-hidden">
@@ -282,13 +317,13 @@ export default function CreatePost() {
                             scope="col"
                             className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
-                            Ngày tạo
+                            Hình ảnh
                           </th>
                           <th
                             scope="col"
                             className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
-                            Hình ảnh
+                            Ngày tạo
                           </th>
                           <th
                             scope="col"
@@ -315,6 +350,7 @@ export default function CreatePost() {
                           <ListItem
                             data={data}
                             openFormUpdate={(id) => handleOpenFormUpdate(id)}
+                            openSlide={(images) => handleOpenSlide(images)}
                           />
                         )}
                       </tbody>

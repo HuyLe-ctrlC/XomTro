@@ -46,6 +46,7 @@ const cloudinaryUploadMultiImg = async (files) => {
         resource_type: "auto",
       });
       //return promise
+      // console.log("data", data1);
       return [{ img: data1?.secure_url, publicId: data1?.public_id }];
     } else if (files.length == 2) {
       const data1 = await cloudinary.uploader.upload(files[0], {

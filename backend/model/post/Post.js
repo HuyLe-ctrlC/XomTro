@@ -1,14 +1,31 @@
 const mongoose = require("mongoose");
 
 const imageSchema = new mongoose.Schema({
-  img: {
-    type: String,
-    default:
-      "https://res.cloudinary.com/huyleminh/image/upload/v1675929721/avatar-default_yxdthk.png",
-  },
-  publicId: {
-    type: String,
-  },
+  // img: {
+  //   type: String,
+  //   default:
+  //     "https://res.cloudinary.com/huyleminh/image/upload/v1675929721/avatar-default_yxdthk.png",
+  // },
+  // publicId: {
+  //   type: String,
+  // },
+  filename: { type: String, required: true },
+  preview: { type: String, required: true },
+  type: { type: String, required: true },
+});
+
+const citySchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  name: { type: String, required: [true, "City is required"] },
+});
+const districtSchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  name: { type: String, required: [true, "District is required"] },
+});
+const wardSchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  name: { type: String, required: [true, "Ward is required"] },
+  prefix: { type: String, required: true },
 });
 
 const postSchema = new mongoose.Schema(
@@ -68,28 +85,14 @@ const postSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "Please Author is required"],
     },
-    description: {
-      type: String,
-      required: [true, "Post description is required"],
-    },
-    city: {
-      type: String,
-      required: [true, "City is required"],
-    },
-    district: {
-      type: String,
-      required: [true, "District is required"],
-    },
-    ward: {
-      type: String,
-      required: [true, "Ward is required"],
-    },
-    image: [imageSchema],
-    // image: {
+    // description: {
     //   type: String,
-    //   default:
-    //     "https://res.cloudinary.com/huyleminh/image/upload/v1675929721/avatar-default_yxdthk.png",
+    //   required: [true, "Post description is required"],
     // },
+    city: citySchema,
+    district: districtSchema,
+    ward: wardSchema,
+    image: [imageSchema],
   },
   {
     toJSON: {
