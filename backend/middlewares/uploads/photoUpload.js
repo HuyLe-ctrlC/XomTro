@@ -67,6 +67,7 @@ const postImgResize = async (req, res, next) => {
   const images = req.files;
   const body = req.body.image;
   // console.log("images", images);
+  // console.log("body", body);
   const resizedAndFormattedImages = [];
   try {
     for (const image of images) {
@@ -88,21 +89,25 @@ const postImgResize = async (req, res, next) => {
         path.join(`public/images/posts/${filename}`)
       );
     }
-    if (Array.isArray(req?.body?.image?.filename)) {
-      for (let index = 0; index < req.body.image?.type?.length; index++) {
-        resizedAndFormattedImages.push({
-          preview: req.body.image?.preview[index],
-          filename: req.body.image?.filename[index],
-          type: req.body.image?.type[index],
-        });
-      }
-    } else {
-      for (let index = 0; index < 1; index++) {
-        resizedAndFormattedImages.push({
-          preview: req.body.image?.preview,
-          filename: req.body.image?.filename,
-          type: req.body.image?.type,
-        });
+    if (body) {
+      if (Array.isArray(req?.body?.image?.filename)) {
+        console.log(456);
+        for (let index = 0; index < req.body.image?.type?.length; index++) {
+          resizedAndFormattedImages.push({
+            preview: req.body.image?.preview[index],
+            filename: req.body.image?.filename[index],
+            type: req.body.image?.type[index],
+          });
+        }
+      } else {
+        console.log(123);
+        for (let index = 0; index < 1; index++) {
+          resizedAndFormattedImages.push({
+            preview: req.body.image?.preview,
+            filename: req.body.image?.filename,
+            type: req.body.image?.type,
+          });
+        }
       }
     }
 
@@ -110,7 +115,7 @@ const postImgResize = async (req, res, next) => {
     next();
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error resizing and formatting images");
+    res.status(500).send("Lỗi resize và format ảnh!");
   }
 };
 

@@ -1,9 +1,9 @@
 import React from "react";
 import Moment from "react-moment";
-
+import "moment/locale/vi";
 const DateFormatter = ({ date }) => {
   return (
-    <Moment format="D MMM YYYY" withTitle>
+    <Moment locale="vi" format="D MMMM YYYY" withTitle>
       {date}
     </Moment>
   );

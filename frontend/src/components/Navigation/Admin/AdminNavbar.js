@@ -14,27 +14,27 @@ const navigation = [
     current: true,
   },
   {
-    name: "Create",
+    name: "Tạo bài viết",
     href: ROUTES.CREATE_POST,
     current: false,
   },
   {
-    name: "Posts",
+    name: "Bài viết",
     href: ROUTES.POSTS,
     current: false,
   },
   {
-    name: "Authors",
+    name: "Tác giả",
     href: ROUTES.USERS,
     current: false,
   },
   {
-    name: "Add Category",
+    name: "Thêm thể loại",
     href: ROUTES.ADD_CATEGORY,
     current: false,
   },
   {
-    name: "Create List",
+    name: "Tạo danh sách",
     href: ROUTES.CATEGORY_LIST,
     current: false,
   },

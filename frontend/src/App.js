@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "./redux/slices/users/usersSlice";
 import AdminProtectRoute from "./utils/ProtectRoutes/AdminProtectRoute";
 import CreatePost from "./components/Posts";
+import PostsList from "./components/frontend/PostList";
 function App() {
   const user = useSelector(selectUser);
   const userAuth = user?.userAuth;
@@ -40,6 +41,7 @@ function App() {
               </PrivateProtectRoute>
             }
           />
+          <Route path={ROUTES.POSTS} element={<PostsList />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

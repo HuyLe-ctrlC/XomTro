@@ -232,17 +232,17 @@ const updatePostCtrl = expressAsyncHandler(async (req, res) => {
       newData: postUpdate,
     });
   }
-  console.log("files", files)
+  // console.log("files", files)
   const imgUploaded = files.map((file) => {
     if (file?.preview?.startsWith("/")) {
-      const filename = file.filename;
-      const type = file.type;
-      const preview = file.preview;
+      const filename = file?.filename;
+      const type = file?.type;
+      const preview = file?.preview;
       return { filename, preview, type };
     } else {
-      const filename = file.filename;
-      const type = file.type;
-      const preview = file.buffer.toString("base64");
+      const filename = file?.filename;
+      const type = file?.type;
+      const preview = file?.buffer?.toString("base64");
       const filepath = `public/images/posts/${filename}`;
       fs.unlinkSync(filepath);
       return { filename, preview, type };
