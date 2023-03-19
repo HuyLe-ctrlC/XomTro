@@ -95,15 +95,17 @@ const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
     if (keyword == "") {
       searchCount = await Post.countDocuments({
         title: { $regex: keyword, $options: "i" },
+        category: { $regex: keyword, $options: "i" },
       });
       searchResult = await Post.find({
         $or: [{ title: { $regex: keyword, $options: "i" } }],
+        $or: [{ category: { $regex: keyword, $options: "i" } }],
       })
         .populate("user", "email lastName firstName profilePhoto")
         .skip(parseInt(offset))
         .limit(parseInt(limit))
         .lean()
-        .sort("-createdAt");
+        .sort({ updatedAt: -1, createdAt: -1 });
     } else {
       searchResult = await Post.aggregate([
         {
@@ -118,6 +120,7 @@ const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
           $match: {
             $or: [
               { title: { $regex: keyword, $options: "i" } },
+              { category: { $regex: keyword, $options: "i" } },
               { "user.firstName": { $regex: keyword, $options: "i" } },
               { "user.lastName": { $regex: keyword, $options: "i" } },
             ],
@@ -126,6 +129,13 @@ const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
         {
           $project: {
             title: 1,
+            category: 1,
+            image: 1,
+            likes: 1,
+            disLikes: 1,
+            numViews: 1,
+            createdAt: 1,
+            updatedAt: 1,
             user: {
               //convert array to Object for every field
               $arrayToObject: [
@@ -162,6 +172,7 @@ const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
           $match: {
             $or: [
               { title: { $regex: keyword, $options: "i" } },
+              { category: { $regex: keyword, $options: "i" } },
               { "user.firstName": { $regex: keyword, $options: "i" } },
               { "user.lastName": { $regex: keyword, $options: "i" } },
             ],
@@ -385,8 +396,12 @@ const toggleAddLikeToPostCtrl = expressAsyncHandler(async (req, res) => {
         isDisLiked: false,
       },
       { new: true }
-    );
-    res.json(post);
+    ).select("disLikes isDisLiked likes isLiked");
+    // res.json({
+    //   result: true,
+    //   data: post,
+    //   message: MESSAGE.MESSAGE_SUCCESS,
+    // });
   }
   //Toggle
   // Remove the user if he has liked the post
@@ -398,8 +413,12 @@ const toggleAddLikeToPostCtrl = expressAsyncHandler(async (req, res) => {
         isLiked: false,
       },
       { new: true }
-    );
-    res.json(post);
+    ).select("disLikes isDisLiked likes isLiked");
+    res.json({
+      result: true,
+      data: post,
+      message: MESSAGE.MESSAGE_SUCCESS,
+    });
   } else {
     // add to likes
     const post = await Post.findByIdAndUpdate(
@@ -409,8 +428,12 @@ const toggleAddLikeToPostCtrl = expressAsyncHandler(async (req, res) => {
         isLiked: true,
       },
       { new: true }
-    );
-    res.json(post);
+    ).select("disLikes isDisLiked likes isLiked");
+    res.json({
+      result: true,
+      data: post,
+      message: MESSAGE.MESSAGE_SUCCESS,
+    });
   }
 });
 
@@ -430,17 +453,23 @@ const toggleAddDislikeToPostCtrl = expressAsyncHandler(async (req, res) => {
   const alreadyLiked = post?.likes?.find(
     (userId) => userId?.toString() === loginUserId?.toString()
   );
+
   //remove
   if (alreadyLiked) {
-    const post = await Post.findOneAndUpdate(
+    const post = await Post.findByIdAndUpdate(
       postId,
       {
         $pull: { likes: loginUserId },
         isLiked: false,
       },
       { new: true }
-    );
-    res.json(post);
+    ).select("disLikes isDisLiked likes isLiked");
+
+    // res.json({
+    //   result: true,
+    //   data: post,
+    //   message: MESSAGE.MESSAGE_SUCCESS,
+    // });
   }
   //toggling
   //Remove this user from dislikes if already disliked
@@ -452,8 +481,12 @@ const toggleAddDislikeToPostCtrl = expressAsyncHandler(async (req, res) => {
         isDisLiked: false,
       },
       { new: true }
-    );
-    res.json(post);
+    ).select("disLikes isDisLiked likes isLiked");
+    res.json({
+      result: true,
+      data: post,
+      message: MESSAGE.MESSAGE_SUCCESS,
+    });
   } else {
     const post = await Post.findByIdAndUpdate(
       postId,
@@ -462,8 +495,12 @@ const toggleAddDislikeToPostCtrl = expressAsyncHandler(async (req, res) => {
         isDisLiked: true,
       },
       { new: true }
-    );
-    res.json(post);
+    ).select("disLikes isDisLiked likes isLiked");
+    res.json({
+      result: true,
+      data: post,
+      message: MESSAGE.MESSAGE_SUCCESS,
+    });
   }
 });
 

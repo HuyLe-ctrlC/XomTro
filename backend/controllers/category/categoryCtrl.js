@@ -206,11 +206,11 @@ const deleteCategoryCtrl = expressAsyncHandler(async (req, res) => {
       // res.json(deleteCategory);
       res.json({
         result: true,
-        message: MESSAGE.MESSAGE_SUCCESS,
+        message: MESSAGE.DELETE_SUCCESS,
         _id: deleteCategory._id,
       });
     } else {
-      res.json({ result: false, message: MESSAGE.MESSAGE_FAILED });
+      res.json({ result: false, message: MESSAGE.DELETE_FAILED });
     }
   } catch (error) {
     res.json(error);

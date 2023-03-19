@@ -59,7 +59,7 @@ export default function CreatePost() {
   const { data, loading, totalPage, appError, serverError } = posts;
 
   const locations = useSelector(selectLocation);
-  const { dataDistrict, dataWard, dataCity } = locations;
+  const { dataCity } = locations;
   // console.log("posts", posts);
   // ==== paging ==== //
   // prev page events
@@ -237,7 +237,10 @@ export default function CreatePost() {
   const showSlide = () => {
     if (slideStatusState) {
       // console.log("images", images);
-      return <Slider closeForm={handleCloseSlide} />;
+      return <div className="z-10 max-w-[1280px] h-[600px] m-auto py-16 px-4 group w-3/4 fixed left-1/2 ml-[-37.5%]">
+        <Slider closeForm={handleCloseSlide} isBigger={false}/>
+      </div>
+      // return <Slider closeForm={handleCloseSlide} />;
     }
   };
   return (

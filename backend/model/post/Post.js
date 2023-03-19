@@ -101,9 +101,16 @@ const postSchema = new mongoose.Schema(
     toObject: {
       virtuals: true,
     },
-    timestamp: true,
+    timestamps: true,
   }
 );
+
+//populate comments
+postSchema.virtual("comments", {
+  ref: "Comment",
+  foreignField: "post",
+  localField: "_id",
+});
 
 //compile
 

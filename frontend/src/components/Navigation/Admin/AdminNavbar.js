@@ -7,6 +7,7 @@ import { HiOutlineLogout } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logoutAction } from "../../../redux/slices/users/usersSlice";
+import logoXomTro from '../../../img/logoXomTro.png'
 const navigation = [
   {
     name: "Home",
@@ -71,7 +72,7 @@ export const AdminNavbar = ({ isLogin }) => {
                 </div>
                 <div className="flex-shrink-0 flex items-center">
                   {/* Logo */}
-                  <BsBook className="w-10 h-10 text-yellow-200" />
+                  <img src={logoXomTro} className="w-16 h-16 py-2 rounded-xl" alt="logo"/>
                 </div>
                 <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
                   {navigation.map((item) => (

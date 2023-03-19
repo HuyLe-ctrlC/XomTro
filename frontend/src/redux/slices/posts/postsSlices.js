@@ -116,6 +116,65 @@ export const deleteAction = createAsyncThunk(
     }
   }
 );
+//like post
+export const likePostAction = createAsyncThunk(
+  "posts/likes",
+  async (data, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const body = { postId: data.postId };
+      const response = await postsApi.like(body);
+      if (response.result) {
+        const results = {
+          _id: data.postId,
+          userId: data.userId,
+          message: response.message,
+          data: response.data,
+        };
+        return results;
+      } else {
+        return rejectWithValue(response);
+      }
+    } catch (error) {
+      // console.log('Failed to fetch data list: ', error);
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+//like post
+export const disLikePostAction = createAsyncThunk(
+  "posts/disLikes",
+  async (data, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const body = { postId: data.postId };
+
+      const response = await postsApi.disLike(body);
+      if (response.result) {
+        const results = {
+          _id: data.postId,
+          userId: data.userId,
+          message: response.message,
+          data: response.data,
+        };
+        return results;
+      } else {
+        return rejectWithValue(response);
+      }
+    } catch (error) {
+      // console.log('Failed to fetch data list: ', error);
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+function findIncludeAndIndex(arr, elem) {
+  const foundIndex = arr.includes(elem);
+  return foundIndex ? arr.indexOf(elem) : -1;
+}
 //slices = reducer
 //action to redirect
 export const resetEditAction = createAction("posts/reset");
@@ -222,6 +281,69 @@ const postsSlices = createSlice({
       })
       .addCase(deleteAction.rejected, (state, action) => {
         // state.loading = false;
+        state.appError = action?.payload;
+        state.serverError = action?.error?.message;
+      });
+
+    //like post by id
+    builder
+      .addCase(likePostAction.fulfilled, (state, action) => {
+        const { _id: payloadId = "", userId: payloadUserId = "" } =
+          action?.payload || {};
+
+        const checkIndex = state.data.findIndex(
+          (row) => row._id.toString() === payloadId.toString()
+        );
+
+        if (checkIndex >= 0) {
+          //this is declared to concise code
+          const likes = state.data[checkIndex].likes;
+          const isLikedIndex = findIncludeAndIndex(likes, payloadUserId);
+          const disLikes = state.data[checkIndex].disLikes;
+          const isDisLikedIndex = findIncludeAndIndex(disLikes, payloadUserId);
+          if (isLikedIndex >= 0) {
+            state.data[checkIndex].likes.splice(isLikedIndex, 1);
+          } else {
+            state.data[checkIndex].disLikes.splice(isDisLikedIndex, 1);
+            likes.push(payloadUserId);
+          }
+        }
+        state.msgSuccess = action?.payload?.message;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(likePostAction.rejected, (state, action) => {
+        state.appError = action?.payload;
+        state.serverError = action?.error?.message;
+      });
+    //disLike post by id
+    builder
+      .addCase(disLikePostAction.fulfilled, (state, action) => {
+        const { _id: payloadId = "", userId: payloadUserId = "" } =
+          action?.payload || {};
+
+        const checkIndex = state.data.findIndex(
+          (row) => row._id.toString() === payloadId.toString()
+        );
+
+        if (checkIndex >= 0) {
+          //this is declared to concise code
+          const disLikes = state.data[checkIndex].disLikes;
+          const isDisLikedIndex = findIncludeAndIndex(disLikes, payloadUserId);
+          const likes = state.data[checkIndex].likes;
+          const isLikedIndex = findIncludeAndIndex(likes, payloadUserId);
+          if (isDisLikedIndex >= 0) {
+            state.data[checkIndex].disLikes.splice(isDisLikedIndex, 1);
+          } else {
+            state.data[checkIndex].likes.splice(isLikedIndex, 1);
+            disLikes.push(payloadUserId);
+          }
+        }
+        state.msgSuccess = action?.payload?.message;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(disLikePostAction.rejected, (state, action) => {
         state.appError = action?.payload;
         state.serverError = action?.error?.message;
       });

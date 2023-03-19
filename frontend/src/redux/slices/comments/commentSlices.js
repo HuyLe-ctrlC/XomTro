@@ -1,17 +1,18 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import categoryApi from "../../../api/categoryApi";
+import commentsApi from "../../../api/commentsApi";
 
 //add action
 export const addDataAction = createAsyncThunk(
-  "category/create",
+  "comments/create",
   async (data, { rejectWithValue, getState, dispatch }) => {
     //http call
     try {
-      // console.log("category", category);
-      const response = await categoryApi.add(data);
+      console.log("data", data);
+      const response = await commentsApi.add(data);
       const results = {
         data: response.data,
         message: response.message,
+        totalComment: response.totalComment,
       };
       return results;
     } catch (error) {
@@ -25,13 +26,13 @@ export const addDataAction = createAsyncThunk(
 
 //add action
 export const updateDataAction = createAsyncThunk(
-  "category/update",
+  "comments/update",
   async (data, { rejectWithValue, getState, dispatch }) => {
     //http call
     const id = data.id;
-    const dataCategory = data.data;
+    const datacomments = data.data;
     try {
-      const response = await categoryApi.update(id, dataCategory);
+      const response = await commentsApi.update(id, datacomments);
       // console.log("response", response);
       if (response.result) {
         const results = {
@@ -53,36 +54,49 @@ export const updateDataAction = createAsyncThunk(
   }
 );
 
-//get all action
-export const getAllAction = createAsyncThunk(
-  "category/getAll",
-  async (params, { rejectWithValue, getState, dispatch }) => {
-    //http call
+//get data by id
+export const getByIdAction = createAsyncThunk(
+  "comments/comments",
+  async (id, { rejectWithValue, getState, dispatch }) => {
     try {
-      const response = await categoryApi.getAll(params);
-      // console.log("data", data);
-      const results = {
-        data: response.data,
-      };
-      return results;
+      // call Api
+      const response = await commentsApi.getById(id);
+      if (response.result) {
+        const results = {
+          data: response.data,
+          message: response.message,
+          totalComment: response.totalComment,
+        };
+        // console.log('results', results);
+        return results;
+      } else {
+        return rejectWithValue(response.errors[0].msg);
+      }
     } catch (error) {
-      if (!error) {
+      if (!error.response) {
         throw error;
       }
       return rejectWithValue(error?.response?.data);
     }
   }
 );
-
 //get data by id
-export const getByIdAction = createAsyncThunk(
-  "category/category",
+export const getByIdDetailAction = createAsyncThunk(
+  "comments/commentDetail",
   async (id, { rejectWithValue, getState, dispatch }) => {
     try {
       // call Api
-      const response = await categoryApi.getById(id);
-      // console.log(response);
-      return response;
+      const response = await commentsApi.getByIdDetail(id);
+      if (response.result) {
+        const results = {
+          dataUpdate: response.dataUpdate,
+          message: response.message,
+        };
+        // console.log('results', results);
+        return results;
+      } else {
+        return rejectWithValue(response.errors[0].msg);
+      }
     } catch (error) {
       if (!error.response) {
         throw error;
@@ -94,15 +108,16 @@ export const getByIdAction = createAsyncThunk(
 
 //delete data by id
 export const deleteAction = createAsyncThunk(
-  "category/delete",
+  "comments/delete",
   async (_id, { rejectWithValue, getState, dispatch }) => {
     try {
       // call api
-      const response = await categoryApi.delete(_id);
+      const response = await commentsApi.delete(_id);
       if (response.result) {
         const result = {
           _id,
           message: response.message,
+          totalComment: response.totalComment,
         };
         return result;
       } else {
@@ -119,27 +134,10 @@ export const deleteAction = createAsyncThunk(
 );
 //slices = reducer
 
-const categorySlices = createSlice({
-  name: "category",
+const commentsSlices = createSlice({
+  name: "comments",
   initialState: { data: [], totalPage: 0, dataUpdate: [] },
   extraReducers: (builder, state) => {
-    //get All
-    builder
-      .addCase(getAllAction.pending, (state, action) => {
-        state.loading = true;
-      })
-      .addCase(getAllAction.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = action?.payload.data;
-        state.totalPage = action?.payload?.totalPage;
-        state.appError = undefined;
-        state.serverError = undefined;
-      })
-      .addCase(getAllAction.rejected, (state, action) => {
-        state.loading = false;
-        state.appError = action?.payload?.message;
-        state.serverError = action?.error?.message;
-      });
     //create
     builder
       .addCase(addDataAction.pending, (state, action) => {
@@ -150,6 +148,7 @@ const categorySlices = createSlice({
         const { data } = action?.payload;
         state.data = state.data?.length > 0 ? state.data : [];
         state.data = [data, ...state.data];
+        state.totalComment = action?.payload?.totalComment;
         // state.data = action?.payload;
         state.appError = undefined;
         state.serverError = undefined;
@@ -168,11 +167,33 @@ const categorySlices = createSlice({
       })
       .addCase(getByIdAction.fulfilled, (state, action) => {
         // state.loading = false;
-        state.dataUpdate = action?.payload;
+        state.data = action?.payload.data;
+        state.totalComment = action?.payload.totalComment;
+        state.message = action?.payload.message;
         state.appError = undefined;
         state.serverError = undefined;
       })
       .addCase(getByIdAction.rejected, (state, action) => {
+        // state.loading = false;
+        state.appError = action?.payload?.message;
+        state.serverError = action?.error?.message;
+      });
+    //get data by ID Detail
+    builder
+      .addCase(getByIdDetailAction.pending, (state, action) => {
+        // state.loading = true;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(getByIdDetailAction.fulfilled, (state, action) => {
+        // state.loading = false;
+        state.dataUpdate = action?.payload.dataUpdate;
+        state.totalComment = action?.payload.totalComment;
+        state.message = action?.payload.message;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(getByIdDetailAction.rejected, (state, action) => {
         // state.loading = false;
         state.appError = action?.payload?.message;
         state.serverError = action?.error?.message;
@@ -213,6 +234,7 @@ const categorySlices = createSlice({
         state.data = state.data.filter(
           (arrow) => arrow._id !== action.payload._id
         );
+        state.totalComment = action?.payload.totalComment;
         state.appError = undefined;
         state.serverError = undefined;
       })
@@ -224,6 +246,6 @@ const categorySlices = createSlice({
   },
 });
 
-export const selectCategory = (state) => state.categories;
+export const selectComments = (state) => state.comments;
 
-export default categorySlices.reducer;
+export default commentsSlices.reducer;

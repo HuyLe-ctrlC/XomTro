@@ -13,7 +13,9 @@ import { useSelector } from "react-redux";
 import { selectUser } from "./redux/slices/users/usersSlice";
 import AdminProtectRoute from "./utils/ProtectRoutes/AdminProtectRoute";
 import CreatePost from "./components/Posts";
-import PostsList from "./components/frontend/PostList";
+import PostsList from "./components/frontend/Posts/PostList";
+import PostDetails from "./components/frontend/Posts/PostDetails";
+import "./style.css"
 function App() {
   const user = useSelector(selectUser);
   const userAuth = user?.userAuth;
@@ -42,6 +44,7 @@ function App() {
             }
           />
           <Route path={ROUTES.POSTS} element={<PostsList />} />
+          <Route path="/posts/:postId" element={<PostDetails />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

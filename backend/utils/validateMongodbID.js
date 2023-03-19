@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const validateMongodbId = (id) => {
   const isValidId = mongoose.Types.ObjectId.isValid(id);
   if (!isValidId) {
-    throw new Error("The ID is not a valid or found");
+    throw new Error("ID không hợp lệ hoặc không tìm thấy!");
   }
 };
 

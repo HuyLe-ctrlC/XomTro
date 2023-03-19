@@ -30,7 +30,7 @@ const formSchema = Yup.object().shape({
     .max(4, "*Tối đa hình ảnh là 4")
     .test("fileSize", "*Một trong các hình ảnh lớn hơn 2MB", (values) => {
       // Check if any file size is greater than 2MB
-      console.log("values", values);
+      // console.log("values", values);
       return values.every((value) =>
         value.size ? !value || value.size <= 2 * 1024 * 1024 : true
       );
@@ -99,7 +99,7 @@ export const Form = (props) => {
     const id = dataUpdate?._id;
     let formData = new FormData();
     formData.append("title", formik.values.title.trim());
-    // formData.append("image", files[0]);
+    formData.append("category", formik.values.category.label.trim());
     formData.append("acreage", formik.values.acreage.trim());
     formData.append("waterPrice", formik.values.waterPrice.trim());
     formData.append("electricityPrice", formik.values.electricityPrice.trim());
@@ -132,7 +132,7 @@ export const Form = (props) => {
     e.preventDefault();
     let formData = new FormData();
     formData.append("title", formik.values.title.trim());
-    // formData.append("image", files[0]);
+    formData.append("category", formik.values.category.label.trim());
     formData.append("acreage", formik.values.acreage.trim());
     formData.append("waterPrice", formik.values.waterPrice.trim());
     formData.append("electricityPrice", formik.values.electricityPrice.trim());
@@ -152,6 +152,7 @@ export const Form = (props) => {
     }
     addData(formData);
   };
+
   // check show button action
   const showButtonAction = () => {
     if (isUpdate) {
@@ -347,8 +348,8 @@ export const Form = (props) => {
       });
     }
   };
-  console.log("files", formik.values);
-  console.log("Error", formik.errors);
+  // console.log("files", formik.values);
+  // console.log("Error", formik.errors);
   return (
     <>
       <div className="bg-black opacity-50 fixed w-full h-full top-0 z-40"></div>

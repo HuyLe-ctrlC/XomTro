@@ -8,7 +8,6 @@ import DateFormatter from "../../utils/DateFormatter";
 
 export const ListItem = ({ data, openFormUpdate, openSlide }) => {
   const dispatch = useDispatch();
-  const [show, setShow] = useState(true);
   const handleOpenFormUpdate = (id) => {
     openFormUpdate(id);
   };
@@ -26,7 +25,7 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
       if (result.isConfirmed) {
         const action = await dispatch(deleteAction(id));
         const message = action.payload;
-        console.log("msg", message);
+        // console.log("msg", message);
         if (deleteAction.fulfilled.match(action)) {
           Swal.fire({
             position: "center",
@@ -101,8 +100,9 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
             </div>
           </td>
           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            {item.ward.prefix}&#160;{item.ward.name}&#160;{item.district.name}
-            &#160;{item.city.name}
+            {item?.ward?.prefix}&#160;{item.ward?.name}&#160;
+            {item.district?.name}
+            &#160;{item?.city?.name}
           </td>
           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
             {/* <img src={item.image[0].img} alt="thumb" className="w-20 h-20" /> */}

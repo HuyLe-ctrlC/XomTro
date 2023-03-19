@@ -91,7 +91,6 @@ const postImgResize = async (req, res, next) => {
     }
     if (body) {
       if (Array.isArray(req?.body?.image?.filename)) {
-        console.log(456);
         for (let index = 0; index < req.body.image?.type?.length; index++) {
           resizedAndFormattedImages.push({
             preview: req.body.image?.preview[index],
@@ -100,7 +99,6 @@ const postImgResize = async (req, res, next) => {
           });
         }
       } else {
-        console.log(123);
         for (let index = 0; index < 1; index++) {
           resizedAndFormattedImages.push({
             preview: req.body.image?.preview,

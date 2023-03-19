@@ -23,6 +23,14 @@ const postsApi = {
     const url = `/${module}/${id}`;
     return axiosClient.delete(url);
   },
+  like: (body) => {
+    const url = `/${module}/likes`;
+    return axiosClient.put(url, body);
+  },
+  disLike: (body) => {
+    const url = `/${module}/dislikes`;
+    return axiosClient.put(url, body);
+  },
 };
 
 export default postsApi;
