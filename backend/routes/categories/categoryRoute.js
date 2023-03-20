@@ -10,7 +10,7 @@ const {
 const authMiddleware = require("../../middlewares/auth/authMiddleware");
 const categoryRoutes = express.Router();
 
-categoryRoutes.get("/search", authMiddleware, searchCategoryCtrl);
+categoryRoutes.get("/search", searchCategoryCtrl);
 categoryRoutes.post("/", authMiddleware, createCategoryCtrl);
 // categoryRoutes.get("/", authMiddleware, fetchCategoriesCtrl);
 categoryRoutes.get("/:id", authMiddleware, fetchCategoryCtrl);

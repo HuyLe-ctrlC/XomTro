@@ -15,7 +15,7 @@ Geocode.setApiKey(GEOCODE_API_KEY);
 export default function Promotion() {
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
-  // const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
+  const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
   const addressMap = "91 Lê Văn Tách, Bình Đường 1, An Bình, Dĩ An, Bình Dương";
   useEffect(() => {
     Geocode.fromAddress(addressMap).then(

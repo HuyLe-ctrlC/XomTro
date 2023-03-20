@@ -3,6 +3,7 @@ const Filter = require("bad-words");
 const fs = require("fs");
 const Post = require("../../model/post/Post");
 const User = require("../../model/user/User");
+const Comment = require("../../model/comment/Comment");
 const validateMongodbId = require("../../utils/validateMongodbID");
 const {
   cloudinaryUploadImg,
@@ -13,6 +14,7 @@ const {
 const { json } = require("express");
 const path = require("path");
 const MESSAGE = require("../../utils/constantsMessage");
+const { removeVietnameseTones } = require("../../utils/slug");
 
 /*-------------------
 //TODO: Create a Post
@@ -84,110 +86,353 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
 //TODO: Fetch All Post
 //-------------------*/
 
+// const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
+//   try {
+//     const keyword = req.query.keyword;
+//     const offset = req.query.offset;
+//     const limit = req.query.limit;
+//     const publish = req.query.publish;
+//     // Do something with the parameters
+//     let searchResult = [];
+//     let searchCount = 0;
+//     if (publish !== "true" && publish !== "false") {
+//       console.log("have publish");
+
+//       if (keyword == "") {
+//         searchCount = await Post.countDocuments({
+//           title: { $regex: keyword, $options: "i" },
+//           category: { $regex: keyword, $options: "i" },
+//         });
+//         searchResult = await Post.find({
+//           $or: [
+//             { title: { $regex: keyword, $options: "i" } },
+//             { category: { $regex: keyword, $options: "i" } },
+//           ],
+//         })
+//           .populate("user", "email lastName firstName profilePhoto")
+//           .skip(parseInt(offset))
+//           .limit(parseInt(limit))
+//           .lean()
+//           .sort({ createdAt: -1 });
+//         // .sort({ updatedAt: -1, createdAt: -1 });
+//       } else {
+//         searchResult = await Post.aggregate([
+//           {
+//             $lookup: {
+//               from: "users",
+//               localField: "user",
+//               foreignField: "_id",
+//               as: "user",
+//             },
+//           },
+//           {
+//             $match: {
+//               $or: [
+//                 { title: { $regex: keyword, $options: "i" } },
+//                 { category: { $regex: keyword, $options: "i" } },
+//                 { "user.firstName": { $regex: keyword, $options: "i" } },
+//                 { "user.lastName": { $regex: keyword, $options: "i" } },
+//               ],
+//             },
+//           },
+//           {
+//             $project: {
+//               title: 1,
+//               category: 1,
+//               image: 1,
+//               likes: 1,
+//               disLikes: 1,
+//               numViews: 1,
+//               createdAt: 1,
+//               updatedAt: 1,
+//               price: 1,
+//               acreage: 1,
+//               electricityPrice: 1,
+//               waterPrice: 1,
+//               city: 1,
+//               district: 1,
+//               ward: 1,
+//               addressDetail: 1,
+//               phoneNumber: 1,
+//               isPublish: 1,
+//               user: {
+//                 //convert array to Object for every field
+//                 $arrayToObject: [
+//                   [
+//                     {
+//                       //key & value
+//                       k: "firstName",
+//                       v: { $arrayElemAt: ["$user.firstName", 0] },
+//                     },
+//                     {
+//                       k: "lastName",
+//                       v: { $arrayElemAt: ["$user.lastName", 0] },
+//                     },
+//                     { k: "email", v: { $arrayElemAt: ["$user.email", 0] } },
+//                     {
+//                       k: "profilePhoto",
+//                       v: { $arrayElemAt: ["$user.profilePhoto", 0] },
+//                     },
+//                   ],
+//                 ],
+//               },
+//             },
+//           },
+//           { $skip: parseInt(offset) },
+//           { $limit: parseInt(limit) },
+//         ]);
+//         const count = await Post.aggregate([
+//           {
+//             $lookup: {
+//               from: "users",
+//               localField: "user",
+//               foreignField: "_id",
+//               as: "user",
+//             },
+//           },
+//           {
+//             $match: {
+//               $or: [
+//                 { title: { $regex: keyword, $options: "i" } },
+//                 { category: { $regex: keyword, $options: "i" } },
+//                 { "user.firstName": { $regex: keyword, $options: "i" } },
+//                 { "user.lastName": { $regex: keyword, $options: "i" } },
+//               ],
+//             },
+//           },
+//           { $count: "total" },
+//         ]);
+//         searchCount = count[0].total;
+//       }
+//     } else if (keyword == "") {
+//       console.log("have not keyword");
+//       searchCount = await Post.countDocuments({
+//         title: { $regex: keyword, $options: "i" },
+//         category: { $regex: keyword, $options: "i" },
+//       });
+//       searchResult = await Post.find({
+//         isPublish: publish,
+//         $or: [
+//           { title: { $regex: keyword, $options: "i" } },
+//           { category: { $regex: keyword, $options: "i" } },
+//         ],
+//       })
+//         .populate("user", "email lastName firstName profilePhoto")
+//         .skip(parseInt(offset))
+//         .limit(parseInt(limit))
+//         .lean()
+//         .sort({ updatedAt: -1, createdAt: -1 });
+//     } else {
+//       console.log("have keyword");
+//       searchResult = await Post.aggregate([
+//         {
+//           $lookup: {
+//             from: "users",
+//             localField: "user",
+//             foreignField: "_id",
+//             as: "user",
+//           },
+//         },
+//         {
+//           $match: {
+//             isPublish: JSON.parse(publish),
+//             $or: [
+//               { title: { $regex: keyword, $options: "i" } },
+//               { category: { $regex: keyword, $options: "i" } },
+//               { "user.firstName": { $regex: keyword, $options: "i" } },
+//               { "user.lastName": { $regex: keyword, $options: "i" } },
+//             ],
+//           },
+//         },
+//         {
+//           $project: {
+//             title: 1,
+//             category: 1,
+//             image: 1,
+//             likes: 1,
+//             disLikes: 1,
+//             numViews: 1,
+//             createdAt: 1,
+//             updatedAt: 1,
+//             price: 1,
+//             acreage: 1,
+//             electricityPrice: 1,
+//             waterPrice: 1,
+//             city: 1,
+//             district: 1,
+//             ward: 1,
+//             addressDetail: 1,
+//             phoneNumber: 1,
+//             isPublish: 1,
+//             user: {
+//               //convert array to Object for every field
+//               $arrayToObject: [
+//                 [
+//                   {
+//                     //key & value
+//                     k: "firstName",
+//                     v: { $arrayElemAt: ["$user.firstName", 0] },
+//                   },
+//                   { k: "lastName", v: { $arrayElemAt: ["$user.lastName", 0] } },
+//                   { k: "email", v: { $arrayElemAt: ["$user.email", 0] } },
+//                   {
+//                     k: "profilePhoto",
+//                     v: { $arrayElemAt: ["$user.profilePhoto", 0] },
+//                   },
+//                 ],
+//               ],
+//             },
+//           },
+//         },
+//         { $skip: parseInt(offset) },
+//         { $limit: parseInt(limit) },
+//       ]);
+//       const count = await Post.aggregate([
+//         {
+//           $lookup: {
+//             from: "users",
+//             localField: "user",
+//             foreignField: "_id",
+//             as: "user",
+//           },
+//         },
+//         {
+//           $match: {
+//             $or: [
+//               { title: { $regex: keyword, $options: "i" } },
+//               { category: { $regex: keyword, $options: "i" } },
+//               { "user.firstName": { $regex: keyword, $options: "i" } },
+//               { "user.lastName": { $regex: keyword, $options: "i" } },
+//             ],
+//           },
+//         },
+//         { $count: "total" },
+//       ]);
+//       searchCount = count[0].total;
+//     }
+//     // const searchCount = Object.keys(searchResult).length;
+
+//     const totalPage = Math.ceil(searchCount / limit);
+//     res.json({ totalPage: totalPage, data: searchResult });
+//   } catch (err) {
+//     res.json(err);
+//   }
+// });
+
 const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
+  const { keyword = "", offset = 0, limit = 10, publish } = req.query;
+  let pipeline = [];
   try {
-    const keyword = req.query.keyword;
-    const offset = req.query.offset;
-    const limit = req.query.limit;
-    // Do something with the parameters
-    let searchResult = [];
-    let searchCount = 0;
-    if (keyword == "") {
-      searchCount = await Post.countDocuments({
-        title: { $regex: keyword, $options: "i" },
-        category: { $regex: keyword, $options: "i" },
-      });
-      searchResult = await Post.find({
-        $or: [{ title: { $regex: keyword, $options: "i" } }],
-        $or: [{ category: { $regex: keyword, $options: "i" } }],
-      })
-        .populate("user", "email lastName firstName profilePhoto")
-        .skip(parseInt(offset))
-        .limit(parseInt(limit))
-        .lean()
-        .sort({ updatedAt: -1, createdAt: -1 });
-    } else {
-      searchResult = await Post.aggregate([
-        {
-          $lookup: {
-            from: "users",
-            localField: "user",
-            foreignField: "_id",
-            as: "user",
-          },
-        },
-        {
-          $match: {
-            $or: [
-              { title: { $regex: keyword, $options: "i" } },
-              { category: { $regex: keyword, $options: "i" } },
-              { "user.firstName": { $regex: keyword, $options: "i" } },
-              { "user.lastName": { $regex: keyword, $options: "i" } },
-            ],
-          },
-        },
-        {
-          $project: {
-            title: 1,
-            category: 1,
-            image: 1,
-            likes: 1,
-            disLikes: 1,
-            numViews: 1,
-            createdAt: 1,
-            updatedAt: 1,
-            user: {
-              //convert array to Object for every field
-              $arrayToObject: [
-                [
-                  {
-                    //key & value
-                    k: "firstName",
-                    v: { $arrayElemAt: ["$user.firstName", 0] },
-                  },
-                  { k: "lastName", v: { $arrayElemAt: ["$user.lastName", 0] } },
-                  { k: "email", v: { $arrayElemAt: ["$user.email", 0] } },
-                  {
-                    k: "profilePhoto",
-                    v: { $arrayElemAt: ["$user.profilePhoto", 0] },
-                  },
-                ],
-              ],
+    pipeline.push({
+      $match: {
+        $or: [
+          {
+            removeVietnameseTonesTitle: {
+              $regex: removeVietnameseTones(keyword),
+              $options: "i",
             },
           },
-        },
-        { $skip: parseInt(offset) },
-        { $limit: parseInt(limit) },
-      ]);
-      const count = await Post.aggregate([
-        {
-          $lookup: {
-            from: "users",
-            localField: "user",
-            foreignField: "_id",
-            as: "user",
+          {
+            category: { $regex: removeVietnameseTones(keyword), $options: "i" },
           },
-        },
-        {
-          $match: {
-            $or: [
-              { title: { $regex: keyword, $options: "i" } },
-              { category: { $regex: keyword, $options: "i" } },
-              { "user.firstName": { $regex: keyword, $options: "i" } },
-              { "user.lastName": { $regex: keyword, $options: "i" } },
-            ],
+          {
+            "user.firstName": {
+              $regex: removeVietnameseTones(keyword),
+              $options: "i",
+            },
           },
-        },
-        { $count: "total" },
-      ]);
-      searchCount = count[0].total;
+          {
+            "user.lastName": {
+              $regex: removeVietnameseTones(keyword),
+              $options: "i",
+            },
+          },
+        ],
+      },
+    });
+    if (publish === "true") {
+      pipeline.push({ $match: { isPublish: true } });
+    } else if (publish === "false") {
+      pipeline.push({ $match: { isPublish: false } });
     }
-    // const searchCount = Object.keys(searchResult).length;
+    pipeline.push({
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    });
 
-    const totalPage = Math.ceil(searchCount / limit);
-    res.json({ totalPage: totalPage, data: searchResult });
-  } catch (err) {
-    res.json(err);
+    pipeline.push({
+      $project: {
+        title: 1,
+        category: 1,
+        image: 1,
+        likes: 1,
+        disLikes: 1,
+        numViews: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        price: 1,
+        acreage: 1,
+        electricityPrice: 1,
+        waterPrice: 1,
+        city: 1,
+        district: 1,
+        ward: 1,
+        addressDetail: 1,
+        phoneNumber: 1,
+        isPublish: 1,
+        user: {
+          $arrayToObject: [
+            [
+              {
+                k: "firstName",
+                v: { $arrayElemAt: ["$user.firstName", 0] },
+              },
+              {
+                k: "lastName",
+                v: { $arrayElemAt: ["$user.lastName", 0] },
+              },
+              { k: "email", v: { $arrayElemAt: ["$user.email", 0] } },
+              {
+                k: "profilePhoto",
+                v: { $arrayElemAt: ["$user.profilePhoto", 0] },
+              },
+            ],
+          ],
+        },
+      },
+    });
+    pipeline.push({ $skip: parseInt(offset) });
+    pipeline.push({ $limit: parseInt(limit) });
+    pipeline.push({
+      $facet: {
+        searchResult: [{ $sort: { createdAt: -1 } }],
+        searchCount: [{ $count: "total" }],
+      },
+    });
+
+    const updatedPipeline = pipeline.filter((element) => {
+      return !("$limit" in element);
+    });
+    const [result] = await Post.aggregate(pipeline);
+    const [resultNoLimit] = await Post.aggregate(updatedPipeline);
+    const { searchResult = [], searchCount = [] } = result;
+
+    const {
+      searchResult: searchResultNoLimit = [],
+      searchCount: searchCountRename = [],
+    } = resultNoLimit;
+    const totalPage = Math.ceil(searchCountRename[0]?.total / limit);
+    res.json({
+      data: searchResult,
+      searchCount: searchCount[0]?.total || 0,
+      totalPage,
+    });
+  } catch (error) {
+    res.json(error);
   }
 });
 
@@ -202,8 +447,8 @@ const fetchPostCtrl = expressAsyncHandler(async (req, res) => {
     const post = await Post.findById(id)
       .populate("user")
       .populate("disLikes")
-      .populate("likes");
-    res.json(post);
+      .populate("likes")
+      .populate("comments");
     //update number of view
     await Post.findByIdAndUpdate(
       id,
@@ -212,6 +457,256 @@ const fetchPostCtrl = expressAsyncHandler(async (req, res) => {
       },
       { new: true }
     );
+    if (post) {
+      res.json(post);
+    } else {
+      res.json({ result: false, message: MESSAGE.DATA_NOT_FOUND });
+    }
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+/*-------------------
+//TODO: Fetch post By User
+//-------------------*/
+
+// const fetchPostByUserCtrl = expressAsyncHandler(async (req, res) => {
+//   const { _id } = req.user;
+//   try {
+//     const keyword = req.query.keyword;
+//     const offset = req.query.offset;
+//     const limit = req.query.limit;
+//     // Do something with the parameters
+//     let searchResult = [];
+//     let searchCount = 0;
+//     if (keyword == "") {
+//       searchCount = await Post.countDocuments({
+//         title: { $regex: keyword, $options: "i" },
+//         category: { $regex: keyword, $options: "i" },
+//       });
+//       searchResult = await Post.find({
+//         user: _id,
+//         $or: [
+//           { title: { $regex: keyword, $options: "i" } },
+//           { category: { $regex: keyword, $options: "i" } },
+//         ],
+//       })
+//         .populate("user", "email lastName firstName profilePhoto")
+//         .skip(parseInt(offset))
+//         .limit(parseInt(limit))
+//         .lean()
+//         .sort({ updatedAt: -1, createdAt: -1 });
+//     } else {
+//       searchResult = await Post.aggregate([
+//         {
+//           $lookup: {
+//             from: "users",
+//             localField: "user",
+//             foreignField: "_id",
+//             as: "user",
+//           },
+//         },
+//         {
+//           $match: {
+//             "user._id": _id,
+//             $or: [
+//               { title: { $regex: keyword, $options: "i" } },
+//               { category: { $regex: keyword, $options: "i" } },
+//               { "user.firstName": { $regex: keyword, $options: "i" } },
+//               { "user.lastName": { $regex: keyword, $options: "i" } },
+//             ],
+//           },
+//         },
+//         {
+//           $project: {
+//             title: 1,
+//             category: 1,
+//             image: 1,
+//             likes: 1,
+//             disLikes: 1,
+//             numViews: 1,
+//             createdAt: 1,
+//             updatedAt: 1,
+//             price: 1,
+//             acreage: 1,
+//             electricityPrice: 1,
+//             waterPrice: 1,
+//             city: 1,
+//             district: 1,
+//             ward: 1,
+//             addressDetail: 1,
+//             phoneNumber: 1,
+//             isPublish: 1,
+//             user: {
+//               //convert array to Object for every field
+//               $arrayToObject: [
+//                 [
+//                   {
+//                     //key & value
+//                     k: "firstName",
+//                     v: { $arrayElemAt: ["$user.firstName", 0] },
+//                   },
+//                   { k: "lastName", v: { $arrayElemAt: ["$user.lastName", 0] } },
+//                   { k: "email", v: { $arrayElemAt: ["$user.email", 0] } },
+//                   {
+//                     k: "profilePhoto",
+//                     v: { $arrayElemAt: ["$user.profilePhoto", 0] },
+//                   },
+//                 ],
+//               ],
+//             },
+//           },
+//         },
+//         { $skip: parseInt(offset) },
+//         { $limit: parseInt(limit) },
+//       ]);
+//       const count = await Post.aggregate([
+//         {
+//           $lookup: {
+//             from: "users",
+//             localField: "user",
+//             foreignField: "_id",
+//             as: "user",
+//           },
+//         },
+//         {
+//           $match: {
+//             $or: [
+//               { title: { $regex: keyword, $options: "i" } },
+//               { category: { $regex: keyword, $options: "i" } },
+//               { "user.firstName": { $regex: keyword, $options: "i" } },
+//               { "user.lastName": { $regex: keyword, $options: "i" } },
+//             ],
+//           },
+//         },
+//         { $count: "total" },
+//       ]);
+//       searchCount = count[0].total;
+//     }
+//     // const searchCount = Object.keys(searchResult).length;
+
+//     const totalPage = Math.ceil(searchCount / limit);
+//     res.json({ totalPage: totalPage, data: searchResult });
+//   } catch (err) {
+//     res.json(err);
+//   }
+// });
+
+const fetchPostByUserCtrl = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.user;
+
+  const { keyword = "", offset = 0, limit = 10, publish } = req.query;
+  let pipeline = [];
+  try {
+    if (publish === "true") {
+      pipeline.push({ $match: { isPublish: true } });
+    } else if (publish === "false") {
+      pipeline.push({ $match: { isPublish: false } });
+    }
+    pipeline.push({
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    });
+    pipeline.push({
+      $match: {
+        "user._id": _id,
+        $or: [
+          {
+            removeVietnameseTonesTitle: {
+              $regex: removeVietnameseTones(keyword),
+              $options: "i",
+            },
+          },
+          {
+            category: { $regex: removeVietnameseTones(keyword), $options: "i" },
+          },
+          {
+            "user.firstName": {
+              $regex: removeVietnameseTones(keyword),
+              $options: "i",
+            },
+          },
+          {
+            "user.lastName": {
+              $regex: removeVietnameseTones(keyword),
+              $options: "i",
+            },
+          },
+        ],
+      },
+    });
+    pipeline.push({
+      $project: {
+        title: 1,
+        category: 1,
+        image: 1,
+        likes: 1,
+        disLikes: 1,
+        numViews: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        price: 1,
+        acreage: 1,
+        electricityPrice: 1,
+        waterPrice: 1,
+        city: 1,
+        district: 1,
+        ward: 1,
+        addressDetail: 1,
+        phoneNumber: 1,
+        isPublish: 1,
+        user: {
+          $arrayToObject: [
+            [
+              {
+                k: "firstName",
+                v: { $arrayElemAt: ["$user.firstName", 0] },
+              },
+              {
+                k: "lastName",
+                v: { $arrayElemAt: ["$user.lastName", 0] },
+              },
+              { k: "email", v: { $arrayElemAt: ["$user.email", 0] } },
+              {
+                k: "profilePhoto",
+                v: { $arrayElemAt: ["$user.profilePhoto", 0] },
+              },
+            ],
+          ],
+        },
+      },
+    });
+    pipeline.push({ $skip: parseInt(offset) });
+    pipeline.push({ $limit: parseInt(limit) });
+    pipeline.push({
+      $facet: {
+        searchResult: [{ $sort: { createdAt: -1 } }],
+        searchCount: [{ $count: "total" }],
+      },
+    });
+
+    const updatedPipeline = pipeline.filter((element) => {
+      return !("$limit" in element);
+    });
+    const [result] = await Post.aggregate(pipeline);
+    const [resultNoLimit] = await Post.aggregate(updatedPipeline);
+    const { searchResult = [], searchCount = [] } = result;
+
+    const {
+      searchResult: searchResultNoLimit = [],
+      searchCount: searchCountRename = [],
+    } = resultNoLimit;
+    const totalPage = Math.ceil(searchCountRename[0]?.total / limit);
+    res.json({
+      data: searchResult,
+      searchCount: searchCount[0]?.total || 0,
+      totalPage,
+    });
   } catch (error) {
     res.json(error);
   }
@@ -357,6 +852,9 @@ const deletePostCtrl = expressAsyncHandler(async (req, res) => {
   try {
     //!change this code
     const posts = await Post.findOneAndDelete(id);
+    // await posts.remove();
+    // Delete all comments that belong to the post
+    await Comment.deleteMany({ post: id });
     if (posts) {
       res.json({
         result: true,
@@ -504,6 +1002,35 @@ const toggleAddDislikeToPostCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
+const updateStatusCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const { publish } = req.body;
+    const post = await Post.findByIdAndUpdate(
+      id,
+      {
+        isPublish: publish,
+      },
+      { new: true }
+    );
+    if (post) {
+      res.json({
+        result: true,
+        data: post,
+        message: MESSAGE.UPDATE_SUCCESS,
+      });
+    } else {
+      res.json({
+        result: false,
+        message: MESSAGE.UPDATE_SUCCESS,
+      });
+    }
+  } catch (error) {
+    res.json(error);
+  }
+});
+
 module.exports = {
   createPostCtrl,
   fetchPostsCtrl,
@@ -512,4 +1039,6 @@ module.exports = {
   deletePostCtrl,
   toggleAddLikeToPostCtrl,
   toggleAddDislikeToPostCtrl,
+  fetchPostByUserCtrl,
+  updateStatusCtrl,
 };

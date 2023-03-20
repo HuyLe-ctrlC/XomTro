@@ -18,7 +18,7 @@ const userRegisterCtrl = expressAsyncHandler(async (req, res) => {
   // check ì user exist
   const userExists = await User.findOne({ email: req?.body?.email });
   if (userExists) {
-    throw new Error("User already exists");
+    throw new Error("Người dùng đã tồn tại!");
   }
   try {
     const user = await User.create({
@@ -27,7 +27,7 @@ const userRegisterCtrl = expressAsyncHandler(async (req, res) => {
       email: req?.body?.email,
       password: req?.body?.password,
     });
-    res.json(user);
+    res.json({ data: user });
   } catch (error) {
     res.json(error);
   }
@@ -45,17 +45,19 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
   //Check if password is match
   if (userFound && (await userFound.isPasswordMatched(password))) {
     res.json({
-      _id: userFound?._id,
-      firstName: userFound?.firstName,
-      lastName: userFound?.lastName,
-      email: userFound?.email,
-      profilePhoto: userFound?.profilePhoto,
-      isAdmin: userFound?.isAdmin,
-      token: generateToken(userFound?._id),
+      data: {
+        _id: userFound?._id,
+        firstName: userFound?.firstName,
+        lastName: userFound?.lastName,
+        email: userFound?.email,
+        profilePhoto: userFound?.profilePhoto,
+        isAdmin: userFound?.isAdmin,
+        token: generateToken(userFound?._id),
+      },
     });
   } else {
     res.status(401);
-    throw new Error("Invalid Login credentials");
+    throw new Error("Username hoặc password không hợp lệ!");
   }
 });
 

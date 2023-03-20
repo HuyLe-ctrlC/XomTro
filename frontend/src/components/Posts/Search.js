@@ -50,6 +50,7 @@ export const Search = (props) => {
         </div>
       </form>
       <Reload />
+      
     </div>
   );
 };

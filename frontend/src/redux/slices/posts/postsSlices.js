@@ -40,7 +40,7 @@ export const updateDataAction = createAsyncThunk(
         };
         return results;
       } else {
-        return rejectWithValue(response.errors[0].msg);
+        return rejectWithValue(response.message);
       }
     } catch (error) {
       if (!error) {
@@ -58,7 +58,26 @@ export const getAllAction = createAsyncThunk(
     //http call
     try {
       const response = await postsApi.getAll(params);
-      // console.log("data", data);
+      const results = {
+        data: response.data,
+        totalPage: response.totalPage,
+      };
+      return results;
+    } catch (error) {
+      if (!error) {
+        throw error;
+      }
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+//get by user
+export const getByUserAction = createAsyncThunk(
+  "posts/getByUser",
+  async (params, { rejectWithValue, getState, dispatch }) => {
+    //http call
+    try {
+      const response = await postsApi.getByUser(params);
       const results = {
         data: response.data,
         totalPage: response.totalPage,
@@ -105,7 +124,7 @@ export const deleteAction = createAsyncThunk(
         };
         return result;
       } else {
-        return rejectWithValue(response);
+        return rejectWithValue(response.message);
       }
     } catch (error) {
       // console.log('Failed to fetch data list: ', error);
@@ -132,7 +151,7 @@ export const likePostAction = createAsyncThunk(
         };
         return results;
       } else {
-        return rejectWithValue(response);
+        return rejectWithValue(response.message);
       }
     } catch (error) {
       // console.log('Failed to fetch data list: ', error);
@@ -160,7 +179,7 @@ export const disLikePostAction = createAsyncThunk(
         };
         return results;
       } else {
-        return rejectWithValue(response);
+        return rejectWithValue(response.message);
       }
     } catch (error) {
       // console.log('Failed to fetch data list: ', error);
@@ -171,6 +190,39 @@ export const disLikePostAction = createAsyncThunk(
     }
   }
 );
+
+//update status by id
+export const statusPublishAction = createAsyncThunk(
+  "post/status",
+  async (dataUpdate, { rejectWithValue, getState, dispatch }) => {
+    const id = await dataUpdate?.id;
+    const publish = await dataUpdate?.publish;
+    try {
+      const data = {
+        publish: publish,
+      };
+      const body = JSON.stringify(data);
+      const response = await postsApi.status(id, body);
+      if (response.result) {
+        const results = {
+          msg: response.message,
+          isPublish: publish,
+          _id: id,
+        };
+        return results;
+      } else {
+        return rejectWithValue(response.message);
+      }
+    } catch (error) {
+      // console.log('Failed to fetch data list: ', error);
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
 function findIncludeAndIndex(arr, elem) {
   const foundIndex = arr.includes(elem);
   return foundIndex ? arr.indexOf(elem) : -1;
@@ -199,6 +251,23 @@ const postsSlices = createSlice({
         state.serverError = undefined;
       })
       .addCase(getAllAction.rejected, (state, action) => {
+        state.loading = false;
+        state.appError = action?.payload?.message;
+        state.serverError = action?.error?.message;
+      });
+    //get All
+    builder
+      .addCase(getByUserAction.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(getByUserAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action?.payload.data;
+        state.totalPage = action?.payload?.totalPage;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(getByUserAction.rejected, (state, action) => {
         state.loading = false;
         state.appError = action?.payload?.message;
         state.serverError = action?.error?.message;
@@ -344,6 +413,24 @@ const postsSlices = createSlice({
         state.serverError = undefined;
       })
       .addCase(disLikePostAction.rejected, (state, action) => {
+        state.appError = action?.payload;
+        state.serverError = action?.error?.message;
+      });
+    //publish data by id
+    builder
+      .addCase(statusPublishAction.fulfilled, (state, action) => {
+        // find and update row data in store
+        const checkIndex = state.data.findIndex(
+          (row) => row._id.toString() === action?.payload?._id.toString()
+        );
+        if (checkIndex >= 0) {
+          state.data[checkIndex].isPublish = action?.payload?.isPublish;
+        }
+        state.msgSuccess = action?.payload?.message;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(statusPublishAction.rejected, (state, action) => {
         state.appError = action?.payload;
         state.serverError = action?.error?.message;
       });

@@ -7,7 +7,7 @@ export const addDataAction = createAsyncThunk(
   async (data, { rejectWithValue, getState, dispatch }) => {
     //http call
     try {
-      console.log("data", data);
+      // console.log("data", data);
       const response = await commentsApi.add(data);
       const results = {
         data: response.data,

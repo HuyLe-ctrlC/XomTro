@@ -9,9 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Header from "./Header";
 import Description from "./Description";
 import Footer from "../../../Footer";
-// import LoadingComponent from "../../utils/LoadingComponent";
-// import AddComment from "../Comments/AddComment";
-// import CommentsList from "../Comments/CommentsList";
+import Error from "../../../Error";
 
 const PostDetails = () => {
   let { postId } = useParams();
@@ -20,7 +18,7 @@ const PostDetails = () => {
 
   //select post details from store
   const post = useSelector(selectPosts);
-  const { dataUpdate, loading, appErr, serverErr } = post;
+  const { dataUpdate, loading, appError, serverError } = post;
 
   //comment
   // const comment = useSelector((state) => state.comment);
@@ -35,9 +33,10 @@ const PostDetails = () => {
     <>
       {loading ? (
         <div className="h-screen">{/* <LoadingComponent /> */}</div>
-      ) : appErr || serverErr ? (
+      ) : appError || serverError ? (
         <h1 className="h-screen text-red-400 text-xl">
-          {serverErr} {appErr}
+          {/* {serverError} {appError} */}
+          <Error />
         </h1>
       ) : (
         <section className="py-10 2xl:py-20 bg-gray-50 overflow-hidden">

@@ -7,7 +7,9 @@ import {
   selectPosts,
   resetEditAction,
   updateDataAction,
+  getByUserAction,
 } from "../../redux/slices/posts/postsSlices";
+import { selectUser } from "../../redux/slices/users/usersSlice";
 import { HiOutlinePlusSm } from "react-icons/hi";
 import { openForm, closeForm } from "../../redux/slices/formSlices";
 import { ListItem } from "./ListItem";
@@ -34,6 +36,7 @@ export default function CreatePost() {
   const [active, setActive] = useState("");
   const [limit, setLimit] = useState(10);
   const [keyword, setKeyword] = useState("");
+
   //set offset
   let offset = currentPage - 1;
   //set params
@@ -43,20 +46,25 @@ export default function CreatePost() {
     limit: limit,
   };
 
+  //get data from redux
+  const posts = useSelector(selectPosts);
+  const { data, loading, totalPage, appError, serverError } = posts;
+  //get user to check isAdmin
+  const user = useSelector(selectUser);
+  const { userAuth } = user;
+
   const getData = () => {
     document.title = title;
     // console.log("keyword", params.keyword);
-    dispatch(getAllAction(params));
+    userAuth?.isAdmin
+      ? dispatch(getAllAction(params))
+      : dispatch(getByUserAction(params));
     dispatch(getCity());
   };
 
   useEffect(() => {
     getData();
   }, []);
-
-  //get data from redux
-  const posts = useSelector(selectPosts);
-  const { data, loading, totalPage, appError, serverError } = posts;
 
   const locations = useSelector(selectLocation);
   const { dataCity } = locations;
@@ -237,9 +245,11 @@ export default function CreatePost() {
   const showSlide = () => {
     if (slideStatusState) {
       // console.log("images", images);
-      return <div className="z-10 max-w-[1280px] h-[600px] m-auto py-16 px-4 group w-3/4 fixed left-1/2 ml-[-37.5%]">
-        <Slider closeForm={handleCloseSlide} isBigger={false}/>
-      </div>
+      return (
+        <div className="z-10 max-w-[1280px] h-[600px] m-auto py-16 px-4 group w-3/4 fixed left-1/2 ml-[-37.5%]">
+          <Slider closeForm={handleCloseSlide} isBigger={false} />
+        </div>
+      );
       // return <Slider closeForm={handleCloseSlide} />;
     }
   };
@@ -315,6 +325,12 @@ export default function CreatePost() {
                             className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
                             Địa chỉ
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Trạng thái
                           </th>
                           <th
                             scope="col"

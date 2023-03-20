@@ -1,15 +1,19 @@
-import axiosClient, { axiosUpload } from "./axiosClient";
+import axiosClient, { axiosUpload, axiosNotToken } from "./axiosClient";
 
 const module = "posts";
 
 const postsApi = {
   getAll: (params) => {
     const url = `/${module}/search`;
-    return axiosClient.get(url, { params });
+    return axiosNotToken.get(url, { params });
   },
   getById: (id) => {
     const url = `/${module}/${id}`;
-    return axiosClient.get(url);
+    return axiosNotToken.get(url);
+  },
+  getByUser: (params) => {
+    const url = `/${module}/getByUser`;
+    return axiosClient.get(url, { params });
   },
   add: (data) => {
     const url = `/${module}`;
@@ -29,6 +33,10 @@ const postsApi = {
   },
   disLike: (body) => {
     const url = `/${module}/dislikes`;
+    return axiosClient.put(url, body);
+  },
+  status: (id, body) => {
+    const url = `/${module}/update-publish/${id}`;
     return axiosClient.put(url, body);
   },
 };

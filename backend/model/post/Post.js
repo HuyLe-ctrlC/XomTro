@@ -35,6 +35,11 @@ const postSchema = new mongoose.Schema(
       required: [true, "Post title is required"],
       trim: true,
     },
+    removeVietnameseTonesTitle: {
+      type: String,
+      required: [true, "Remove vietnamese tones title is required"],
+      trim: true,
+    },
     category: {
       type: String,
       required: [true, "Category is required"],
@@ -92,7 +97,23 @@ const postSchema = new mongoose.Schema(
     city: citySchema,
     district: districtSchema,
     ward: wardSchema,
+    addressDetail: {
+      type: String,
+      required: [true, "Address detail is required"],
+    },
+    houseLessor: {
+      type: String,
+      required: [true, "House lessor is required"],
+    },
+    phoneNumber: {
+      type: String,
+      required: [true, "Number phone is required"],
+    },
     image: [imageSchema],
+    isPublish: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: {
@@ -110,6 +131,20 @@ postSchema.virtual("comments", {
   ref: "Comment",
   foreignField: "post",
   localField: "_id",
+});
+
+
+postSchema.pre("remove", async function (next) {
+  try {
+    // Delete all comments that belong to the post
+    await Comment.deleteMany({ post: this._id });
+
+    // Call the next middleware function to continue with deleting the post
+    next();
+  } catch (err) {
+    // Handle the error if the deletion of the comments fails
+    next(err);
+  }
 });
 
 //compile

@@ -54,9 +54,10 @@ export const logoutAction = createAsyncThunk(
 );
 
 //get user from the local storage and place into initialState
-const userLoginFromStorage = localStorage.getItem("userInfo")
-  ? JSON.parse(localStorage.getItem("userInfo"))
-  : null;
+const userLoginFromStorage =
+  localStorage.getItem("userInfo")
+    ? JSON.parse(localStorage.getItem("userInfo"))
+    : null;
 
 //slices === reducer
 const usersSlices = createSlice({

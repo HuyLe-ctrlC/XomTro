@@ -24,7 +24,7 @@ export const ListItem = ({ data, openFormUpdate }) => {
       if (result.isConfirmed) {
         const action = await dispatch(deleteAction(id));
         const message = action.payload;
-        console.log("msg", message);
+        // console.log("msg", message);
         if (deleteAction.fulfilled.match(action)) {
           Swal.fire({
             position: "center",

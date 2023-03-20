@@ -12,6 +12,7 @@ import {
 } from "../../redux/slices/location/locationSlices";
 import CategoryDropDown from "../Categories/CategoryDropDown";
 import Swal from "sweetalert2";
+import { removeVietnameseTones } from "../../utils/VietnameseHelper";
 
 const formSchema = Yup.object().shape({
   title: Yup.string().required("*Dữ liệu bắt buộc!"),
@@ -25,6 +26,7 @@ const formSchema = Yup.object().shape({
   ward: Yup.string().required("*Dữ liệu bắt buộc!"),
   addressDetail: Yup.string().required("*Dữ liệu bắt buộc!"),
   houseLessor: Yup.string().required("*Dữ liệu bắt buộc!"),
+  phoneNumber: Yup.string().required("*Dữ liệu bắt buộc!"),
   files: Yup.array()
     .min(1, "*Dữ liệu bắt buộc!")
     .max(4, "*Tối đa hình ảnh là 4")
@@ -51,6 +53,8 @@ export const Form = (props) => {
   const [ward, setWard] = useState("");
   const [houseLessor, setHouseLessor] = useState("");
   const [addressDetail, setAddressDetail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [timeRule, setTimeRule] = useState("");
   const [files, setFiles] = useState([]);
 
   // get props to index components
@@ -82,6 +86,15 @@ export const Form = (props) => {
         if (dataUpdate.waterPrice !== undefined) {
           setWaterPrice(dataUpdate.waterPrice);
         }
+        if (dataUpdate.phoneNumber !== undefined) {
+          setPhoneNumber(dataUpdate.phoneNumber);
+        }
+        if (dataUpdate.addressDetail !== undefined) {
+          setAddressDetail(dataUpdate.addressDetail);
+        }
+        if (dataUpdate.houseLessor !== undefined) {
+          setHouseLessor(dataUpdate.houseLessor);
+        }
         if (dataUpdate.image !== undefined) {
           setFiles(dataUpdate.image);
         }
@@ -99,11 +112,18 @@ export const Form = (props) => {
     const id = dataUpdate?._id;
     let formData = new FormData();
     formData.append("title", formik.values.title.trim());
+    formData.append(
+      "removeVietnameseTonesTitle",
+      removeVietnameseTones(formik.values.title.trim())
+    );
     formData.append("category", formik.values.category.label.trim());
     formData.append("acreage", formik.values.acreage.trim());
     formData.append("waterPrice", formik.values.waterPrice.trim());
     formData.append("electricityPrice", formik.values.electricityPrice.trim());
     formData.append("price", formik.values.price.trim());
+    formData.append("addressDetail", formik.values.addressDetail.trim());
+    formData.append("houseLessor", formik.values.houseLessor.trim());
+    formData.append("phoneNumber", formik.values.phoneNumber.trim());
     formData.append("city[id]", JSON.parse(formik?.values?.city)?.id);
     formData.append("city[name]", JSON.parse(formik?.values?.city)?.name);
     formData.append("district[id]", JSON.parse(formik?.values?.district)?.id);
@@ -132,11 +152,18 @@ export const Form = (props) => {
     e.preventDefault();
     let formData = new FormData();
     formData.append("title", formik.values.title.trim());
+    formData.append(
+      "removeVietnameseTonesTitle",
+      removeVietnameseTones(formik.values.title.trim())
+    );
     formData.append("category", formik.values.category.label.trim());
     formData.append("acreage", formik.values.acreage.trim());
     formData.append("waterPrice", formik.values.waterPrice.trim());
     formData.append("electricityPrice", formik.values.electricityPrice.trim());
     formData.append("price", formik.values.price.trim());
+    formData.append("addressDetail", formik.values.addressDetail.trim());
+    formData.append("houseLessor", formik.values.houseLessor.trim());
+    formData.append("phoneNumber", formik.values.phoneNumber.trim());
     formData.append("city[id]", JSON.parse(formik?.values?.city)?.id);
     formData.append("city[name]", JSON.parse(formik?.values?.city)?.name);
     formData.append("district[id]", JSON.parse(formik?.values?.district)?.id);
@@ -208,6 +235,8 @@ export const Form = (props) => {
       category,
       addressDetail,
       houseLessor,
+      phoneNumber,
+      timeRule,
     },
     validationSchema: formSchema,
   });
@@ -232,6 +261,8 @@ export const Form = (props) => {
     setHouseLessor(formik.values.houseLessor);
     setAddressDetail(formik.values.addressDetail);
     setCategory(formik.values.category);
+    setPhoneNumber(formik.values.phoneNumber);
+    setTimeRule(formik.values.timeRule);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -645,6 +676,54 @@ export const Form = (props) => {
               </div>
               <div className="text-red-400 mb-2">
                 {formik.touched.houseLessor && formik.errors.houseLessor}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-row justify-between mb-4">
+            <div className="flex flex-col w-full mr-1">
+              <div className="relative z-0 group border border-gray-300 rounded-md ">
+                <input
+                  type="phoneNumber"
+                  name="floating_phoneNumber"
+                  id="floating_phoneNumber"
+                  className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  value={formik.values.phoneNumber}
+                  onChange={formik.handleChange("phoneNumber")}
+                  onBlur={formik.handleBlur("phoneNumber")}
+                />
+                <label
+                  htmlFor="floating_phoneNumber"
+                  className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
+                >
+                  Số điện thoại <span className="text-red-500">*</span>
+                </label>
+              </div>
+              <div className="text-red-400 mb-2">
+                {formik.touched.phoneNumber && formik.errors.phoneNumber}
+              </div>
+            </div>
+            <div className="flex flex-col w-full ml-1">
+              <div className="relative z-0 group border border-gray-300 rounded-md">
+                <input
+                  type="timeRule"
+                  name="floating_timeRule"
+                  id="floating_timeRule"
+                  className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  value={formik.values.timeRule}
+                  onChange={formik.handleChange("timeRule")}
+                  onBlur={formik.handleBlur("timeRule")}
+                />
+                <label
+                  htmlFor="floating_timeRule"
+                  className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
+                >
+                  Giờ giấc <span className="text-red-500">*</span>
+                </label>
+              </div>
+              <div className="text-red-400 mb-2">
+                {formik.touched.timeRule && formik.errors.timeRule}
               </div>
             </div>
           </div>

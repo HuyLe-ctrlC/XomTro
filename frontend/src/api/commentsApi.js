@@ -1,4 +1,4 @@
-import axiosClient from "./axiosClient";
+import axiosClient, { axiosNotToken } from "./axiosClient";
 
 const module = "comments";
 
@@ -9,7 +9,7 @@ const commentApi = {
   //   },
   getById: (id) => {
     const url = `/${module}/${id}`;
-    return axiosClient.get(url);
+    return axiosNotToken.get(url);
   },
   getByIdDetail: (id) => {
     const url = `/${module}/getDetail/${id}`;

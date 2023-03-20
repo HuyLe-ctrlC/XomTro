@@ -3,7 +3,10 @@ import { HiPencilAlt } from "react-icons/hi";
 import { BsTrash } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
-import { deleteAction } from "../../redux/slices/posts/postsSlices";
+import {
+  deleteAction,
+  statusPublishAction,
+} from "../../redux/slices/posts/postsSlices";
 import DateFormatter from "../../utils/DateFormatter";
 
 export const ListItem = ({ data, openFormUpdate, openSlide }) => {
@@ -54,11 +57,48 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
       }
     });
   };
+
+  const handleStatus = async (e, id) => {
+    const publish = e.target.checked;
+    const resultAction = await dispatch(statusPublishAction({ id, publish }));
+    if (statusPublishAction.fulfilled.match(resultAction)) {
+      // const msg = resultAction.payload;
+      // console.log(msg);
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        width: 500,
+      });
+
+      Toast.fire({
+        icon: "success",
+        title: "Cập nhật dữ liệu thành công!",
+      });
+    } else {
+      // console.log(resultAction.payload);
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        width: 500,
+      });
+
+      Toast.fire({
+        icon: "error",
+        title: "Cập nhật dữ liệu thất bại!",
+      });
+    }
+  };
   return (
     <>
       {data?.map((item) => (
         <tr className="bg-gray-50" key={item._id}>
-          <td className="px-6 py-4 whitespace-nowrap">
+          <td className="px-4 py-4 whitespace-nowrap">
             <div className="flex items-center">
               <div className="flex-shrink-0 h-10 w-10">
                 <img
@@ -75,13 +115,13 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
               </div>
             </div>
           </td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
             {item.title}
           </td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
             {item.category}
           </td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
             <div className="flex items-center">
               <div className="">
                 <div className="text-sm text-gray-500">
@@ -99,12 +139,31 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
               </div>
             </div>
           </td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            {item?.ward?.prefix}&#160;{item.ward?.name}&#160;
-            {item.district?.name}
-            &#160;{item?.city?.name}
+          <td className="px-4 py-4 whitespace text-sm text-gray-500 overflow-hidden max-w-[220px]">
+            {item?.addressDetail},&#160;{item?.ward?.prefix},&#160;
+            {item.ward?.name},&#160;
+            {item.district?.name},&#160;{item?.city?.name}
           </td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+            {/* {item.isPublish ? "Đã duyệt" : "Chưa duyệt"} */}
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={item.isPublish}
+                onChange={(e) => handleStatus(e, item._id)}
+                id={`publish_${item._id}`}
+              />
+              <div
+                htmlFor={`publish_${item._id}`}
+                className="w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+              ></div>
+              <span className="ml-3 text-sm text-gray-500">
+                {item.isPublish ? "Đã duyệt" : "Chưa duyệt"}
+              </span>
+            </label>
+          </td>
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
             {/* <img src={item.image[0].img} alt="thumb" className="w-20 h-20" /> */}
             <button
               onClick={() => openSlideShow(item?._id)}
@@ -113,10 +172,12 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
               Xem image
             </button>
           </td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            {<DateFormatter date={item?.createdAt} />}
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+            <time>
+              <DateFormatter date={item?.createdAt} />
+            </time>
           </td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
             <button
               className="text-4xl"
               onClick={() => handleOpenFormUpdate(item._id)}

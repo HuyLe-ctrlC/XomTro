@@ -1,11 +1,10 @@
-import axiosClient from "./axiosClient";
-
+import axiosClient, {  axiosNotToken } from "./axiosClient";
 const module = "category";
 
 const categoryApi = {
   getAll: (params) => {
     const url = `/${module}/search`;
-    return axiosClient.get(url, { params });
+    return axiosNotToken.get(url, { params });
   },
   getById: (id) => {
     const url = `/${module}/${id}`;

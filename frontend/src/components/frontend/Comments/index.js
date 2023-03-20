@@ -1,6 +1,6 @@
-import { Menu, Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
+
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
@@ -10,7 +10,7 @@ import {
   selectComments,
   updateDataAction,
 } from "../../../redux/slices/comments/commentSlices";
-import DateFormatter from "../../../utils/DateFormatter";
+
 import LoadingComponent from "../../Loading/Loading";
 import ListItem from "./ListItem";
 import { openForm, closeForm } from "../../../redux/slices/formSlices";

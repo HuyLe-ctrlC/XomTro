@@ -19,13 +19,15 @@ import { AiFillLike, AiFillDislike } from "react-icons/ai";
 import { Paging } from "../../../Paging/Paging";
 import Skeleton from "../../../../utils/Skeleton";
 import LabelXomTro from "../../../LabelXomTro";
+import Error from "../../../Error";
 
 export default function PostsList() {
   const title = "Các tin đăng";
   const [currentPage, setCurrentPage] = useState(1);
   const [active, setActive] = useState("");
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(6);
   const [keyword, setKeyword] = useState("");
+  const [publish, setPublished] = useState(true);
   //set offset
   let offset = currentPage - 1;
   //set params
@@ -33,12 +35,13 @@ export default function PostsList() {
     keyword: keyword,
     offset: offset,
     limit: limit,
+    publish: publish,
   };
 
   //select post from store
   const posts = useSelector(selectPosts);
   const user = useSelector(selectUser);
-  const { data, loading, totalPage, appErr, serverErr, likes, dislikes } =
+  const { data, loading, totalPage, appError, serverError, likes, dislikes } =
     posts;
   // console.log(data);
   //select categories from store
@@ -46,8 +49,8 @@ export default function PostsList() {
   const {
     data: dataCategory,
     loading: catLoading,
-    appErr: catAppErr,
-    serverErr: catServerErr,
+    appError: catAppErr,
+    serverError: catServerErr,
   } = category;
   //dispatch
   const dispatch = useDispatch();
@@ -73,6 +76,10 @@ export default function PostsList() {
     // bookmark
     dispatch(getCategories({ ...params, keyword: "" }));
   };
+  const handleTop100 = () => {
+    const newParams = { ...params, limit: 100 };
+    getData(newParams);
+  };
 
   const handleClickCategories = (title) => {
     const newParams = { ...params, keyword: title };
@@ -94,14 +101,14 @@ export default function PostsList() {
       let nextPage = currentPage + 1;
       params.offset = (nextPage - 1) * limit;
       setCurrentPage(nextPage);
-      getData();
+      getData(params);
     }
   };
   // change page event
   const handleChangePage = (page) => {
     params.offset = (page - 1) * limit;
     setCurrentPage(page);
-    getData();
+    getData(params);
   };
   return (
     <>
@@ -123,7 +130,7 @@ export default function PostsList() {
               <div className=" block text-left md:text-right w-1/2 mt-4 md:mt-0">
                 {/* View All */}
                 <button
-                  onClick={() => dispatch(getAllAction(params))}
+                  onClick={() => handleTop100()}
                   className="inline-block py-2 px-6 rounded-l-xl rounded-t-xl bg-green-600 hover:bg-green-700 text-gray-50 font-bold leading-loose transition duration-200"
                 >
                   Xem tất cả bài viết
@@ -139,7 +146,7 @@ export default function PostsList() {
                     rFontSize={3}
                   />
                 </div>
-                <div className="py-4 px-6 bg-green-100 shadow-md rounded border-2">
+                <div className="py-4 px-6 bg-gradient-to-r from-green-300 to-blue-300 shadow-md rounded border-2">
                   {/* <h4 className="mb-4 text-base font-semibold uppercase">
                     Loại nhà
                   </h4> */}
@@ -149,7 +156,8 @@ export default function PostsList() {
                       <LoadingComponent />
                     ) : catAppErr || catServerErr ? (
                       <h1>
-                        {catServerErr} {catAppErr}
+                        {/* {catServerErr} {catAppErr} */}
+                        Máy chủ đang bận
                       </h1>
                     ) : dataCategory?.length <= 0 ? (
                       <h1 className="text-lg text-center">
@@ -162,7 +170,7 @@ export default function PostsList() {
                             onClick={() =>
                               handleClickCategories(category.title)
                             }
-                            className="block cursor-pointer py-2 px-3 rounded font-semibold bg-white group hover:bg-green-500"
+                            className="block cursor-pointer py-2 px-3 rounded font-semibold bg-white group hover:bg-gray-100"
                           >
                             {category?.title}
                           </p>
@@ -176,9 +184,10 @@ export default function PostsList() {
                 {/* Post goes here */}
                 {loading ? (
                   <Skeleton />
-                ) : appErr || serverErr ? (
+                ) : appError || serverError ? (
                   <h1 className=" text-center text-lg ">
-                    {serverErr} {appErr}
+                    {/* {serverError} {appError} */}
+                    <Error />
                   </h1>
                 ) : data === undefined || data?.length <= 0 ? (
                   <h1 className=" text-lg text-center">

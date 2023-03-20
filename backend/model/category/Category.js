@@ -17,7 +17,12 @@ const categorySchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
+//populate comments
+categorySchema.virtual("posts", {
+  ref: "Post",
+  foreignField: "category",
+  localField: "_id",
+});
 const Category = mongoose.model("Category", categorySchema);
 
 module.exports = Category;
