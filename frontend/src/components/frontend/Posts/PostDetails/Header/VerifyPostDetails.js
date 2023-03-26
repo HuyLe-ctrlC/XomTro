@@ -1,6 +1,7 @@
 import React from "react";
 import { BsShieldFillCheck } from "react-icons/bs";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { selectPosts } from "../../../../../redux/slices/posts/postsSlices";
 import ZaloIcon from "../../../../../utils/ZaloIcon";
 
@@ -51,16 +52,16 @@ export default function VerifyPostDetails() {
       </section>
       <footer className="p-2">
         <div className="flex flex-col">
-          <div className="flex flex-col justify-center items-center">
+          <Link to={`/profile/${dataUpdate?.user?._id}`} className="flex flex-col justify-center items-center">
             <div className="mb-2">
               <img
-                src={dataUpdate?.user?.profilePhoto}
+                src={`data:image/jpeg;base64,${dataUpdate?.user?.profilePhoto[0].preview}`}
                 alt=""
                 className="w-12 h-12 rounded-full"
               />
             </div>
             <div>Chủ nhà: {dataUpdate?.user?.fullName}</div>
-          </div>
+          </Link>
           <button
             type="button"
             className="text-white bg-blue-400 hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none focus:ring-[#1da1f2]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#1da1f2]/55 mr-2 my-2"

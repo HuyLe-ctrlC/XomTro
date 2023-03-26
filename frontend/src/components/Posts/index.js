@@ -30,8 +30,8 @@ export default function CreatePost() {
   const dispatch = useDispatch();
 
   const [formStatusState, setFormStatusState] = useState(false);
-  const title = "Quản lý bài viết";
   const [isUpdate, setIsUpdate] = useState(false);
+  const title = "Quản lý bài viết";
   const [currentPage, setCurrentPage] = useState(1);
   const [active, setActive] = useState("");
   const [limit, setLimit] = useState(10);

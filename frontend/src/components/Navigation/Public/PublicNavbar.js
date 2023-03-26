@@ -5,34 +5,7 @@ import { AiOutlineClose, AiOutlineMenu, AiOutlinePlus } from "react-icons/ai";
 import { BsBook } from "react-icons/bs";
 import { HiOutlineLogin } from "react-icons/hi";
 import * as ROUTES from "../../../constants/routes/routes";
-
-const navigation = [
-  {
-    name: "Home",
-    href: ROUTES.HOME,
-    current: true,
-  },
-  {
-    name: "Create",
-    href: ROUTES.CREATE_POST,
-    current: false,
-  },
-  {
-    name: "Posts",
-    href: ROUTES.POSTS,
-    current: false,
-  },
-  {
-    name: "Register",
-    href: ROUTES.REGISTER,
-    current: false,
-  },
-  {
-    name: "Login",
-    href: ROUTES.LOGIN,
-    current: false,
-  },
-];
+import { navigationPublic } from "../../../constants/navigation/navigation";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -62,7 +35,7 @@ const PublicNavbar = () => {
                   <BsBook className="h-10 w-10 text-yellow-200" />
                 </div>
                 <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
-                  {navigation.map((item) => (
+                  {navigationPublic.map((item) => (
                     <Link
                       key={item.name}
                       to={item.href}
@@ -90,7 +63,7 @@ const PublicNavbar = () => {
                       className="-ml-1 mr-2 h-5 w-5"
                       aria-hidden="true"
                     />
-                    <span>Login</span>
+                    <span>Đăng nhập</span>
                   </Link>
                 </div>
                 <div className="hidden md:ml-4 md:flex-shrink-0 md:flex md:items-center">
@@ -102,7 +75,7 @@ const PublicNavbar = () => {
                       className="-ml-1 mr-2 h-5 w-5"
                       aria-hidden="true"
                     />
-                    <span>New Post</span>
+                    <span>Đăng tin</span>
                   </Link>
                 </div>
               </div>
@@ -110,7 +83,7 @@ const PublicNavbar = () => {
           </div>
           <Disclosure.Panel className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {navigation.map((item) => (
+              {navigationPublic.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}

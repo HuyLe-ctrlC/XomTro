@@ -9,6 +9,7 @@ export const addDataAction = createAsyncThunk(
     try {
       // console.log("data", data);
       const response = await commentsApi.add(data);
+      // console.log("response", response);
       const results = {
         data: response.data,
         message: response.message,
@@ -33,7 +34,6 @@ export const updateDataAction = createAsyncThunk(
     const datacomments = data.data;
     try {
       const response = await commentsApi.update(id, datacomments);
-      // console.log("response", response);
       if (response.result) {
         const results = {
           id: id,
@@ -61,6 +61,7 @@ export const getByIdAction = createAsyncThunk(
     try {
       // call Api
       const response = await commentsApi.getById(id);
+      // console.log("response", response);
       if (response.result) {
         const results = {
           data: response.data,
@@ -87,6 +88,7 @@ export const getByIdDetailAction = createAsyncThunk(
     try {
       // call Api
       const response = await commentsApi.getByIdDetail(id);
+      // console.log("response", response);
       if (response.result) {
         const results = {
           dataUpdate: response.dataUpdate,
@@ -113,6 +115,7 @@ export const deleteAction = createAsyncThunk(
     try {
       // call api
       const response = await commentsApi.delete(_id);
+      // console.log("response", response);
       if (response.result) {
         const result = {
           _id,

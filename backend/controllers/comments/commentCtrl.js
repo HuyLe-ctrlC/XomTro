@@ -2,12 +2,15 @@ const expressAsyncHandler = require("express-async-handler");
 const Comment = require("../../model/comment/Comment");
 const validateMongodbId = require("../../utils/validateMongodbID");
 const MESSAGE = require("../../utils/constantsMessage");
+const blockUser = require("../../utils/blockUser");
 /*-------------------
 //TODO: Create a comment
 //-------------------*/
 const createCommentCtrl = expressAsyncHandler(async (req, res) => {
   //1. Get the user
   const user = req.user;
+  //check user isBlocked
+  blockUser(user);
   //2. Get the post Id
   const { postId, description } = req?.body;
   try {
@@ -21,14 +24,14 @@ const createCommentCtrl = expressAsyncHandler(async (req, res) => {
     if (comments) {
       res.json({
         result: true,
-        message: MESSAGE.UPDATE_SUCCESS,
+        message: MESSAGE.COMMENT_SUCCESS,
         data: comments,
         totalComment: totalComment,
       });
     } else {
       res.json({
         result: false,
-        message: MESSAGE.UPDATE_FAILED,
+        message: MESSAGE.COMMENT_FAILED,
       });
     }
   } catch (error) {
@@ -65,7 +68,7 @@ const fetchCommentCtrl = expressAsyncHandler(async (req, res) => {
   try {
     const comments = await Comment.find({ post: id })
       .select(
-        "user.firstName user.lastName user.profilePhoto description post createdAt updatedAt"
+        "user.firstName user.lastName user.profilePhoto user._id description post createdAt updatedAt"
       )
       .sort("-createdAt");
     const totalComment = comments.length;
@@ -90,7 +93,7 @@ const fetchCommentDetail = expressAsyncHandler(async (req, res) => {
   validateMongodbId(id);
   try {
     const comment = await Comment.findById(id).select(
-      "user.firstName user.lastName user.profilePhoto description post createdAt updatedAt"
+      "user.firstName user.lastName user.profilePhoto user._id description post createdAt updatedAt"
     );
     res.json({
       result: true,

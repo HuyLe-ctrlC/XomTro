@@ -5,12 +5,16 @@ import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { deleteAction } from "../../../redux/slices/comments/commentSlices";
 import { selectUser } from "../../../redux/slices/users/usersSlice";
+import { selectPosts } from "../../../redux/slices/posts/postsSlices";
 import DateFormatter from "../../../utils/DateFormatter";
-
+import { Link } from "react-router-dom";
 export default function ListItem({ data, openFormUpdate }) {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  const post = useSelector(selectPosts);
   const { userAuth } = user;
+  //To check own post
+  const isLoginUser = userAuth?._id === post?.dataUpdate?.user?._id;
   const handleOpenFormUpdate = (id) => {
     openFormUpdate(id);
   };
@@ -63,14 +67,19 @@ export default function ListItem({ data, openFormUpdate }) {
         >
           <footer className="flex justify-between items-center mb-2">
             <div className="flex items-center">
-              <div className="inline-flex items-center mr-3 text-sm text-gray-900">
+              <Link
+                to={`/profile/${comment?.user?._id}`}
+                className="inline-flex items-center mr-3 text-sm text-gray-900"
+              >
                 <img
                   className="mr-2 w-6 h-6 rounded-full"
-                  src={comment?.user?.profilePhoto}
+                  src={`data:image/jpeg;base64,${comment?.user?.profilePhoto[0].preview}`}
                   alt={comment?.user?.firstName}
                 />
-                <span>{comment?.user?.firstName} {comment?.user?.lastName}</span>
-              </div>
+                <span>
+                  {comment?.user?.firstName} {comment?.user?.lastName}
+                </span>
+              </Link>
               <p className="text-sm text-gray-600">
                 <time>
                   {comment.updatedAt === comment.createdAt ? (
@@ -82,8 +91,8 @@ export default function ListItem({ data, openFormUpdate }) {
               </p>
             </div>
 
-            {userAuth != null && (
-              <div className="hidden md:ml-4 md:flex-shrink-0 md:flex md:items-center">
+            {isLoginUser && (
+              <div className="md:ml-4 md:flex-shrink-0 md:flex md:items-center">
                 {/* Profile dropdown */}
                 <Menu as="div" className="ml-3 relative z-10">
                   {({ open }) => (

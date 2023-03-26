@@ -2,56 +2,42 @@ import React, { Fragment } from "react";
 import * as ROUTES from "../../../constants/routes/routes";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { AiOutlineClose, AiOutlineMenu, AiOutlinePlus } from "react-icons/ai";
-import { BsBook } from "react-icons/bs";
 import { HiOutlineLogout } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logoutAction } from "../../../redux/slices/users/usersSlice";
-import logoXomTro from '../../../img/logoXomTro.png'
-const navigation = [
-  {
-    name: "Home",
-    href: ROUTES.HOME,
-    current: true,
-  },
-  {
-    name: "Tạo bài viết",
-    href: ROUTES.CREATE_POST,
-    current: false,
-  },
-  {
-    name: "Bài viết",
-    href: ROUTES.POSTS,
-    current: false,
-  },
-  {
-    name: "Tác giả",
-    href: ROUTES.USERS,
-    current: false,
-  },
-  {
-    name: "Thêm thể loại",
-    href: ROUTES.ADD_CATEGORY,
-    current: false,
-  },
-  {
-    name: "Tạo danh sách",
-    href: ROUTES.CATEGORY_LIST,
-    current: false,
-  },
-];
+import logoXomTro from "../../../img/logoXomTro.png";
+import { navigationAdmin } from "../../../constants/navigation/navigation";
+import Swal from "sweetalert2";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export const AdminNavbar = ({ isLogin }) => {
+  const navigate = useNavigate();
   const userNavigation = [
-    { name: "Your profile", href: `/profile/${isLogin?._id}` },
-    { name: "Change your password", href: ROUTES.UPDATE_PASSWORD },
-    { name: "Settings", href: ROUTES.UPDATE_PASSWORD },
+    { name: "Hồ sơ của bạn", href: `/profile/${isLogin?._id}` },
+    { name: "Thay đổi mật khẩu", href: ROUTES.UPDATE_PASSWORD },
+    { name: "Cài đặt", href: ROUTES.UPDATE_PASSWORD },
   ];
   const dispatch = useDispatch();
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Bạn có chắc là muốn đăng xuất?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "OK",
+      denyButtonText: `Chờ một tí`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        Swal.fire("Đã đăng xuất!", "", "success");
+        navigate("/login");
+        dispatch(logoutAction());
+      }
+    });
+  };
   return (
     <Disclosure as="nav" className="bg-[#15a05c]">
       {({ open }) => (
@@ -72,10 +58,14 @@ export const AdminNavbar = ({ isLogin }) => {
                 </div>
                 <div className="flex-shrink-0 flex items-center">
                   {/* Logo */}
-                  <img src={logoXomTro} className="w-16 h-16 py-2 rounded-xl" alt="logo"/>
+                  <img
+                    src={logoXomTro}
+                    className="hidden md:block md:w-16 md:h-16 md:py-2 md:rounded-xl"
+                    alt="logo"
+                  />
                 </div>
                 <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
-                  {navigation.map((item) => (
+                  {navigationAdmin.map((item) => (
                     <Link
                       to={item.href}
                       key={item.name}
@@ -104,11 +94,12 @@ export const AdminNavbar = ({ isLogin }) => {
                       className="-ml-1 mr-2 h-5 w-5"
                       aria-hidden="true"
                     />
-                    <span>New Post</span>
+                    <span>Đăng tin</span>
                   </Link>
                   {/* Logout */}
                   <button
-                    onClick={() => dispatch(logoutAction())}
+                    onClick={handleLogout}
+                    // onClick={() => dispatch(logoutAction())}
                     type="button"
                     className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-red-500"
                   >
@@ -116,7 +107,7 @@ export const AdminNavbar = ({ isLogin }) => {
                       className="-ml-1 mr-2 h-5 w-5"
                       aria-hidden="true"
                     />
-                    <span>Logout</span>
+                    <span>Đăng xuất</span>
                   </button>
                 </div>
                 <div className="hidden md:ml-4 md:flex-shrink-0 md:flex md:items-center">
@@ -129,7 +120,7 @@ export const AdminNavbar = ({ isLogin }) => {
                             <span className="sr-only">Open user menu</span>
                             <img
                               className="h-8 w-8 rounded-full"
-                              src={isLogin?.profilePhoto}
+                              src={`data:image/jpeg;base64,${isLogin.profilePhoto[0].preview}`}
                               alt="Admin avatar"
                             />
                           </Menu.Button>
@@ -174,7 +165,7 @@ export const AdminNavbar = ({ isLogin }) => {
           </div>
           <Disclosure.Panel className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {navigation.map((item) => (
+              {navigationAdmin.map((item) => (
                 <Link
                   to={item.href}
                   key={item.name}
@@ -196,7 +187,7 @@ export const AdminNavbar = ({ isLogin }) => {
                   {/* Image */}
                   <img
                     className="h-10 w-10 rounded-full"
-                    src={isLogin?.profilePhoto}
+                    src={`data:image/jpeg;base64,${isLogin.profilePhoto[0].preview}`}
                     alt={isLogin?.firstName}
                   />
                 </div>

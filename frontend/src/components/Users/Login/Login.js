@@ -1,17 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import poster from "../../../img/poster2.png";
-import { AiOutlineMail } from "react-icons/ai";
+import { AiFillEye, AiFillEyeInvisible, AiOutlineMail } from "react-icons/ai";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { MdScreenShare } from "react-icons/md";
 import {
   loginUserAction,
   selectUser,
 } from "../../../redux/slices/users/usersSlice";
-
+import Error from "../../Error";
 //TODO => Form Schema
 const formSchema = Yup.object({
   email: Yup.string().required("Email is required"),
@@ -21,6 +21,16 @@ const formSchema = Yup.object({
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  //set eyes password
+  const [passwordCurrentType, setPasswordCurrentType] = useState("password");
+
+  const togglePasswordCurrent = () => {
+    if (passwordCurrentType === "password") {
+      setPasswordCurrentType("text");
+      return;
+    }
+    setPasswordCurrentType("password");
+  };
   //formik
   const formik = useFormik({
     initialValues: {
@@ -37,9 +47,12 @@ const Login = () => {
   //todo: useNavigate
   const store = useSelector(selectUser);
   const { userAuth, loading, serverError, appError } = store;
+  //set up logout and login
   useEffect(() => {
-    if (userAuth) {
+    if (userAuth === undefined || userAuth === null) {
       // navigate(`/profile/${userAuth?._id}`);
+      navigate(`/login`);
+    } else {
       navigate(`/`);
     }
   }, [navigate, userAuth]);
@@ -67,7 +80,8 @@ const Login = () => {
                     {/* display error message*/}
                     {appError || serverError ? (
                       <div className="text-red-400 text-xs mb-3">
-                        {serverError}: {appError}
+                        {serverError && "Lỗi đăng nhập"}: {appError}
+                        {/* <Error /> */}
                       </div>
                     ) : null}
                     {/* Email */}
@@ -89,18 +103,28 @@ const Login = () => {
                       {formik.touched.email && formik.errors.email}
                     </div>
                     {/* Password */}
-                    <div className="flex items-center pl-6 mb-3 border-gray-500 border bg-white rounded-full">
+                    <div className="relative flex items-center pl-6 mb-3 border-gray-500 border bg-white rounded-full">
                       <span className="inline-block pr-3 py-2 border-r border-gray-500">
                         <RiLockPasswordLine className="w-5 h-5" />
                       </span>
                       <input
-                        type="password"
+                        type={passwordCurrentType}
                         placeholder="Password"
                         value={formik.values.password}
                         onChange={formik.handleChange("password")}
                         onBlur={formik.handleBlur("password")}
-                        className="w-full pl-4 pr-6 py-4 font-bold placeholder-gray-300 rounded-r-full focus:outline-none"
+                        className="relative w-full pl-4 pr-6 py-4 font-bold placeholder-gray-300 rounded-r-full focus:outline-none"
                       />
+                      <p
+                        className="absolute right-2 top-[30%] cursor-pointer text-gray-500 text-2xl"
+                        onClick={togglePasswordCurrent}
+                      >
+                        {passwordCurrentType === "password" ? (
+                          <AiFillEye />
+                        ) : (
+                          <AiFillEyeInvisible />
+                        )}
+                      </p>
                     </div>
                     {/* Error */}
                     <div className="text-red-400 mb-2">

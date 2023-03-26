@@ -17,18 +17,18 @@ export default function Promotion() {
   const [lng, setLng] = useState(0);
   const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
   const addressMap = "91 Lê Văn Tách, Bình Đường 1, An Bình, Dĩ An, Bình Dương";
-  useEffect(() => {
-    Geocode.fromAddress(addressMap).then(
-      (response) => {
-        const { lat, lng } = response.results[0].geometry.location;
-        setLat(lat);
-        setLng(lng);
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  }, []);
+  // useEffect(() => {
+  //   Geocode.fromAddress(addressMap).then(
+  //     (response) => {
+  //       const { lat, lng } = response.results[0].geometry.location;
+  //       setLat(lat);
+  //       setLng(lng);
+  //     },
+  //     (error) => {
+  //       console.error(error);
+  //     }
+  //   );
+  // }, []);
 
   // useEffect(() => {
   //   navigator.geolocation.getCurrentPosition(

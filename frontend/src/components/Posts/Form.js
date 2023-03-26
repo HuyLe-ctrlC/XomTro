@@ -13,7 +13,8 @@ import {
 import CategoryDropDown from "../Categories/CategoryDropDown";
 import Swal from "sweetalert2";
 import { removeVietnameseTones } from "../../utils/VietnameseHelper";
-
+import { phoneRegExp } from "../../constants/regex/numberPhone";
+import { NumericFormat } from "react-number-format";
 const formSchema = Yup.object().shape({
   title: Yup.string().required("*Dữ liệu bắt buộc!"),
   category: Yup.object().required("*Dữ liệu bắt buộc!"),
@@ -26,7 +27,9 @@ const formSchema = Yup.object().shape({
   ward: Yup.string().required("*Dữ liệu bắt buộc!"),
   addressDetail: Yup.string().required("*Dữ liệu bắt buộc!"),
   houseLessor: Yup.string().required("*Dữ liệu bắt buộc!"),
-  phoneNumber: Yup.string().required("*Dữ liệu bắt buộc!"),
+  phoneNumber: Yup.string()
+    .matches(phoneRegExp, "Số điện thoại không hợp lệ!")
+    .required("*Dữ liệu bắt buộc!"),
   files: Yup.array()
     .min(1, "*Dữ liệu bắt buộc!")
     .max(4, "*Tối đa hình ảnh là 4")
@@ -120,7 +123,13 @@ export const Form = (props) => {
     formData.append("acreage", formik.values.acreage.trim());
     formData.append("waterPrice", formik.values.waterPrice.trim());
     formData.append("electricityPrice", formik.values.electricityPrice.trim());
-    formData.append("price", formik.values.price.trim());
+    formData.append(
+      "price",
+      typeof formik.values.price == "string"
+        ? formik.values.price.replace(/,/g, "")
+        : formik.values.price
+    );
+    // formData.append("price", formik.values.price.trim());
     formData.append("addressDetail", formik.values.addressDetail.trim());
     formData.append("houseLessor", formik.values.houseLessor.trim());
     formData.append("phoneNumber", formik.values.phoneNumber.trim());
@@ -160,7 +169,13 @@ export const Form = (props) => {
     formData.append("acreage", formik.values.acreage.trim());
     formData.append("waterPrice", formik.values.waterPrice.trim());
     formData.append("electricityPrice", formik.values.electricityPrice.trim());
-    formData.append("price", formik.values.price.trim());
+    formData.append(
+      "price",
+      typeof formik.values.price == "string"
+        ? formik.values.price.replace(/,/g, "")
+        : formik.values.price
+    );
+    // formData.append("price", formik.values.price.trim());
     formData.append("addressDetail", formik.values.addressDetail.trim());
     formData.append("houseLessor", formik.values.houseLessor.trim());
     formData.append("phoneNumber", formik.values.phoneNumber.trim());
@@ -185,7 +200,7 @@ export const Form = (props) => {
     if (isUpdate) {
       return (
         <button
-          type="butt"
+          type="submit"
           onClick={handleUpdateData}
           className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-300 disabled:hover:bg-blue-300"
           disabled={
@@ -422,8 +437,10 @@ export const Form = (props) => {
           <div className="flex flex-row justify-between mb-8">
             <div className="flex flex-col w-full mr-1">
               <div className="relative z-0 group border border-gray-300 rounded-md ">
-                <input
-                  type="price"
+                <NumericFormat
+                  thousandsGroupStyle="thousand"
+                  thousandSeparator=","
+                  type="text"
                   name="floating_price"
                   id="floating_price"
                   className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"

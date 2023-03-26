@@ -63,6 +63,7 @@ export const getAllAction = createAsyncThunk(
       // console.log("data", data);
       const results = {
         data: response.data,
+        totalPage: response.totalPage,
       };
       return results;
     } catch (error) {
@@ -188,7 +189,7 @@ const categorySlices = createSlice({
         // state.loading = false;
         // find and update row data in store
         const checkIndex = state.data.findIndex(
-          (row) => row._id.toString() == action?.payload?.id.toString()
+          (row) => row._id.toString() === action?.payload?.id.toString()
         );
         if (checkIndex >= 0) {
           state.data[checkIndex] = action?.payload?.newData;

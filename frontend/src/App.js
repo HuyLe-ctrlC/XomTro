@@ -1,4 +1,5 @@
 import React from "react";
+import "./style.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { NotFound } from "./pages/NotFound/NotFound";
 import HomePage from "./components/HomePage/HomePage";
@@ -15,7 +16,9 @@ import AdminProtectRoute from "./utils/ProtectRoutes/AdminProtectRoute";
 import CreatePost from "./components/Posts";
 import PostsList from "./components/frontend/Posts/PostList";
 import PostDetails from "./components/frontend/Posts/PostDetails";
-import "./style.css"
+import Profile from "./components/Users/Profile";
+import AccountVerified from "./components/Users/AccountVerified";
+import { UserList } from "./components/Users/UserList";
 function App() {
   const user = useSelector(selectUser);
   const userAuth = user?.userAuth;
@@ -36,10 +39,34 @@ function App() {
             }
           />
           <Route
+            path={ROUTES.USERS_MANAGEMENT}
+            element={
+              <AdminProtectRoute userAuth={userAuth}>
+                <UserList />
+              </AdminProtectRoute>
+            }
+          />
+          <Route
             path={ROUTES.CREATE_POST}
             element={
               <PrivateProtectRoute userAuth={userAuth}>
                 <CreatePost />
+              </PrivateProtectRoute>
+            }
+          />
+          <Route
+            path={ROUTES.PROFILE}
+            element={
+              <PrivateProtectRoute userAuth={userAuth}>
+                <Profile />
+              </PrivateProtectRoute>
+            }
+          />
+          <Route
+            path={ROUTES.VERIFIED_ACCOUNT}
+            element={
+              <PrivateProtectRoute userAuth={userAuth}>
+                <AccountVerified />
               </PrivateProtectRoute>
             }
           />

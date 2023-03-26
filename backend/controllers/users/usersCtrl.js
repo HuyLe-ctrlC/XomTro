@@ -8,6 +8,9 @@ const nodemailer = require("nodemailer");
 const resetURL = require("../../utils/resetURL");
 const resetURLExtensions = require("../../utils/resetURLExtension");
 const cloudinaryUploadImg = require("../../utils/cloudinary");
+const image64Default = require("../../utils/image64Default");
+const MESSAGE = require("../../utils/constantsMessage");
+const blockUser = require("../../utils/blockUser");
 /*-------------------
 //TODO: Register
 
@@ -21,13 +24,54 @@ const userRegisterCtrl = expressAsyncHandler(async (req, res) => {
     throw new Error("Người dùng đã tồn tại!");
   }
   try {
+    const profileDefault = [
+      {
+        filename: "default.jpg",
+        preview: image64Default,
+        type: "image/jpeg",
+      },
+    ];
     const user = await User.create({
-      firstName: req?.body?.firstName,
-      lastName: req?.body?.lastName,
-      email: req?.body?.email,
-      password: req?.body?.password,
+      // firstName: req?.body?.firstName,
+      // lastName: req?.body?.lastName,
+      // email: req?.body?.email,
+      // password: req?.body?.password,
+      ...req.body,
+      profilePhoto: profileDefault,
     });
     res.json({ data: user });
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+const adminRegisterCtrl = expressAsyncHandler(async (req, res) => {
+  // check ì user exist
+  const userExists = await User.findOne({ email: req?.body?.email });
+  if (userExists) {
+    throw new Error("Người dùng đã tồn tại!");
+  }
+  try {
+    const files = req.resizedAndFormattedImages;
+
+    const imgUploaded = [];
+
+    for (const file of files) {
+      const filename = file.filename;
+      const type = file.type;
+      const filepath = `public/images/profile/${file.filename}`;
+      const fileBuffer = file.buffer;
+      const preview = fileBuffer.toString("base64");
+
+      imgUploaded.push({ filename, preview, type });
+      fs.unlinkSync(filepath);
+    }
+
+    const user = await User.create({
+      ...req.body,
+      profilePhoto: imgUploaded,
+    });
+    res.json({ result: true, newData: user, message: MESSAGE.UPDATE_SUCCESS });
   } catch (error) {
     res.json(error);
   }
@@ -41,7 +85,7 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
   //check if user exists
   const userFound = await User.findOne({ email });
-
+  if (userFound?.isBlocked) throw new Error("Tài khoản này đã bị chặn!");
   //Check if password is match
   if (userFound && (await userFound.isPasswordMatched(password))) {
     res.json({
@@ -52,12 +96,13 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
         email: userFound?.email,
         profilePhoto: userFound?.profilePhoto,
         isAdmin: userFound?.isAdmin,
+        isAccountVerified: userFound?.isAccountVerified,
         token: generateToken(userFound?._id),
       },
     });
   } else {
     res.status(401);
-    throw new Error("Username hoặc password không hợp lệ!");
+    throw new Error("Email hoặc mật khẩu không hợp lệ!");
   }
 });
 
@@ -65,11 +110,69 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
 //TODO: Get All User
 //-------------------*/
 const fetchUsersCtrl = expressAsyncHandler(async (req, res) => {
+  // try {
+  //   const users = await User.find({});
+  //   res.json(users);
+  // } catch (error) {
+  //   res.json(error);
+  // }
   try {
-    const users = await User.find({});
-    res.json(users);
-  } catch (error) {
-    res.json(error);
+    const { keyword = "", offset = 0, limit = 10 } = req.query;
+    let pipeline = [];
+
+    pipeline.push({
+      $match: {
+        $or: [
+          { email: { $regex: keyword, $options: "i" } },
+          { firstName: { $regex: keyword, $options: "i" } },
+          { lastName: { $regex: keyword, $options: "i" } },
+        ],
+      },
+    });
+
+    pipeline.push({
+      $project: {
+        _id: 1,
+        firstName: 1,
+        lastName: 1,
+        profilePhoto: 1,
+        email: 1,
+        isBlocked: 1,
+        isAdmin: 1,
+        isAccountVerified: 1,
+        postCount: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    });
+    pipeline.push({ $skip: parseInt(offset) });
+    pipeline.push({ $limit: parseInt(limit) });
+    pipeline.push({
+      $facet: {
+        searchResult: [{ $sort: { createdAt: -1 } }],
+        searchCount: [{ $count: "total" }],
+      },
+    });
+
+    const updatedPipeline = pipeline.filter((element) => {
+      return !("$limit" in element);
+    });
+    const [result] = await User.aggregate(pipeline);
+    const [resultNoLimit] = await User.aggregate(updatedPipeline);
+    const { searchResult = [], searchCount = [] } = result;
+
+    const {
+      searchResult: searchResultNoLimit = [],
+      searchCount: searchCountRename = [],
+    } = resultNoLimit;
+    const totalPage = Math.ceil(searchCountRename[0]?.total / limit);
+    res.json({
+      data: searchResult,
+      searchCount: searchCount[0]?.total || 0,
+      totalPage,
+    });
+  } catch (err) {
+    res.json(err);
   }
 });
 
@@ -109,9 +212,42 @@ const fetchUserDetailCtrl = expressAsyncHandler(async (req, res) => {
 const userProfileCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
+  //1.Find the login user
+  //2. Check this particular if the login user exists in the array of viewedBy
+
+  //Get the login user
+  const loginUserId = req?.user?._id?.toString();
+
   try {
-    const myProfile = await User.findById(id).populate("posts");
-    res.json(myProfile);
+    const myProfile = await User.findById(id)
+      .select(
+        "-password -accountVerificationToken -accountVerificationTokenExpires"
+      )
+      .populate("posts")
+      .populate({
+        path: "viewedBy",
+        select:
+          "-password -accountVerificationToken -accountVerificationTokenExpires",
+      });
+
+    const alreadyViewed = myProfile?.viewedBy?.find((user) => {
+      return user?._id?.toString() === loginUserId;
+    });
+
+    if (alreadyViewed || loginUserId === id) {
+      res.json({
+        result: true,
+        data: myProfile,
+      });
+    } else {
+      const profile = await User.findByIdAndUpdate(myProfile?._id, {
+        $push: { viewedBy: loginUserId },
+      });
+      res.json({
+        result: true,
+        data: profile,
+      });
+    }
   } catch (error) {
     res.json(error);
   }
@@ -122,19 +258,86 @@ const userProfileCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 
 const updateUserCtrl = expressAsyncHandler(async (req, res) => {
-  const { _id } = req?.user;
-  validateMongodbId(_id);
-  const user = await User.findByIdAndUpdate(
-    _id,
-    {
-      firstName: req?.body?.firstName,
-      lastName: req?.body?.lastName,
-      email: req?.body?.email,
-      bio: req?.body?.bio,
-    },
-    { new: true, runValidations: true }
-  );
-  res.json(user);
+  const { id } = req?.params;
+  validateMongodbId(id);
+  // const { _id } = req?.user;
+  // validateMongodbId(_id);
+  blockUser(req.user);
+  //middleware implement resize and convert to buffer
+  try {
+    const files = req.resizedAndFormattedImages;
+    if (!files.length) {
+      const postUpdate = await User.findByIdAndUpdate(
+        id,
+        // _id,
+
+        {
+          ...req.body,
+        },
+        { new: true }
+      )
+        .select(
+          "-password -accountVerificationToken -accountVerificationTokenExpires"
+        )
+        .populate("posts")
+        .populate({
+          path: "viewedBy",
+          select:
+            "-password -accountVerificationToken -accountVerificationTokenExpires",
+        });
+
+      return res.json({
+        result: true,
+        message: MESSAGE.UPDATE_SUCCESS,
+        newData: postUpdate,
+      });
+    }
+    // console.log("files", files)
+    const imgUploaded = files.map((file) => {
+      if (file?.preview?.startsWith("/")) {
+        const filename = file?.filename;
+        const type = file?.type;
+        const preview = file?.preview;
+        return { filename, preview, type };
+      } else {
+        const filename = file?.filename;
+        const type = file?.type;
+        const preview = file?.buffer?.toString("base64");
+        const filepath = `public/images/profile/${filename}`;
+        fs.unlinkSync(filepath);
+        return { filename, preview, type };
+      }
+    });
+    const user = await User.findByIdAndUpdate(
+      id,
+      // _id,
+      {
+        firstName: req?.body?.firstName,
+        lastName: req?.body?.lastName,
+        email: req?.body?.email,
+        bio: req?.body?.bio,
+        profilePhoto: imgUploaded,
+      },
+      { new: true, runValidations: true }
+    )
+      .select(
+        "-password -accountVerificationToken -accountVerificationTokenExpires"
+      )
+      .populate("posts")
+      .populate({
+        path: "viewedBy",
+        select:
+          "-password -accountVerificationToken -accountVerificationTokenExpires",
+      });
+
+    res.json({
+      result: true,
+      message: MESSAGE.UPDATE_SUCCESS,
+      newData: user,
+    });
+  } catch (error) {
+    res.json({ message: error });
+  }
 });
 
 /*-------------------
@@ -172,15 +375,8 @@ const followingUserCtrl = expressAsyncHandler(async (req, res) => {
   const targetUser = await User.findById(followId);
 
   if (targetUser.followers.includes(loginUserId)) {
-    throw new Error("You have already followed this user");
+    throw new Error("Bạn đã theo dõi người này rồi!");
   }
-
-  // const alreadyFollowing = targetUser?.followers?.find(
-  //   (user) => user?.toString() === loginUserId
-  // );
-  // if (alreadyFollowing) {
-  //   throw new Error("You have already followed this user");
-  // }
 
   //1. Find the user you want to follow and update it's followers fields
   await User.findByIdAndUpdate(
@@ -199,7 +395,7 @@ const followingUserCtrl = expressAsyncHandler(async (req, res) => {
     },
     { new: true }
   );
-  res.json("Following successfully!");
+  res.json({ result: true, message: MESSAGE.FOLLOW_SUCCESS });
 });
 
 /*-------------------
@@ -225,7 +421,7 @@ const unfollowUserCtrl = expressAsyncHandler(async (req, res) => {
     },
     { new: true }
   );
-  res.json("Unfollow successfully");
+  res.json({ result: true, message: MESSAGE.UNFOLLOW_SUCCESS });
 });
 
 /*-------------------
@@ -239,11 +435,17 @@ const blockUserCtrl = expressAsyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     id,
     {
-      isBlock: true,
+      isBlocked: true,
     },
     { new: true }
+  ).select(
+    "-password -accountVerificationToken -accountVerificationTokenExpires"
   );
-  res.json(user);
+  res.json({
+    result: true,
+    message: MESSAGE.BLOCKED_SUCCESS,
+    newData: user,
+  });
 });
 
 /*-------------------
@@ -257,11 +459,48 @@ const unblockUserCtrl = expressAsyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     id,
     {
-      isBlock: false,
+      isBlocked: false,
     },
     { new: true }
+  ).select(
+    "-password -accountVerificationToken -accountVerificationTokenExpires"
   );
-  res.json(user);
+  res.json({
+    result: true,
+    message: MESSAGE.UNBLOCKED_SUCCESS,
+    newData: user,
+  });
+});
+
+const updateStatusCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const { publish } = req.body;
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        isBlocked: publish,
+      },
+      { new: true }
+    ).select(
+      "-password -accountVerificationToken -accountVerificationTokenExpires"
+    );
+    if (user) {
+      res.json({
+        result: true,
+        data: user,
+        message: MESSAGE.UPDATE_SUCCESS,
+      });
+    } else {
+      res.json({
+        result: false,
+        message: MESSAGE.UPDATE_FAILED,
+      });
+    }
+  } catch (error) {
+    res.json(error);
+  }
 });
 
 /*-------------------
@@ -269,7 +508,6 @@ const unblockUserCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 
 const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
-  const { email } = req.body;
   const loginUserId = req.user.id;
   const user = await User.findById(loginUserId);
   try {
@@ -287,9 +525,9 @@ const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
     //build a email
     const msg = {
       from: `${process.env.EMAIL}`, // Sender email
-      to: `${email}`, // Receiver email
-      subject: "Verification", // Title email
-      text: "Please Confirm Your Account", // Text in email
+      to: user?.email, // Receiver email
+      subject: "Xác thực", // Title email
+      text: "Vui lòng xác thực tài khoản của bạn", // Text in email
       html: resetURL(
         verificationToken,
         resetURLExtensions.confirmAccount,
@@ -299,13 +537,10 @@ const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
 
     await transporter.sendMail(msg);
 
-    res.json(
-      resetURL(
-        verificationToken,
-        resetURLExtensions.confirmAccount,
-        resetURLExtensions.confirmSlug
-      )
-    );
+    res.json({
+      result: true,
+      message: "Đã gửi email xác thực thành công! Vui lòng kiểm tra email",
+    });
   } catch (error) {
     res.json(error);
   }
@@ -324,14 +559,14 @@ const accountVerificationCtrl = expressAsyncHandler(async (req, res) => {
     accountVerificationTokenExpires: { $gt: new Date() },
   });
   if (!userFind) {
-    throw new Error("Token expired, try again later");
+    throw new Error("Token đã hết hạn, thử lại sau!");
   }
   //update the properties to true
   userFind.isAccountVerified = true;
   userFind.accountVerificationToken = undefined;
   userFind.accountVerificationTokenExpires = undefined;
   await userFind.save();
-  res.json(userFind);
+  res.json({ result: true, data: userFind, message: MESSAGE.VERIFIED_SUCCESS });
 });
 
 /*-------------------
@@ -346,7 +581,7 @@ const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
   if (!user) {
-    throw new Error(`User not found`);
+    throw new Error(`Không tìm thấy user`);
   }
   try {
     const token = await user.createPasswordResetToken();
@@ -364,7 +599,7 @@ const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
       from: "ongconoizzz@gmail.com", // Sender email
       to: `${email}`, // Receiver email
       subject: "Reset Password", // Title email
-      text: "Please Reset Your Password", // Text in email
+      text: "Vui lòng reset password của bạn", // Text in email
       html: resetURL(
         token,
         resetURLExtensions.resetPassword,
@@ -375,9 +610,9 @@ const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
     const emailMsg = await transporter.sendMail(msg);
     //
     res.json({
-      msg: `A verification message is successfully sent to ${
+      msg: `Một tin nhắn xác nhận đã được gửi đến thành công email: ${
         user?.email
-      }. Reset now within 10 minutes!\\n ${resetURL(
+      }. Quá trình reset sẽ hết hạn trong vòng 10 phút!\\n ${resetURL(
         token,
         resetURLExtensions.resetPassword,
         resetURLExtensions.resetPasswordSlug
@@ -402,7 +637,7 @@ const passwordResetCtrl = expressAsyncHandler(async (req, res) => {
     passwordResetExpires: { $gt: Date.now() },
   });
   if (!user) {
-    throw new Error("Token expired, try again later");
+    throw new Error("Token đã hết hạn, thử lại sau!");
   }
   //Update/change the password
   user.password = password;
@@ -456,4 +691,6 @@ module.exports = {
   forgetPasswordToken,
   passwordResetCtrl,
   profilePhotoUploadCtrl,
+  updateStatusCtrl,
+  adminRegisterCtrl,
 };

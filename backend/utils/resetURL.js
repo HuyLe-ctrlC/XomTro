@@ -44,11 +44,11 @@ const resetURL = (verificationToken, behavior, slug) => {
                         >
                           <div style="text-align: center">
                             <img
-                              src="https://res.cloudinary.com/huyleminh/image/upload/v1675929722/logo-email_vuzvsr.png"
+                              src="https://res.cloudinary.com/huyleminh/image/upload/v1679545822/Furniture_cczeao.png"
                               alt=""
                               border="0"
-                              width="422"
-                              height="122"
+                              width="100%"
+                              height="210px"
                               class="CToWUd"
                               data-bit="iit"
                             />
@@ -96,8 +96,18 @@ const resetURL = (verificationToken, behavior, slug) => {
                             margin: 0 0 12px 0;
                           "
                         >
-                          <span class="il">${behavior}</span> Your Blog Account
+                          Cám ơn bạn đã sử dụng Xomtro
                         </h2>
+                        <h3
+                          style="
+                            font-size: 20px;
+                            line-height: 26px;
+                            margin: 0 0 12px 0;
+                            font-style: italic;
+                          "
+                        >
+                          <span class="il">Vui lòng ${behavior}</span> để sử dụng XomTro tốt nhất
+                        </h3>
                         <a
                           class="m_-977246017001525659formEmailButton"
                           href="http://localhost:3000/${slug}/${verificationToken}"
@@ -135,15 +145,14 @@ const resetURL = (verificationToken, behavior, slug) => {
                               background-color: #ef4d80 !important;
                               color: #ffffff !important;
                             "
-                            >${behavior} now.</span
+                            >${behavior} ngay.</span
                           >
                         </a>
                         <br />
                         <div>
                           <p style="padding: 0 0 10px 0">
-                            If you received this email by mistake, simply delete
-                            it. You won't be ${behavior} your account if you don't click the
-                            <span class="il">confirmation</span> link above.
+                          Hãy click vào link ở trên để xác thực tài khoản của bạn. Vui lòng liên
+                           hệ quản trị viên nếu có bất kỳ lỗi nào trong quá trình xác thực. Xin cảm ơn!
                           </p>
                         </div>
                         <span>

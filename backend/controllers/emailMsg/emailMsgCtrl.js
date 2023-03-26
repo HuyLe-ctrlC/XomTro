@@ -2,21 +2,23 @@ const expressAsyncHandler = require("express-async-handler");
 const nodemailer = require("nodemailer");
 const EmailMsg = require("../../model/emailMessaging/emailMessaging");
 const Filter = require("bad-words");
-const ResetURL = require("../../utils/resetURL");
+const sendMessage = require("../../utils/sendMessage");
 /*-------------------
 //TODO: Send Email Message
 //-------------------*/
 
 const sendEmailMsgCtrl = expressAsyncHandler(async (req, res) => {
-  const { email } = req.user;
+  const { email, firstName, lastName, _id } = req.user;
   const { to, subject, message } = req.body;
   //get the message
   const emailMessage = subject + " " + message;
+  //get full name
+  const fullName = firstName + " " + lastName;
   //prevent profane/bad words
   const filter = new Filter(email);
   const isProfane = filter.isProfane(emailMessage);
   if (isProfane) {
-    throw new Error("Email send failed, because it contains profane words");
+    throw new Error("Gửi email thất bại! Email có chứa từ ngữ không phù hợp!");
   }
   try {
     const transporter = nodemailer.createTransport({
@@ -30,7 +32,8 @@ const sendEmailMsgCtrl = expressAsyncHandler(async (req, res) => {
       from: `${process.env.EMAIL}`, // Sender email
       to, // Receiver email
       subject, // Title email
-      html: `<p>${message}</p>`, // Text in email
+      // html: `<p>${message}</p>`, // Text in email
+      html: sendMessage(_id, fullName, message),
     };
     await transporter.sendMail(msg);
     await EmailMsg.create({
@@ -40,7 +43,7 @@ const sendEmailMsgCtrl = expressAsyncHandler(async (req, res) => {
       message,
       subject,
     });
-    res.json("email sent");
+    res.json({ result: true, message: "Đã gửi email thành công!" });
   } catch (error) {
     res.json(error);
   }

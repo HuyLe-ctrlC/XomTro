@@ -103,7 +103,7 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
               <div className="flex-shrink-0 h-10 w-10">
                 <img
                   className="h-10 w-10 rounded-full"
-                  src={item?.user?.profilePhoto}
+                  src={`data:image/jpeg;base64,${item?.user?.profilePhoto[0].preview}`}
                   alt="item profile"
                 />
               </div>
@@ -123,9 +123,10 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
           </td>
           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
             <div className="flex items-center">
-              <div className="">
+              <div className="space-y-2">
                 <div className="text-sm text-gray-500">
-                  Giá phòng: {item.price}/tháng
+                  Giá phòng: {new Intl.NumberFormat("de-DE").format(item.price)}
+                  /tháng
                 </div>
                 <div className="text-sm text-gray-500">
                   Diện tích: {item.acreage} m2

@@ -9,4 +9,11 @@ module.exports = {
   UPDATE_FAILED: "Cập nhật liệu thất bại!",
   COMMENT_SUCCESS: "Bạn đã bình luận thành công!",
   COMMENT_FAILED: "Bạn bình luận thất lại!",
+  FOLLOW_SUCCESS: "Theo dõi thành công!",
+  FOLLOW_FAILED: "Theo dõi thất bại!",
+  UNFOLLOW_SUCCESS: "Bỏ theo dõi thành công!",
+  UNFOLLOW_FAILED: "Bỏ theo dõi thất bại!",
+  VERIFIED_SUCCESS: "Xác thực tài khoản thành công!",
+  BLOCKED_SUCCESS: "Chặn tài khoản thành công!",
+  UNBLOCKED_SUCCESS: "Bỏ chặn tài khoản thành công!",
 };

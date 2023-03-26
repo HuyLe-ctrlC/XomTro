@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-
+const imageSchema = new mongoose.Schema({
+  filename: { type: String, required: true },
+  preview: { type: String, required: true },
+  type: { type: String, required: true },
+});
 //create schema
 const userSchema = new mongoose.Schema(
   {
@@ -13,11 +17,12 @@ const userSchema = new mongoose.Schema(
       required: [true, "Last name is required"],
       type: String,
     },
-    profilePhoto: {
-      type: String,
-      default:
-        "https://res.cloudinary.com/huyleminh/image/upload/v1675929721/avatar-default_yxdthk.png",
-    },
+    // profilePhoto: {
+    //   type: String,
+    //   default:
+    //     "https://res.cloudinary.com/huyleminh/image/upload/v1675929721/avatar-default_yxdthk.png",
+    // },
+    profilePhoto: [imageSchema],
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -43,7 +48,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["Admin", "Guest", "Blogger"],
+      enum: ["Admin", "Khách", "Chủ nhà", "Người thuê nhà"],
     },
     isFollowing: {
       type: Boolean,
@@ -67,6 +72,14 @@ const userSchema = new mongoose.Schema(
         },
       ],
     },
+    // createdPost: {
+    //   type: [
+    //     {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "Post",
+    //     },
+    //   ],
+    // },
     followers: {
       type: [
         {
@@ -110,6 +123,14 @@ userSchema.virtual("posts", {
   foreignField: "user",
   localField: "_id",
 });
+
+/*-------------------
+//! Account type
+-------------------*/
+userSchema.virtual("accountType").get(function () {
+  const totalFollowers = this.followers?.length;
+  return totalFollowers >= 1 ? "Chủ nhà" : "Người thuê nhà"
+});
 /*-------------------
 //! Virtual method to concatenate firstName and lastName
 -------------------*/
@@ -129,7 +150,6 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
-
 
 /*-------------------
 //? Match password

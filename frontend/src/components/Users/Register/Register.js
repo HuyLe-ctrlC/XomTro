@@ -1,21 +1,31 @@
-import React, { useEffect } from "react";
-import { AiOutlineUserAdd, AiOutlineMail } from "react-icons/ai";
+import React, { useEffect, useState } from "react";
+import {
+  AiOutlineUserAdd,
+  AiOutlineMail,
+  AiFillEye,
+  AiFillEyeInvisible,
+} from "react-icons/ai";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import {
   registerUserAction,
+  resetErrorAction,
+  resetRegisteredAction,
   selectUser,
 } from "../../../redux/slices/users/usersSlice";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 //TODO => Form Schema
 const formSchema = Yup.object({
   firstName: Yup.string().required("*Dữ liệu là bắt buộc!"),
   lastName: Yup.string().required("*Dữ liệu là bắt buộc!"),
   email: Yup.string().required("*Dữ liệu là bắt buộc!"),
-  password: Yup.string().required("*Dữ liệu là bắt buộc!"),
+  password: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .min(6, "*Mật khẩu quá ngắn, phải có ít nhất 6 ký tự!"),
 });
 
 //TODO => Register
@@ -24,7 +34,22 @@ const Register = () => {
   const navigate = useNavigate();
   //DISPATCH
   const dispatch = useDispatch();
+  //set eyes password
+  const [passwordCurrentType, setPasswordCurrentType] = useState("password");
 
+  const togglePasswordCurrent = () => {
+    if (passwordCurrentType === "password") {
+      setPasswordCurrentType("text");
+      return;
+    }
+    setPasswordCurrentType("password");
+  };
+
+  //reset error in the store
+  useEffect(() => {
+    dispatch(resetErrorAction())
+  }, [])
+  
   //formik
   const formik = useFormik({
     initialValues: {
@@ -33,21 +58,61 @@ const Register = () => {
       email: "",
       password: "",
     },
-    onSubmit: (values) => {
-      //dispatch the action
-      dispatch(registerUserAction(values));
-      // console.log(values);
-    },
     validationSchema: formSchema,
   });
   //select state from store
   const storeData = useSelector(selectUser);
   const { loading, appError, serverError, registered } = storeData;
-  useEffect(() => {
-    if (registered) {
-      navigate("/login");
+
+  const handleRegister = async () => {
+    let dataRegistered = {
+      firstName: formik.values.firstName,
+      lastName: formik.values.lastName,
+      email: formik.values.email,
+      password: formik.values.password,
+    };
+
+    const updateAction = await dispatch(registerUserAction(dataRegistered));
+    const msg = updateAction.payload;
+    // console.log("msg", msg);
+
+    if (registerUserAction.fulfilled.match(updateAction)) {
+      if (msg) {
+        Swal.fire({
+          icon: "success",
+          title: "Đăng ký thành công",
+          confirmButtonText: "Đăng nhập ngay",
+          confirmButtonAriaLabel: "Thumbs up, great!",
+        }).then((isConfirmed) => {
+          if (isConfirmed) {
+            navigate("/login");
+            // window.location.reload();
+            dispatch(resetRegisteredAction());
+          }
+        });
+      }
+    } else {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        width: 500,
+      });
+
+      Toast.fire({
+        icon: "error",
+        title: msg.message ?? (serverError && "Máy chủ đang bận!"),
+      });
     }
-  }, [navigate, registered]);
+  };
+
+  // useEffect(() => {
+  //   if (registered) {
+  //     navigate("/login");
+  //   }
+  // }, [navigate, registered]);
 
   return (
     <div className="relative py-20 2xl:py-40 bg-gray-800 overflow-hidden">
@@ -73,7 +138,7 @@ const Register = () => {
                   {/* display error message*/}
                   {appError || serverError ? (
                     <div className="text-red-400 text-xs mb-3">
-                      {serverError}: {appError}
+                      {serverError && "Lỗi đăng ký"}: {appError}
                     </div>
                   ) : null}
                   {/* First name */}
@@ -131,18 +196,28 @@ const Register = () => {
                     {formik.touched.email && formik.errors.email}
                   </div>
                   {/* Password */}
-                  <div className="flex items-center pl-6 mb-3 bg-white rounded-full">
+                  <div className="flex relative items-center pl-6 mb-3 bg-white rounded-full">
                     <span className="inline-block pr-3 py-2 border-r border-gray-500">
                       <RiLockPasswordLine className="w-5 h-5" />
                     </span>
                     <input
-                      type="password"
+                      type={passwordCurrentType}
                       placeholder="Password"
                       value={formik.values.password}
                       onChange={formik.handleChange("password")}
                       onBlur={formik.handleBlur("password")}
-                      className="w-full pl-4 pr-6 py-4 font-bold placeholder-gray-300 rounded-r-full focus:outline-none"
+                      className="relative w-full pl-4 pr-6 py-4 font-bold placeholder-gray-300 rounded-r-full focus:outline-none"
                     />
+                    <p
+                      className="absolute right-2 top-[30%] cursor-pointer text-gray-500 text-2xl"
+                      onClick={togglePasswordCurrent}
+                    >
+                      {passwordCurrentType === "password" ? (
+                        <AiFillEye />
+                      ) : (
+                        <AiFillEyeInvisible />
+                      )}
+                    </p>
                   </div>
                   {/* Error */}
                   <div className="text-red-400 mb-2">
@@ -159,8 +234,10 @@ const Register = () => {
                     </button>
                   ) : (
                     <button
+                      onClick={() => handleRegister()}
+                      disabled={!formik.isValid}
                       type="submit"
-                      className="py-4 w-full bg-blue-500 text-white hover:bg-blue-600 font-bold rounded-full transition duration-200"
+                      className="py-4 w-full bg-blue-500 text-white hover:bg-blue-600 font-bold rounded-full transition duration-200 disabled:cursor-not-allowed"
                     >
                       Đăng ký
                     </button>

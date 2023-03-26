@@ -4,22 +4,40 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { AiOutlineClose, AiOutlineMenu, AiOutlinePlus } from "react-icons/ai";
 import { BsBook } from "react-icons/bs";
 import { HiOutlineLogout } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logoutAction } from "./../../../redux/slices/users/usersSlice";
 import { navigationPrivate } from "../../../constants/navigation/navigation";
+import Swal from "sweetalert2";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export const PrivateNavbar = ({ isLogin }) => {
+  const navigate = useNavigate();
   const userNavigation = [
-    { name: "Your profile", href: `/profile/${isLogin?._id}` },
-    { name: "Change your password", href: ROUTES.UPDATE_PASSWORD },
+    { name: "Hồ sơ của bạn", href: `/profile/${isLogin?._id}` },
+    { name: "Thay đổi mật khẩu", href: ROUTES.UPDATE_PASSWORD },
   ];
   //logout
   const dispatch = useDispatch();
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Bạn có chắc là muốn đăng xuất?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "OK",
+      denyButtonText: `Chờ một tí`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        Swal.fire("Đã đăng xuất!", "", "success");
+        navigate("/login");
+        dispatch(logoutAction());
+      }
+    });
+  };
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -76,10 +94,11 @@ export const PrivateNavbar = ({ isLogin }) => {
                       className="-ml-1 mr-2 h-5 w-5"
                       aria-hidden="true"
                     />
-                    <span>New Post</span>
+                    <span>Đăng tin</span>
                   </Link>
                   <button
-                    onClick={() => dispatch(logoutAction())}
+                    onClick={handleLogout}
+                    // onClick={() => dispatch(logoutAction())}
                     type="button"
                     className="pr-3 relative inline-flex items-center mr-2 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-red-500"
                   >
@@ -87,7 +106,7 @@ export const PrivateNavbar = ({ isLogin }) => {
                       className="-ml-1 mr-2 h-5 w-5"
                       aria-hidden="true"
                     />
-                    <span>Logout</span>
+                    <span>Đăng xuất</span>
                   </button>
                 </div>
                 <div className="hidden md:ml-4 md:flex-shrink-0 md:flex md:items-center">
@@ -100,7 +119,7 @@ export const PrivateNavbar = ({ isLogin }) => {
                             <span className="sr-only">Open user menu</span>
                             <img
                               className="h-8 w-8 rounded-full"
-                              src={isLogin?.profilePhoto}
+                              src={`data:image/jpeg;base64,${isLogin.profilePhoto[0].preview}`}
                               alt=""
                             />
                           </Menu.Button>
@@ -177,7 +196,7 @@ export const PrivateNavbar = ({ isLogin }) => {
                   <div className="flex-shrink-0">
                     <img
                       className="h-10 w-10 rounded-full"
-                      src={isLogin?.profilePhoto}
+                      src={`data:image/jpeg;base64,${isLogin?.profilePhoto[0].preview}`}
                       alt=""
                     />
                   </div>

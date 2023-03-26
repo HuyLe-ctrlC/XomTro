@@ -18,6 +18,8 @@ import Swal from "sweetalert2";
 import Form from "./Form";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { selectUser } from "../../../redux/slices/users/usersSlice";
+import { AiFillWarning } from "react-icons/ai";
 
 const formSchema = Yup.object({
   description: Yup.string().required("*Dữ liệu bắt buộc!"),
@@ -30,6 +32,8 @@ export default function Comments() {
   const [description, setDescription] = useState("");
   //select comments details from store
   const comments = useSelector(selectComments);
+  const user = useSelector(selectUser);
+  const { userAuth } = user;
   const { data, dataUpdate, totalComment, loading, appError, serverError } =
     comments;
   const [formStatusState, setFormStatusState] = useState(false);
@@ -78,7 +82,7 @@ export default function Comments() {
 
       Toast.fire({
         icon: "error",
-        title: msg.message ?? (serverError && "Máy chủ đang bận!"),
+        title: msg.message ?? (appError.msg && "Máy chủ đang bận!"),
       });
     }
   };
@@ -193,36 +197,41 @@ export default function Comments() {
               Bình luận ({totalComment})
             </h2>
           </div>
-          <form className="mb-6">
-            <div className="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 ">
-              <label htmlFor="comment" className="sr-only">
-                Your comment
-              </label>
-              <textarea
-                id="comment"
-                rows="6"
-                className="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none "
-                placeholder="Viết gì đó để bình luận..."
-                value={formik.values.description}
-                onChange={formik.handleChange("description")}
-                onBlur={formik.handleBlur("description")}
-                ref={inputRef}
-              ></textarea>
-            </div>
-            <button
-              onClick={() => handleAddData(postId, formik.values.description)}
-              type="button"
-              className="inline-flex items-center bg-blue-700 py-2.5 px-4 text-xs font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 hover:bg-primary-800"
-            >
-              Bình luận
-            </button>
-          </form>
+          {userAuth && (
+            <form className="mb-6">
+              <div className="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border-2 border-gray-200 ">
+                <label htmlFor="comment" className="sr-only">
+                  Your comment
+                </label>
+                <textarea
+                  id="comment"
+                  rows="6"
+                  className="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none "
+                  placeholder="Viết gì đó để bình luận..."
+                  value={formik.values.description}
+                  onChange={formik.handleChange("description")}
+                  onBlur={formik.handleBlur("description")}
+                  ref={inputRef}
+                />
+              </div>
+              <button
+                onClick={() => handleAddData(postId, formik.values.description)}
+                type="button"
+                className="inline-flex items-center bg-blue-700 py-2.5 px-4 text-xs font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 hover:bg-primary-800"
+              >
+                Bình luận
+              </button>
+            </form>
+          )}
           {loading ? (
             <LoadingComponent />
           ) : appError || serverError ? (
-            <h1>
-              {serverError} {appError}
-            </h1>
+            <div className="bg-red-500 text-white rounded-lg text-2xl p-4 flex">
+              <AiFillWarning className="text-7xl w-32 mr-2" />
+              <p>
+                {serverError && "Thông báo:"} {appError}
+              </p>
+            </div>
           ) : data?.length <= 0 ? (
             <h1 className="text-lg text-center">
               Hãy là người bình luận đầu tiên!

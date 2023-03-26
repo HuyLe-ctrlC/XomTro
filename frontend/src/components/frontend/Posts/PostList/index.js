@@ -187,7 +187,7 @@ export default function PostsList() {
                 ) : appError || serverError ? (
                   <h1 className=" text-center text-lg ">
                     {/* {serverError} {appError} */}
-                    <Error />
+                    {serverError == "Cannot read properties of null (reading 'token')" ? "Vui lòng đăng nhập để thực hiện chức năng này!" : <Error />}
                   </h1>
                 ) : data === undefined || data?.length <= 0 ? (
                   <h1 className=" text-lg text-center">
@@ -316,7 +316,7 @@ export default function PostsList() {
                               <Link>
                                 <img
                                   className="h-10 w-10 rounded-full"
-                                  src={post?.user?.profilePhoto}
+                                  src={`data:image/jpeg;base64,${post?.user?.profilePhoto[0].preview}`}
                                   alt=""
                                 />
                               </Link>

@@ -57,7 +57,7 @@ export const Form = (props) => {
         <button
           type="submit"
           onClick={() => handleUpdateData()}
-          className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:cursor-not-allowed"
           disabled={!formik.isValid}
         >
           Cập nhật
@@ -68,7 +68,7 @@ export const Form = (props) => {
         <button
           type="submit"
           onClick={() => handleAddData()}
-          className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+          className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 disabled:cursor-not-allowed"
           disabled={!formik.isValid}
         >
           Lưu
@@ -118,7 +118,7 @@ export const Form = (props) => {
               ref={inputRef}
             />
             <div className="text-red-500 text-base">
-              {formik.touched.name && formik.errors.name}
+              {formik.touched.title && formik.errors.title}
             </div>
           </div>
           {showButtonAction()}

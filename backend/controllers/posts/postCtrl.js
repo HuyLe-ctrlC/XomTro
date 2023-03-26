@@ -15,14 +15,14 @@ const { json } = require("express");
 const path = require("path");
 const MESSAGE = require("../../utils/constantsMessage");
 const { removeVietnameseTones } = require("../../utils/slug");
-
+const blockUser = require("../../utils/blockUser");
 /*-------------------
 //TODO: Create a Post
 //-------------------*/
 const createPostCtrl = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
   //Display message if user is blocked
-  //! blockUser(req.user); later
+  blockUser(req.user);
   //validateMongodbId(req.body.user);
   //Check for bad words
   const filter = new Filter();
@@ -72,6 +72,17 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
       user: req?.user,
       image: imgUploaded,
     });
+
+    await User.findByIdAndUpdate(
+      _id,
+      {
+        $inc: { postCount: 1 },
+      },
+      {
+        new: true,
+      }
+    );
+
     res.json({
       result: true,
       data: post,
@@ -390,6 +401,10 @@ const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
               {
                 k: "firstName",
                 v: { $arrayElemAt: ["$user.firstName", 0] },
+              },
+              {
+                k: "_id",
+                v: { $arrayElemAt: ["$user._id", 0] },
               },
               {
                 k: "lastName",
@@ -894,7 +909,11 @@ const toggleAddLikeToPostCtrl = expressAsyncHandler(async (req, res) => {
         isDisLiked: false,
       },
       { new: true }
-    ).select("disLikes isDisLiked likes isLiked");
+    ).populate({
+      path: "user",
+      select:
+        "-password -accountVerificationToken -accountVerificationTokenExpires",
+    });
     // res.json({
     //   result: true,
     //   data: post,
@@ -911,7 +930,11 @@ const toggleAddLikeToPostCtrl = expressAsyncHandler(async (req, res) => {
         isLiked: false,
       },
       { new: true }
-    ).select("disLikes isDisLiked likes isLiked");
+    ).populate({
+      path: "user",
+      select:
+        "-password -accountVerificationToken -accountVerificationTokenExpires",
+    });
     res.json({
       result: true,
       data: post,
@@ -926,7 +949,12 @@ const toggleAddLikeToPostCtrl = expressAsyncHandler(async (req, res) => {
         isLiked: true,
       },
       { new: true }
-    ).select("disLikes isDisLiked likes isLiked");
+    ).populate({
+      path: "user",
+      select:
+        "-password -accountVerificationToken -accountVerificationTokenExpires",
+    });
+
     res.json({
       result: true,
       data: post,
@@ -961,7 +989,11 @@ const toggleAddDislikeToPostCtrl = expressAsyncHandler(async (req, res) => {
         isLiked: false,
       },
       { new: true }
-    ).select("disLikes isDisLiked likes isLiked");
+    ).populate({
+      path: "user",
+      select:
+        "-password -accountVerificationToken -accountVerificationTokenExpires",
+    });
 
     // res.json({
     //   result: true,
@@ -979,7 +1011,11 @@ const toggleAddDislikeToPostCtrl = expressAsyncHandler(async (req, res) => {
         isDisLiked: false,
       },
       { new: true }
-    ).select("disLikes isDisLiked likes isLiked");
+    ).populate({
+      path: "user",
+      select:
+        "-password -accountVerificationToken -accountVerificationTokenExpires",
+    });
     res.json({
       result: true,
       data: post,
@@ -993,7 +1029,11 @@ const toggleAddDislikeToPostCtrl = expressAsyncHandler(async (req, res) => {
         isDisLiked: true,
       },
       { new: true }
-    ).select("disLikes isDisLiked likes isLiked");
+    ).populate({
+      path: "user",
+      select:
+        "-password -accountVerificationToken -accountVerificationTokenExpires",
+    });
     res.json({
       result: true,
       data: post,

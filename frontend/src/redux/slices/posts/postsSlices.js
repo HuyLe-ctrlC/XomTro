@@ -142,6 +142,7 @@ export const likePostAction = createAsyncThunk(
     try {
       const body = { postId: data.postId };
       const response = await postsApi.like(body);
+      // console.log("responseLike", response);
       if (response.result) {
         const results = {
           _id: data.postId,
@@ -170,6 +171,7 @@ export const disLikePostAction = createAsyncThunk(
       const body = { postId: data.postId };
 
       const response = await postsApi.disLike(body);
+      // console.log("responseDislike", response);
       if (response.result) {
         const results = {
           _id: data.postId,
@@ -255,7 +257,7 @@ const postsSlices = createSlice({
         state.appError = action?.payload?.message;
         state.serverError = action?.error?.message;
       });
-    //get All
+    //get by user
     builder
       .addCase(getByUserAction.pending, (state, action) => {
         state.loading = true;
@@ -331,7 +333,7 @@ const postsSlices = createSlice({
       .addCase(updateDataAction.rejected, (state, action) => {
         // state.loading = false;
         state.msgSuccess = undefined;
-        state.appError = action?.payload;
+        state.appError = action?.payload?.message;
         state.serverError = action?.error?.message;
       });
     //delete data by id
@@ -365,18 +367,22 @@ const postsSlices = createSlice({
         );
 
         if (checkIndex >= 0) {
-          //this is declared to concise code
-          const likes = state.data[checkIndex].likes;
-          const isLikedIndex = findIncludeAndIndex(likes, payloadUserId);
-          const disLikes = state.data[checkIndex].disLikes;
-          const isDisLikedIndex = findIncludeAndIndex(disLikes, payloadUserId);
-          if (isLikedIndex >= 0) {
-            state.data[checkIndex].likes.splice(isLikedIndex, 1);
-          } else {
-            state.data[checkIndex].disLikes.splice(isDisLikedIndex, 1);
-            likes.push(payloadUserId);
-          }
+          state.data[checkIndex] = action.payload?.data;
         }
+
+        // if (checkIndex >= 0) {
+        //   //this is declared to concise code
+        //   const likes = state.data[checkIndex].likes;
+        //   const isLikedIndex = findIncludeAndIndex(likes, payloadUserId);
+        //   const disLikes = state.data[checkIndex].disLikes;
+        //   const isDisLikedIndex = findIncludeAndIndex(disLikes, payloadUserId);
+        //   if (isLikedIndex >= 0) {
+        //     state.data[checkIndex].likes.splice(isLikedIndex, 1);
+        //   } else {
+        //     state.data[checkIndex].disLikes.splice(isDisLikedIndex, 1);
+        //     likes.push(payloadUserId);
+        //   }
+        // }
         state.msgSuccess = action?.payload?.message;
         state.appError = undefined;
         state.serverError = undefined;
@@ -396,18 +402,22 @@ const postsSlices = createSlice({
         );
 
         if (checkIndex >= 0) {
-          //this is declared to concise code
-          const disLikes = state.data[checkIndex].disLikes;
-          const isDisLikedIndex = findIncludeAndIndex(disLikes, payloadUserId);
-          const likes = state.data[checkIndex].likes;
-          const isLikedIndex = findIncludeAndIndex(likes, payloadUserId);
-          if (isDisLikedIndex >= 0) {
-            state.data[checkIndex].disLikes.splice(isDisLikedIndex, 1);
-          } else {
-            state.data[checkIndex].likes.splice(isLikedIndex, 1);
-            disLikes.push(payloadUserId);
-          }
+          state.data[checkIndex] = action.payload?.data;
         }
+
+        // if (checkIndex >= 0) {
+        //   //this is declared to concise code
+        //   const disLikes = state.data[checkIndex].disLikes;
+        //   const isDisLikedIndex = findIncludeAndIndex(disLikes, payloadUserId);
+        //   const likes = state.data[checkIndex].likes;
+        //   const isLikedIndex = findIncludeAndIndex(likes, payloadUserId);
+        //   if (isDisLikedIndex >= 0) {
+        //     state.data[checkIndex].disLikes.splice(isDisLikedIndex, 1);
+        //   } else {
+        //     state.data[checkIndex].likes.splice(isLikedIndex, 1);
+        //     disLikes.push(payloadUserId);
+        //   }
+        // }
         state.msgSuccess = action?.payload?.message;
         state.appError = undefined;
         state.serverError = undefined;
