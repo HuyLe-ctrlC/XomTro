@@ -16,4 +16,5 @@ module.exports = {
   VERIFIED_SUCCESS: "Xác thực tài khoản thành công!",
   BLOCKED_SUCCESS: "Chặn tài khoản thành công!",
   UNBLOCKED_SUCCESS: "Bỏ chặn tài khoản thành công!",
+  RESET_PASSWORD_SUCCESS: "Reset mật khẩu thành công!",
 };

@@ -9,6 +9,8 @@ export const USERS_MANAGEMENT = "/users/management";
 export const ADD_CATEGORY = "/add-category";
 export const CATEGORY_LIST = "/category-list";
 export const UPDATE_PASSWORD = "/update-password";
+export const RESET_PASSWORD_TOKEN = "/password-reset-token";
+export const RESET_PASSWORD = "/reset-password/:token";
 export const VERIFIED_ACCOUNT = "/verify-account/:token";
 
 //optech

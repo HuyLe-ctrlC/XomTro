@@ -19,6 +19,9 @@ import PostDetails from "./components/frontend/Posts/PostDetails";
 import Profile from "./components/Users/Profile";
 import AccountVerified from "./components/Users/AccountVerified";
 import { UserList } from "./components/Users/UserList";
+import { UpdatePassword } from "./components/Users/PasswordManagement/UpdatePassword";
+import { ResetPasswordForm } from "./components/Users/PasswordManagement/ResetPasswordForm";
+import { ResetPassword } from "./components/Users/PasswordManagement/ResetPassword";
 function App() {
   const user = useSelector(selectUser);
   const userAuth = user?.userAuth;
@@ -47,6 +50,15 @@ function App() {
             }
           />
           <Route
+            path={ROUTES.UPDATE_PASSWORD}
+            element={
+              <PrivateProtectRoute userAuth={userAuth}>
+                <UpdatePassword />
+              </PrivateProtectRoute>
+            }
+          />
+
+          <Route
             path={ROUTES.CREATE_POST}
             element={
               <PrivateProtectRoute userAuth={userAuth}>
@@ -70,7 +82,28 @@ function App() {
               </PrivateProtectRoute>
             }
           />
+          {/* <Route
+            path={ROUTES.RESET_PASSWORD_TOKEN}
+            element={
+              <PrivateProtectRoute userAuth={userAuth}>
+                <ResetPasswordForm />
+              </PrivateProtectRoute>
+            }
+          />
+          <Route
+            path={ROUTES.RESET_PASSWORD}
+            element={
+              <PrivateProtectRoute userAuth={userAuth}>
+                <ResetPassword />
+              </PrivateProtectRoute>
+            }
+          /> */}
           <Route path={ROUTES.POSTS} element={<PostsList />} />
+          <Route
+            path={ROUTES.RESET_PASSWORD_TOKEN}
+            element={<ResetPasswordForm />}
+          />
+          <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
           <Route path="/posts/:postId" element={<PostDetails />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

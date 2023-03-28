@@ -1,7 +1,7 @@
 const resetURLExtensions = {
-  confirmAccount: "Xác thực",
+  confirmAccount: "xác thực",
   confirmSlug: "verify-account",
-  resetPassword: "Reset",
+  resetPassword: "reset mật khẩu",
   resetPasswordSlug: "reset-password",
 };
 

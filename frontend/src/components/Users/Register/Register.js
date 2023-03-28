@@ -15,14 +15,16 @@ import {
   resetRegisteredAction,
   selectUser,
 } from "../../../redux/slices/users/usersSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-
+import * as ROUTES from '../../../constants/routes/routes';
 //TODO => Form Schema
 const formSchema = Yup.object({
   firstName: Yup.string().required("*Dữ liệu là bắt buộc!"),
   lastName: Yup.string().required("*Dữ liệu là bắt buộc!"),
-  email: Yup.string().required("*Dữ liệu là bắt buộc!"),
+  email: Yup.string()
+    .email("*Dữ liệu là định dạng email!")
+    .required("*Dữ liệu bắt buộc!"),
   password: Yup.string()
     .required("*Dữ liệu bắt buộc!")
     .min(6, "*Mật khẩu quá ngắn, phải có ít nhất 6 ký tự!"),
@@ -47,9 +49,9 @@ const Register = () => {
 
   //reset error in the store
   useEffect(() => {
-    dispatch(resetErrorAction())
-  }, [])
-  
+    dispatch(resetErrorAction());
+  }, []);
+
   //formik
   const formik = useFormik({
     initialValues: {
@@ -86,7 +88,6 @@ const Register = () => {
         }).then((isConfirmed) => {
           if (isConfirmed) {
             navigate("/login");
-            // window.location.reload();
             dispatch(resetRegisteredAction());
           }
         });
@@ -107,12 +108,6 @@ const Register = () => {
       });
     }
   };
-
-  // useEffect(() => {
-  //   if (registered) {
-  //     navigate("/login");
-  //   }
-  // }, [navigate, registered]);
 
   return (
     <div className="relative py-20 2xl:py-40 bg-gray-800 overflow-hidden">
@@ -243,6 +238,14 @@ const Register = () => {
                     </button>
                   )}
                 </form>
+                <div className="p-2">
+                  <Link
+                    to={ROUTES.RESET_PASSWORD_TOKEN}
+                    className="font-medium text-white hover:text-blue-500 hover:underline"
+                  >
+                    Quên mật khẩu?
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

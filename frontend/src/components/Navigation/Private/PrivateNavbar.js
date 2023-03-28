@@ -19,6 +19,7 @@ export const PrivateNavbar = ({ isLogin }) => {
   const userNavigation = [
     { name: "Hồ sơ của bạn", href: `/profile/${isLogin?._id}` },
     { name: "Thay đổi mật khẩu", href: ROUTES.UPDATE_PASSWORD },
+    { name: "Quên mật khẩu", href: ROUTES.RESET_PASSWORD_TOKEN },
   ];
   //logout
   const dispatch = useDispatch();

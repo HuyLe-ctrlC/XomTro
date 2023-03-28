@@ -9,8 +9,8 @@ import {
   Polyline,
 } from "@react-google-maps/api";
 import LabelXomTro from "../../../../LabelXomTro";
-const API_KEY = "AIzaSyCLZd_RriLVeCmsn29QadhI4YiCZGejquU";
-const GEOCODE_API_KEY = "AIzaSyBJ2puHqV3_42-4v2uHTLQNXpLgtRrGj6U";
+const API_KEY = process.env.API_GOOGLE_MAP_KEY;
+const GEOCODE_API_KEY = process.env.API_GEOCODE_MAP_KEY;
 Geocode.setApiKey(GEOCODE_API_KEY);
 export default function Promotion() {
   const [lat, setLat] = useState(0);

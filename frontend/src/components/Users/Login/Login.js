@@ -11,11 +11,16 @@ import {
   loginUserAction,
   selectUser,
 } from "../../../redux/slices/users/usersSlice";
+import * as ROUTES from '../../../constants/routes/routes';
 import Error from "../../Error";
 //TODO => Form Schema
 const formSchema = Yup.object({
-  email: Yup.string().required("Email is required"),
-  password: Yup.string().required("Password is required"),
+  email: Yup.string()
+    .email("*Dữ liệu là định dạng email!")
+    .required("*Dữ liệu bắt buộc!"),
+  password: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .min(6, "*Mật khẩu quá ngắn, phải có ít nhất 6 ký tự!"),
 });
 
 const Login = () => {
@@ -150,10 +155,10 @@ const Login = () => {
                   </form>
                   <div className="p-2">
                     <Link
-                      to="/password-reset-token"
-                      className="font-medium text-indigo-600 hover:text-indigo-500"
+                      to={ROUTES.RESET_PASSWORD_TOKEN}
+                      className="font-medium text-indigo-600 hover:text-indigo-500 hover:underline"
                     >
-                      Quên mật khẩu
+                      Quên mật khẩu?
                     </Link>
                   </div>
                 </div>

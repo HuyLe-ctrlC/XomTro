@@ -347,17 +347,23 @@ const updateUserCtrl = expressAsyncHandler(async (req, res) => {
 const updateUserPasswordCtrl = expressAsyncHandler(async (req, res) => {
   //destructure the login user
   const { _id } = req.user;
-  const { password } = req.body;
+  const { password, passwordCurrent } = req.body;
   validateMongodbId(_id);
   //Find the user by _id
   const user = await User.findById(_id);
 
-  if (password) {
+  if (password && (await user.isPasswordMatched(passwordCurrent))) {
     user.password = password;
     const updatedUser = await user.save();
-    res.json(updatedUser);
+    res.json({
+      result: true,
+      message: MESSAGE.UPDATE_SUCCESS,
+    });
   } else {
-    res.json(user);
+    res.json({
+      result: false,
+      message: MESSAGE.UPDATE_FAILED,
+    });
   }
 });
 
@@ -610,13 +616,8 @@ const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
     const emailMsg = await transporter.sendMail(msg);
     //
     res.json({
-      msg: `Một tin nhắn xác nhận đã được gửi đến thành công email: ${
-        user?.email
-      }. Quá trình reset sẽ hết hạn trong vòng 10 phút!\\n ${resetURL(
-        token,
-        resetURLExtensions.resetPassword,
-        resetURLExtensions.resetPasswordSlug
-      )}`,
+      result: true,
+      message: `Một tin nhắn xác nhận đã được gửi đến thành công email: ${user?.email}. Quá trình reset mật khẩu sẽ hết hạn trong vòng 10 phút!`,
     });
   } catch (error) {
     res.json(error);
@@ -644,7 +645,10 @@ const passwordResetCtrl = expressAsyncHandler(async (req, res) => {
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
-  res.json(user);
+  res.json({
+    result: true,
+    message: MESSAGE.RESET_PASSWORD_SUCCESS,
+  });
 });
 
 /*-------------------

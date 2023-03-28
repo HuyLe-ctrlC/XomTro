@@ -51,6 +51,18 @@ const usersApi = {
     const url = `/${module}/admin-register`;
     return axiosUpload.post(url, body);
   },
+  updatePassword: (body) => {
+    const url = `/${module}/password`;
+    return axiosClient.put(url, body);
+  },
+  forgetPasswordToken: (body) => {
+    const url = `/${module}/forget-password-token`;
+    return axiosNotToken.post(url, body);
+  },
+  resetPassword: (body) => {
+    const url = `/${module}/reset-password`;
+    return axiosNotToken.put(url, body);
+  },
 };
 
 export default usersApi;

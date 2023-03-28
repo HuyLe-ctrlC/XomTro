@@ -303,6 +303,78 @@ export const statusPublishAction = createAsyncThunk(
     }
   }
 );
+//update password
+export const updatePasswordAction = createAsyncThunk(
+  "user/update-password",
+  async (body, { rejectWithValue, getState, dispatch }) => {
+    
+    try {
+      const response = await usersApi.updatePassword(body);
+      if (response.result) {
+        const results = {
+          message: response.message,
+        };
+        return results;
+      } else {
+        return rejectWithValue(response);
+      }
+    } catch (error) {
+      // console.log('Failed to fetch data list: ', error);
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+//update password
+export const forgetPasswordTokenAction = createAsyncThunk(
+  "user/forget-password-token",
+  async (body, { rejectWithValue, getState, dispatch }) => {
+    
+    try {
+      const response = await usersApi.forgetPasswordToken(body);
+      if (response.result) {
+        const results = {
+          message: response.message,
+        };
+        return results;
+      } else {
+        return rejectWithValue(response);
+      }
+    } catch (error) {
+      // console.log('Failed to fetch data list: ', error);
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+//update password
+export const resetPasswordAction = createAsyncThunk(
+  "user/reset-password",
+  async (body, { rejectWithValue, getState, dispatch }) => {
+    
+    try {
+      const response = await usersApi.resetPassword(body);
+      if (response.result) {
+        const results = {
+          message: response.message,
+        };
+        return results;
+      } else {
+        return rejectWithValue(response);
+      }
+    } catch (error) {
+      // console.log('Failed to fetch data list: ', error);
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
 
 //reset registered
 export const resetRegisteredAction = createAction("account/reset-registered");
@@ -561,6 +633,21 @@ const usersSlices = createSlice({
         state.serverError = undefined;
       })
       .addCase(addDataByAdminAction.rejected, (state, action) => {
+        state.loading = false;
+        state.appError = action?.payload?.message;
+        state.serverError = action?.error?.message;
+      });
+    //add data by admin
+    builder
+      .addCase(updatePasswordAction.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(updatePasswordAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(updatePasswordAction.rejected, (state, action) => {
         state.loading = false;
         state.appError = action?.payload?.message;
         state.serverError = action?.error?.message;
