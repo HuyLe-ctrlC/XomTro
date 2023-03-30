@@ -33,8 +33,8 @@ export const Form = (props) => {
   const [email, setEmail] = useState("");
   const [files, setFiles] = useState([]);
   //useState send email
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
+  const [subject] = useState("");
+  const [message] = useState("");
   // get props to index components
   const { closeForm, isUpdate, sendEmail, updateData, dataUpdate } = props;
   //useRef
@@ -316,7 +316,7 @@ export const Form = (props) => {
                     {...getInputProps()}
                     accept="image/png, image/jpeg, image/jpg"
                   />
-                  <p className="border border-dashed p-2 italic text-sm text-gray-500">
+                  <p className="border-2 border-dashed p-2 italic text-sm text-gray-500">
                     Chọn hình ảnh để đăng tin tại đây
                   </p>
                 </div>

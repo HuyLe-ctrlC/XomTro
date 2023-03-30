@@ -13,6 +13,9 @@ export const RESET_PASSWORD_TOKEN = "/password-reset-token";
 export const RESET_PASSWORD = "/reset-password/:token";
 export const VERIFIED_ACCOUNT = "/verify-account/:token";
 
+//Xomtro
+export const UTILITY_MANAGEMENT = "/utility-management";
+
 //optech
 
 export const APPLY = "/apply";

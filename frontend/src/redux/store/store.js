@@ -4,6 +4,7 @@ import categoriesReducer from "../slices/category/categorySlice";
 import postsReducer from "../slices/posts/postsSlices";
 import locationsReducer from "../slices/location/locationSlices";
 import commentsReducer from "../slices/comments/commentSlices";
+import roomSlices from "../slices/rooms/roomsSlices";
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
     categories: categoriesReducer,
     posts: postsReducer,
     locations: locationsReducer,
-    comments: commentsReducer
+    comments: commentsReducer,
+    rooms: roomSlices,
   },
 });
 

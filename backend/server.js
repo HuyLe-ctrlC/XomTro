@@ -10,6 +10,8 @@ const emailMsgRoutes = require("./routes/emailMsg/emailMsgRoute");
 const { errorHandler, notFound } = require("./middlewares/error/errorHandler");
 const categoryRoutes = require("./routes/categories/categoryRoute");
 const locationRoutes = require("./routes/location/locationRoute");
+const xomtroRoutes = require("./routes/xomtros/xomtrosRoute");
+const roomRoutes = require("./routes/rooms/roomsRoute");
 const app = express();
 //DB
 dbConnect();
@@ -30,6 +32,10 @@ app.use("/api/email", emailMsgRoutes);
 app.use("/api/category", categoryRoutes);
 //location Route
 app.use("/api/location", locationRoutes);
+//xomtro route
+app.use("/api/xomtro", xomtroRoutes);
+//room route
+app.use("/api/room", roomRoutes);
 //error handler
 app.use(notFound);
 app.use(errorHandler);

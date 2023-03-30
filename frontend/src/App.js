@@ -22,6 +22,7 @@ import { UserList } from "./components/Users/UserList";
 import { UpdatePassword } from "./components/Users/PasswordManagement/UpdatePassword";
 import { ResetPasswordForm } from "./components/Users/PasswordManagement/ResetPasswordForm";
 import { ResetPassword } from "./components/Users/PasswordManagement/ResetPassword";
+import UtilityManagement from "./pages/Xomtro/UtilityManagement";
 function App() {
   const user = useSelector(selectUser);
   const userAuth = user?.userAuth;
@@ -89,15 +90,15 @@ function App() {
                 <ResetPasswordForm />
               </PrivateProtectRoute>
             }
-          />
+          /> */}
           <Route
-            path={ROUTES.RESET_PASSWORD}
+            path={ROUTES.UTILITY_MANAGEMENT}
             element={
               <PrivateProtectRoute userAuth={userAuth}>
-                <ResetPassword />
+                <UtilityManagement />
               </PrivateProtectRoute>
             }
-          /> */}
+          />
           <Route path={ROUTES.POSTS} element={<PostsList />} />
           <Route
             path={ROUTES.RESET_PASSWORD_TOKEN}

@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    xomtroCount: {
+      type: Number,
+      default: 0,
+    },
     isBlocked: {
       type: Boolean,
       default: false,
@@ -129,7 +133,7 @@ userSchema.virtual("posts", {
 -------------------*/
 userSchema.virtual("accountType").get(function () {
   const totalFollowers = this.followers?.length;
-  return totalFollowers >= 1 ? "Chủ nhà" : "Người thuê nhà"
+  return totalFollowers >= 1 ? "Chủ nhà" : "Người thuê nhà";
 });
 /*-------------------
 //! Virtual method to concatenate firstName and lastName

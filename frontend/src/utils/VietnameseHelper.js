@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 export function stringToSlug(str) {
   // remove accents
   var from =

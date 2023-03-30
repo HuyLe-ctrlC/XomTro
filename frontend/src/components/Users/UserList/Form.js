@@ -457,7 +457,7 @@ export const Form = (props) => {
                     {...getInputProps()}
                     accept="image/png, image/jpeg, image/jpg"
                   />
-                  <p className="border border-dashed p-2 italic text-sm text-gray-500">
+                  <p className="border-2 border-dashed p-2 italic text-sm text-gray-500">
                     Chọn hình ảnh để đăng tin tại đây
                   </p>
                 </div>
@@ -594,7 +594,7 @@ export const Form = (props) => {
                     {...getInputProps()}
                     accept="image/png, image/jpeg, image/jpg"
                   />
-                  <p className="border border-dashed p-2 italic text-sm text-gray-500">
+                  <p className="border-2 border-dashed p-2 italic text-sm text-gray-500">
                     Chọn hình ảnh để đăng tin tại đây
                   </p>
                 </div>

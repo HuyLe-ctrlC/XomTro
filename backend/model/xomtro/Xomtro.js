@@ -14,8 +14,24 @@ const wardSchema = new mongoose.Schema({
   prefix: { type: String, required: true },
 });
 
+const servicesXomtroSchema = new mongoose.Schema({
+  serviceName: { type: String, required: [true, "Tên dịch vụ là bắt buộc"] },
+  price: {
+    type: Number,
+    required: [true, `Giá dịch vụ là bắt buộc`],
+    min: [0, `Giá dịch vụ phải lớn hơn hoặc bằng 0`],
+  },
+  paymentMethod: {
+    type: String,
+    required: [true, "Phương thức thanh toán là bắt buộc"],
+    default: "Theo tháng",
+  },
+  _id: Number
+});
+
 const xomtroSchema = new mongoose.Schema(
   {
+    nameXomtro: { type: String, required: [true, "Số phòng là bắt buộc"] },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
@@ -53,26 +69,22 @@ const xomtroSchema = new mongoose.Schema(
       type: String,
       required: [true, "Địa chỉ Xomtro là bắt buộc"],
     },
-    electricServices: {
-      type: String,
-      required: [true, "Dịch vụ điện là bắt buộc"],
-      default: "Theo đồng hồ",
-    },
-    waterServices: {
-      type: String,
-      required: [true, "Dịch vụ nước là bắt buộc"],
-      default: "Theo đồng hồ",
-    },
-    garbageServices: {
-      type: String,
-      required: [true, "Dịch vụ rác là bắt buộc"],
-      default: "Theo tháng",
-    },
-    internetServices: {
-      type: String,
-      required: [true, "Dịch vụ internet là bắt buộc"],
-      default: "Theo tháng",
-    },
+    services: [servicesXomtroSchema],
+    // waterServices: {
+    //   type: String,
+    //   required: [true, "Dịch vụ nước là bắt buộc"],
+    //   default: "Theo đồng hồ",
+    // },
+    // garbageServices: {
+    //   type: String,
+    //   required: [true, "Dịch vụ rác là bắt buộc"],
+    //   default: "Theo tháng",
+    // },
+    // internetServices: {
+    //   type: String,
+    //   required: [true, "Dịch vụ internet là bắt buộc"],
+    //   default: "Theo tháng",
+    // },
     assetManagement: {
       type: Boolean,
       default: false,
@@ -88,6 +100,10 @@ const xomtroSchema = new mongoose.Schema(
     paymentDeadline: {
       type: Number,
       default: 7,
+    },
+    roomCount: {
+      type: Number,
+      default: 0,
     },
   },
   {
