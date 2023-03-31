@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { logoutAction } from "./../../../redux/slices/users/usersSlice";
 import { navigationPrivate } from "../../../constants/navigation/navigation";
 import Swal from "sweetalert2";
+import { revertAllAction } from "../../../redux/slices/posts/postsSlices";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -36,11 +37,12 @@ export const PrivateNavbar = ({ isLogin }) => {
         Swal.fire("Đã đăng xuất!", "", "success");
         navigate("/login");
         dispatch(logoutAction());
+        dispatch(revertAllAction());
       }
     });
   };
   return (
-    <Disclosure as="nav" className="bg-gray-800">
+    <Disclosure as="nav" className="bg-[#15a05c]">
       {({ open }) => (
         <>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -88,14 +90,14 @@ export const PrivateNavbar = ({ isLogin }) => {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <Link
-                    to={ROUTES.CREATE_POST}
+                    to={ROUTES.XOMTRO}
                     className="pr-3 relative inline-flex items-center mr-2 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500"
                   >
                     <AiOutlinePlus
                       className="-ml-1 mr-2 h-5 w-5"
                       aria-hidden="true"
                     />
-                    <span>Đăng tin</span>
+                    <span>Quản lý trọ</span>
                   </Link>
                   <button
                     onClick={handleLogout}

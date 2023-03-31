@@ -18,7 +18,7 @@ export const axiosUpload = axios.create({ baseURL: process.env.REACT_APP_API_URL
 
 axiosUpload.interceptors.request.use(async (config) => {
   //1. convert JSON to Object, then get value by key token
-  const token = JSON.parse(localStorage.getItem("userInfo")).token;
+  const token = JSON.parse(localStorage.getItem("userInfo"))?.token;
   if (token[0] == '"') {
     // console.log(token);
     const _token = token.slice(1, token.length - 1);
@@ -31,7 +31,7 @@ axiosUpload.interceptors.request.use(async (config) => {
 
 axiosClient.interceptors.request.use(async (config) => {
   //1. convert JSON to Object, then get value by key token
-  const token = JSON.parse(localStorage.getItem("userInfo")).token;
+  const token = JSON.parse(localStorage.getItem("userInfo"))?.token;
   if (token[0] == '"') {
     // console.log(token);
     const _token = token.slice(1, token.length - 1);

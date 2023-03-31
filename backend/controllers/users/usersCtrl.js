@@ -596,8 +596,8 @@ const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
     let transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "ongconoizzz@gmail.com",
-        pass: "pnpakzxeiwvyzovm",
+        user: `${process.env.EMAIL}`,
+        pass: `${process.env.EMAIL_PASSWORD}`,
       },
     });
     //build a email

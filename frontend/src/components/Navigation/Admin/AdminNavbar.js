@@ -9,6 +9,7 @@ import { logoutAction } from "../../../redux/slices/users/usersSlice";
 import logoXomTro from "../../../img/logoXomTro.png";
 import { navigationAdmin } from "../../../constants/navigation/navigation";
 import Swal from "sweetalert2";
+import { revertAllAction } from "../../../redux/slices/posts/postsSlices";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -35,6 +36,7 @@ export const AdminNavbar = ({ isLogin }) => {
         Swal.fire("Đã đăng xuất!", "", "success");
         navigate("/login");
         dispatch(logoutAction());
+        dispatch(revertAllAction());
       }
     });
   };

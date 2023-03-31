@@ -2,27 +2,28 @@ import React from "react";
 import "./style.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { NotFound } from "./pages/NotFound/NotFound";
-import HomePage from "./components/HomePage/HomePage";
+import HomePage from "./pages/HomePage";
 import * as ROUTES from "./constants/routes/routes";
-import Login from "./components/Users/Login/Login";
-import Register from "./components/Users/Register/Register";
+import Login from "./pages/Users/Login/Login";
+import Register from "./pages/Users/Register/Register";
 import { Navbar } from "./components/Navigation/Navbar";
-import { Category } from "./components/Categories";
+import { Category } from "./pages/Categories";
 //Protect Router
 import PrivateProtectRoute from "./utils/ProtectRoutes/PrivateProtectRoute";
 import { useSelector } from "react-redux";
 import { selectUser } from "./redux/slices/users/usersSlice";
 import AdminProtectRoute from "./utils/ProtectRoutes/AdminProtectRoute";
-import CreatePost from "./components/Posts";
-import PostsList from "./components/frontend/Posts/PostList";
-import PostDetails from "./components/frontend/Posts/PostDetails";
-import Profile from "./components/Users/Profile";
-import AccountVerified from "./components/Users/AccountVerified";
-import { UserList } from "./components/Users/UserList";
-import { UpdatePassword } from "./components/Users/PasswordManagement/UpdatePassword";
-import { ResetPasswordForm } from "./components/Users/PasswordManagement/ResetPasswordForm";
-import { ResetPassword } from "./components/Users/PasswordManagement/ResetPassword";
+import CreatePost from "./pages/Posts";
+import PostsList from "./pages/frontend/Posts/PostList";
+import PostDetails from "./pages/frontend/Posts/PostDetails";
+import Profile from "./pages/Users/Profile";
+import AccountVerified from "./pages/Users/AccountVerified";
+import { UserList } from "./pages/Users/UserList";
+import { UpdatePassword } from "./pages/Users/PasswordManagement/UpdatePassword";
+import { ResetPasswordForm } from "./pages/Users/PasswordManagement/ResetPasswordForm";
+import { ResetPassword } from "./pages/Users/PasswordManagement/ResetPassword";
 import UtilityManagement from "./pages/Xomtro/UtilityManagement";
+import Xomtro from "./pages/Xomtro";
 function App() {
   const user = useSelector(selectUser);
   const userAuth = user?.userAuth;
@@ -31,9 +32,7 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path={ROUTES.HOME} element={<HomePage />} />
-          <Route path={ROUTES.LOGIN} element={<Login />} />
-          <Route path={ROUTES.REGISTER} element={<Register />} />
+          {/* Admin routes */}
           <Route
             path={ROUTES.CATEGORY_LIST}
             element={
@@ -50,6 +49,7 @@ function App() {
               </AdminProtectRoute>
             }
           />
+          {/* User routes */}
           <Route
             path={ROUTES.UPDATE_PASSWORD}
             element={
@@ -83,14 +83,15 @@ function App() {
               </PrivateProtectRoute>
             }
           />
-          {/* <Route
-            path={ROUTES.RESET_PASSWORD_TOKEN}
+          {/* Xomtro route */}
+          <Route
+            path={ROUTES.XOMTRO}
             element={
               <PrivateProtectRoute userAuth={userAuth}>
-                <ResetPasswordForm />
+                <Xomtro />
               </PrivateProtectRoute>
             }
-          /> */}
+          />
           <Route
             path={ROUTES.UTILITY_MANAGEMENT}
             element={
@@ -99,13 +100,17 @@ function App() {
               </PrivateProtectRoute>
             }
           />
+          {/* public routes */}
           <Route path={ROUTES.POSTS} element={<PostsList />} />
           <Route
             path={ROUTES.RESET_PASSWORD_TOKEN}
             element={<ResetPasswordForm />}
           />
           <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
-          <Route path="/posts/:postId" element={<PostDetails />} />
+          <Route path={ROUTES.POSTS_DETAIL} element={<PostDetails />} />
+          <Route path={ROUTES.HOME} element={<HomePage />} />
+          <Route path={ROUTES.LOGIN} element={<Login />} />
+          <Route path={ROUTES.REGISTER} element={<Register />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

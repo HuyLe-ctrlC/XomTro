@@ -2,15 +2,16 @@ import React from "react";
 import { BsFacebook, BsGithub } from "react-icons/bs";
 import ZaloIcon from "../../utils/ZaloIcon";
 import logoXomTro from "../../img/logoXomTro.png";
+
 const Footer = () => {
   return (
-    <div className="w-full min-h-screen flex items-center bg-gray-100 mt-4 p-4">
-      <div className=" w-full text-gray-800 flex flex-col">
+    <div className="w-full min-h-screen flex items-center bg-white mt-4 p-4 drop-shadow-lg">
+      <div className="w-full text-gray-800 flex flex-col max-w-7xl mx-auto px-4">
         <div className="w-full text-7xl font-bold">
           <h1 className="w-full md:w-2/3">Tìm trọ nhanh với XomTro</h1>
         </div>
         <div className="flex mt-8 flex-col md:flex-row md:justify-between">
-          <p className="w-full md:w-2/3 text-gray-400">
+          <p className="w-full md:w-2/3 text-gray-800">
             Cung cấp các nhà trọ được chất lượng đã được kiểm duyệt từ website.
           </p>
           <div className="w-44 pt-6 md:pt-0">
@@ -31,16 +32,16 @@ const Footer = () => {
                 alt="logo"
               />
             </div>
-            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase">
+            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase hover:bg-slate-300 p-4 rounded-lg">
               Về chúng tôi
             </a>
-            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase">
+            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase hover:bg-slate-300 p-4 rounded-lg">
               Nhà trọ
             </a>
-            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase">
+            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase hover:bg-slate-300 p-4 rounded-lg">
               Ký túc xá
             </a>
-            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase">
+            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase hover:bg-slate-300 p-4 rounded-lg">
               Chung cư
             </a>
             <div className="flex flex-row space-x-8 items-center lg:justify-between text-gray-800">

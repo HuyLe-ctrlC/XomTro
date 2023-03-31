@@ -307,7 +307,6 @@ export const statusPublishAction = createAsyncThunk(
 export const updatePasswordAction = createAsyncThunk(
   "user/update-password",
   async (body, { rejectWithValue, getState, dispatch }) => {
-    
     try {
       const response = await usersApi.updatePassword(body);
       if (response.result) {
@@ -331,7 +330,6 @@ export const updatePasswordAction = createAsyncThunk(
 export const forgetPasswordTokenAction = createAsyncThunk(
   "user/forget-password-token",
   async (body, { rejectWithValue, getState, dispatch }) => {
-    
     try {
       const response = await usersApi.forgetPasswordToken(body);
       if (response.result) {
@@ -355,7 +353,6 @@ export const forgetPasswordTokenAction = createAsyncThunk(
 export const resetPasswordAction = createAsyncThunk(
   "user/reset-password",
   async (body, { rejectWithValue, getState, dispatch }) => {
-    
     try {
       const response = await usersApi.resetPassword(body);
       if (response.result) {
@@ -379,7 +376,6 @@ export const resetPasswordAction = createAsyncThunk(
 //reset registered
 export const resetRegisteredAction = createAction("account/reset-registered");
 export const resetErrorAction = createAction("account/reset-error");
-
 //get user from the local storage and place into initialState
 const userLoginFromStorage = localStorage.getItem("userInfo")
   ? JSON.parse(localStorage.getItem("userInfo"))
