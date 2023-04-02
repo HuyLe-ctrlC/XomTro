@@ -33,7 +33,7 @@ export default function Slider(props) {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex(
-        (currentIndex) => (currentIndex + 1) % dataUpdate?.image.length
+        (currentIndex) => (currentIndex + 1) % dataUpdate?.image?.length
       );
     }, 5000);
     return () => clearInterval(interval);

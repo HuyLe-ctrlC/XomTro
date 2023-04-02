@@ -24,6 +24,9 @@ import { ResetPasswordForm } from "./pages/Users/PasswordManagement/ResetPasswor
 import { ResetPassword } from "./pages/Users/PasswordManagement/ResetPassword";
 import UtilityManagement from "./pages/Xomtro/UtilityManagement";
 import Xomtro from "./pages/Xomtro";
+import Room from "./pages/Xomtro/Room";
+import OutletProtectRoute from "./utils/ProtectRoutes/OutletProtectRoute";
+import Invoice from "./pages/Xomtro/Invoice";
 function App() {
   const user = useSelector(selectUser);
   const userAuth = user?.userAuth;
@@ -84,22 +87,18 @@ function App() {
             }
           />
           {/* Xomtro route */}
-          <Route
-            path={ROUTES.XOMTRO}
-            element={
-              <PrivateProtectRoute userAuth={userAuth}>
-                <Xomtro />
-              </PrivateProtectRoute>
-            }
-          />
-          <Route
-            path={ROUTES.UTILITY_MANAGEMENT}
-            element={
-              <PrivateProtectRoute userAuth={userAuth}>
-                <UtilityManagement />
-              </PrivateProtectRoute>
-            }
-          />
+
+          <Route element={<OutletProtectRoute userAuth={userAuth} />}>
+            <Route path={ROUTES.XOMTRO} element={<Xomtro />}>
+              <Route path={ROUTES.ROOM} element={<Room />} />
+              <Route path={ROUTES.INVOICE} element={<Invoice />} />
+              <Route
+                path={ROUTES.UTILITY_MANAGEMENT}
+                element={<UtilityManagement />}
+              />
+            </Route>
+          </Route>
+
           {/* public routes */}
           <Route path={ROUTES.POSTS} element={<PostsList />} />
           <Route

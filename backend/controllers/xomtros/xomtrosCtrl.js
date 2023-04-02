@@ -8,6 +8,7 @@ const { removeVietnameseTones } = require("../../utils/slug");
 const validateMongodbId = require("../../utils/validateMongodbID");
 const blockUser = require("../../utils/blockUser");
 const idMaxInRoom = require("../../utils/idMaxInRoom");
+const { default: mongoose } = require("mongoose");
 const createXomtroCtrl = expressAsyncHandler(async (req, res) => {
   //1. Get the user
   const user = req.user;
@@ -190,6 +191,26 @@ const fetchXomtrosCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
+const fetchXomtroCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const xomtro = await Xomtro.findById(id);
+
+    if (xomtro) {
+      res.json({
+        result: true,
+        data: xomtro,
+        message: MESSAGE.GET_DATA_SUCCESS,
+      });
+    } else {
+      res.json({ result: false, message: MESSAGE.DATA_NOT_FOUND });
+    }
+  } catch (error) {
+    res.json(error);
+  }
+});
+
 const deleteXomtroCtrl = expressAsyncHandler(async (req, res) => {
   //1. Get the user
   const user = req.user;
@@ -303,4 +324,5 @@ module.exports = {
   deleteXomtroCtrl,
   updateXomtroCtrl,
   addUtilityXomtroCtrl,
+  fetchXomtroCtrl
 };

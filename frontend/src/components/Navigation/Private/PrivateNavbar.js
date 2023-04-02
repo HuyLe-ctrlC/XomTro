@@ -10,7 +10,7 @@ import { logoutAction } from "./../../../redux/slices/users/usersSlice";
 import { navigationPrivate } from "../../../constants/navigation/navigation";
 import Swal from "sweetalert2";
 import { revertAllAction } from "../../../redux/slices/posts/postsSlices";
-
+import NavItem from "../NavItem";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -18,9 +18,9 @@ function classNames(...classes) {
 export const PrivateNavbar = ({ isLogin }) => {
   const navigate = useNavigate();
   const userNavigation = [
-    { name: "Hồ sơ của bạn", href: `/profile/${isLogin?._id}` },
-    { name: "Thay đổi mật khẩu", href: ROUTES.UPDATE_PASSWORD },
-    { name: "Quên mật khẩu", href: ROUTES.RESET_PASSWORD_TOKEN },
+    { title: "Hồ sơ của bạn", href: `/profile/${isLogin?._id}` },
+    { title: "Thay đổi mật khẩu", href: ROUTES.UPDATE_PASSWORD },
+    { title: "Quên mật khẩu", href: ROUTES.RESET_PASSWORD_TOKEN },
   ];
   //logout
   const dispatch = useDispatch();
@@ -70,21 +70,7 @@ export const PrivateNavbar = ({ isLogin }) => {
                   <BsBook className="h-10 w-10 text-yellow-200" />
                 </div>
                 <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
-                  {navigationPrivate.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={classNames(
-                        item.current
-                          ? "bg-gray-900 text-white"
-                          : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                        "px-3 py-2 rounded-md text-sm font-medium"
-                      )}
-                      aria-current={item.current ? "page" : undefined}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
+                  <NavItem navigationArr={navigationPrivate} />
                 </div>
               </div>
               <div className="flex items-center">
@@ -141,18 +127,18 @@ export const PrivateNavbar = ({ isLogin }) => {
                             static
                             className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
                           >
-                            {userNavigation.map((item) => (
-                              <Menu.Item key={item.name}>
+                            {userNavigation.map((item, index) => (
+                              <Menu.Item key={index}>
                                 {({ active }) => (
-                                  <a
-                                    href={item.href}
+                                  <Link
+                                    to={item.href}
                                     className={classNames(
                                       active ? "bg-gray-100" : "",
                                       "block px-4 py-2 text-sm text-gray-700"
                                     )}
                                   >
-                                    {item.name}
-                                  </a>
+                                    {item.title}
+                                  </Link>
                                 )}
                               </Menu.Item>
                             ))}
@@ -177,19 +163,19 @@ export const PrivateNavbar = ({ isLogin }) => {
           >
             <Disclosure.Panel className="md:hidden">
               <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                {navigationPrivate.map((item) => (
+                {navigationPrivate.map((item, index) => (
                   <a
-                    key={item.name}
+                    key={index}
                     href={item.href}
                     className={classNames(
                       item.current
                         ? "bg-gray-900 text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                        : "text-white hover:bg-gray-700 hover:text-white",
                       "block px-3 py-2 rounded-md text-base font-medium"
                     )}
                     aria-current={item.current ? "page" : undefined}
                   >
-                    {item.name}
+                    {item.title}
                   </a>
                 ))}
               </div>
@@ -213,14 +199,14 @@ export const PrivateNavbar = ({ isLogin }) => {
                   </div>
                 </div>
                 <div className="mt-3 px-2 space-y-1 sm:px-3">
-                  {userNavigation.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                  {userNavigation.map((item, index) => (
+                    <Link
+                      key={index}
+                      to={item.href}
+                      className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-white hover:bg-gray-700"
                     >
-                      {item.name}
-                    </a>
+                      {item.title}
+                    </Link>
                   ))}
                 </div>
               </div>

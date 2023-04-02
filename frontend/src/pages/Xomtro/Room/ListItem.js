@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { HiPencilAlt } from "react-icons/hi";
 import { BsTrash } from "react-icons/bs";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import {
   deleteAction,
   statusPublishAction,
-} from "../../redux/slices/posts/postsSlices";
-import DateFormatter from "../../utils/DateFormatter";
-import { selectUser } from "../../redux/slices/users/usersSlice";
+} from "../../../redux/slices/posts/postsSlices";
+import DateFormatter from "../../../utils/DateFormatter";
 
 export const ListItem = ({ data, openFormUpdate, openSlide }) => {
   const dispatch = useDispatch();
@@ -95,7 +94,6 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
       });
     }
   };
-  const { userAuth } = useSelector(selectUser);
   return (
     <>
       {data?.map((item) => (
@@ -148,25 +146,21 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
             {item.district?.name},&#160;{item?.city?.name}
           </td>
           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+            {/* {item.isPublish ? "Đã duyệt" : "Chưa duyệt"} */}
             <label className="relative inline-flex items-center cursor-pointer">
-              {userAuth?.isAdmin && (
-                <>
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={item.isPublish}
-                    onChange={(e) => handleStatus(e, item._id)}
-                    id={`publish_${item._id}`}
-                  />
-                  <div
-                    htmlFor={`publish_${item._id}`}
-                    className="w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
-                  ></div>
-                </>
-              )}
-
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={item.isPublish}
+                onChange={(e) => handleStatus(e, item._id)}
+                id={`publish_${item._id}`}
+              />
+              <div
+                htmlFor={`publish_${item._id}`}
+                className="w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+              ></div>
               <span className="ml-3 text-sm text-gray-500">
-                {item.isPublish ? "Đã duyệt" : "Đang chờ duyệt"}
+                {item.isPublish ? "Đã duyệt" : "Chưa duyệt"}
               </span>
             </label>
           </td>

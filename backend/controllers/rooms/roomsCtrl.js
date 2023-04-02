@@ -6,7 +6,7 @@ const Room = require("../../model/room/Room");
 const MESSAGE = require("../../utils/constantsMessage");
 const validateMongodbId = require("../../utils/validateMongodbID");
 const blockUser = require("../../utils/blockUser");
-
+const mongoose = require("mongoose");
 const createRoomCtrl = expressAsyncHandler(async (req, res) => {
   //1. Get the user
   const user = req.user;
@@ -114,6 +114,98 @@ const fetchRoomsCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
+const fetchRoomsByIdXomTroCtrl = expressAsyncHandler(async (req, res) => {
+  try {
+    const { keyword = "", offset = 0, limit = 10 } = req.query;
+    const xomtroId = req.query.xomtroId
+      ? mongoose.Types.ObjectId(req.query.xomtroId)
+      : null;
+    let pipeline = [];
+
+    if (xomtroId) {
+      pipeline.push({
+        $match: {
+          xomtro: xomtroId,
+        },
+      });
+    }
+
+    pipeline.push({
+      $match: {
+        $or: [{ roomName: { $regex: keyword, $options: "i" } }],
+      },
+    });
+
+    pipeline.push({
+      $project: {
+        roomName: 1,
+        floor: 1,
+        acreage: 1,
+        price: 1,
+        maxPeople: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        services: 1,
+        internetServices: 1,
+        invoiceDate: 1,
+        paymentDeadline: 1,
+        rentalStatus: 1,
+        paymentStatus: 1,
+        securityDeposit: 1,
+        moveInDate: 1,
+      },
+    });
+    pipeline.push({ $skip: parseInt(offset) });
+    pipeline.push({ $limit: parseInt(limit) });
+    pipeline.push({
+      $facet: {
+        searchResult: [{ $sort: { createdAt: -1 } }],
+        searchCount: [{ $count: "total" }],
+      },
+    });
+
+    const updatedPipeline = pipeline.filter((element) => {
+      return !("$limit" in element);
+    });
+    const [result] = await Room.aggregate(pipeline);
+    const [resultNoLimit] = await Room.aggregate(updatedPipeline);
+    const { searchResult = [], searchCount = [] } = result;
+
+    const {
+      searchResult: searchResultNoLimit = [],
+      searchCount: searchCountRename = [],
+    } = resultNoLimit;
+    const totalPage = Math.ceil(searchCountRename[0]?.total / limit);
+    res.json({
+      data: searchResult,
+      searchCount: searchCount[0]?.total || 0,
+      totalPage,
+    });
+  } catch (err) {
+    res.json(err);
+  }
+});
+
+const fetchRoomCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const room = await Room.findById(id);
+
+    if (room) {
+      res.json({
+        result: true,
+        data: room,
+        message: MESSAGE.GET_DATA_SUCCESS,
+      });
+    } else {
+      res.json({ result: false, message: MESSAGE.DATA_NOT_FOUND });
+    }
+  } catch (error) {
+    res.json(error);
+  }
+});
+
 const updateRoomCtrl = expressAsyncHandler(async (req, res) => {
   //1. Get the user
   const user = req.user;
@@ -189,8 +281,8 @@ const addUtilityCtrl = expressAsyncHandler(async (req, res) => {
       if (room && room.services && room.services.length > 0) {
         latestId = room.services[room.services.length - 1]._id;
       }
-      
-      dataAdded['_id'] = latestId + 1;
+
+      dataAdded["_id"] = latestId + 1;
 
       await Room.findByIdAndUpdate(
         id,
@@ -294,4 +386,6 @@ module.exports = {
   addUtilityCtrl,
   updateUtilityCtrl,
   deleteUtilityCtrl,
+  fetchRoomsByIdXomTroCtrl,
+  fetchRoomCtrl,
 };

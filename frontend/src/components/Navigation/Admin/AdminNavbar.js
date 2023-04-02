@@ -10,6 +10,7 @@ import logoXomTro from "../../../img/logoXomTro.png";
 import { navigationAdmin } from "../../../constants/navigation/navigation";
 import Swal from "sweetalert2";
 import { revertAllAction } from "../../../redux/slices/posts/postsSlices";
+import NavItem from "../NavItem";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -18,9 +19,9 @@ function classNames(...classes) {
 export const AdminNavbar = ({ isLogin }) => {
   const navigate = useNavigate();
   const userNavigation = [
-    { name: "Hồ sơ của bạn", href: `/profile/${isLogin?._id}` },
-    { name: "Thay đổi mật khẩu", href: ROUTES.UPDATE_PASSWORD },
-    { name: "Quên mật khẩu", href: ROUTES.RESET_PASSWORD_TOKEN },
+    { title: "Hồ sơ của bạn", href: `/profile/${isLogin?._id}` },
+    { title: "Thay đổi mật khẩu", href: ROUTES.UPDATE_PASSWORD },
+    { title: "Quên mật khẩu", href: ROUTES.RESET_PASSWORD_TOKEN },
   ];
   const dispatch = useDispatch();
   const handleLogout = () => {
@@ -67,21 +68,7 @@ export const AdminNavbar = ({ isLogin }) => {
                   />
                 </div>
                 <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
-                  {navigationAdmin.map((item) => (
-                    <Link
-                      to={item.href}
-                      key={item.name}
-                      className={classNames(
-                        item.current
-                          ? "bg-gray-900 text-white"
-                          : "text-white hover:bg-gray-700 hover:text-white",
-                        "px-3 py-2 rounded-md text-sm font-medium"
-                      )}
-                      aria-current={item.current ? "page" : undefined}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
+                  <NavItem navigationArr={navigationAdmin}/>
                 </div>
               </div>
               <div className="flex items-center">
@@ -142,7 +129,7 @@ export const AdminNavbar = ({ isLogin }) => {
                             className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
                           >
                             {userNavigation.map((item) => (
-                              <Menu.Item key={item.name}>
+                              <Menu.Item key={item.title}>
                                 {({ active }) => (
                                   <Link
                                     to={item.href}
@@ -151,7 +138,7 @@ export const AdminNavbar = ({ isLogin }) => {
                                       "block px-4 py-2 text-sm text-gray-700"
                                     )}
                                   >
-                                    {item.name}
+                                    {item.title}
                                   </Link>
                                 )}
                               </Menu.Item>
@@ -167,18 +154,18 @@ export const AdminNavbar = ({ isLogin }) => {
           </div>
           <Disclosure.Panel className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {navigationAdmin.map((item) => (
+              {navigationAdmin.map((item, index) => (
                 <Link
                   to={item.href}
-                  key={item.name}
+                  key={index}
                   className={classNames(
                     item.current
                       ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                      : "text-white hover:bg-gray-700 hover:text-white",
                     "block py-2 px-3 rounded-md text-base font-medium"
                   )}
                 >
-                  {item.name}
+                  {item.title}
                 </Link>
               ))}
             </div>
@@ -203,13 +190,13 @@ export const AdminNavbar = ({ isLogin }) => {
                 </div>
               </div>
               <div className="px-2 mt-3 space-y-1 sm:px-3">
-                {userNavigation.map((item) => (
+                {userNavigation.map((item, index) => (
                   <Link
                     to={item.href}
-                    key={item.name}
-                    className="block px-3 py-2 rounded-md text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                    key={index}
+                    className="block px-3 py-2 rounded-md text-sm font-medium text-white hover:text-white hover:bg-gray-700"
                   >
-                    {item.name}
+                    {item.title}
                   </Link>
                 ))}
               </div>

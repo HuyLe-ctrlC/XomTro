@@ -19,6 +19,11 @@ export const ADD_CATEGORY = "/add-category";
 export const CATEGORY_LIST = "/category-list";
 
 //Xomtro
-export const UTILITY_MANAGEMENT = "/utility-management";
 export const XOMTRO = "/xomtro";
-
+export const ROOM = "room";
+export const XOMTRO_ROOM  = "/xomtro/room";
+export const UTILITY_MANAGEMENT = "utility-management";
+export const INVOICE = "invoices";
+export const TENANTS = "tenants";
+export const CONTRACTS = "contracts";
+export const REVENUE = "revenue";

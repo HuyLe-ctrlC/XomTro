@@ -1,22 +1,15 @@
 import * as ROUTES from "../routes/routes";
 export const navigationPrivate = [
+  { title: "Home", href: ROUTES.HOME, current: true },
+  { title: "Đăng tin", href: ROUTES.CREATE_POST, current: false },
+  { title: "Quản lý Xomtro", href: ROUTES.XOMTRO, current: false },
   {
-    name: "Home",
-    href: ROUTES.HOME,
-    current: true,
-  },
-  {
-    name: "Đăng tin",
-    href: ROUTES.CREATE_POST,
-    current: false,
-  },
-  {
-    name: "Bài viết",
+    title: "Bài viết",
     href: ROUTES.POSTS,
     current: false,
   },
   {
-    name: "Hồ sơ",
+    title: "Hồ sơ",
     href: ROUTES.USERS,
     current: false,
   },
@@ -24,32 +17,32 @@ export const navigationPrivate = [
 
 export const navigationAdmin = [
   {
-    name: "Home",
+    title: "Home",
     href: ROUTES.HOME,
     current: true,
   },
   {
-    name: "Quản lý bài viết",
+    title: "Quản lý bài viết",
     href: ROUTES.CREATE_POST,
     current: false,
   },
   {
-    name: "Bài viết",
+    title: "Bài viết",
     href: ROUTES.POSTS,
     current: false,
   },
   {
-    name: "Tác giả",
-    href: ROUTES.USERS,
+    title: "Quản trị Xomtro",
+    href: ROUTES.XOMTRO,
     current: false,
   },
   {
-    name: "Quản lý tài khoản",
+    title: "Quản lý tài khoản",
     href: ROUTES.USERS_MANAGEMENT,
     current: false,
   },
   {
-    name: "Thể loại",
+    title: "Thể loại",
     href: ROUTES.CATEGORY_LIST,
     current: false,
   },
@@ -57,27 +50,27 @@ export const navigationAdmin = [
 
 export const navigationPublic = [
   {
-    name: "Home",
+    title: "Home",
     href: ROUTES.HOME,
     current: true,
   },
   {
-    name: "Đăng tin",
+    title: "Đăng tin",
     href: ROUTES.CREATE_POST,
     current: false,
   },
   {
-    name: "Các bài viết",
+    title: "Các bài viết",
     href: ROUTES.POSTS,
     current: false,
   },
   {
-    name: "Đăng ký",
+    title: "Đăng ký",
     href: ROUTES.REGISTER,
     current: false,
   },
   {
-    name: "Đăng nhập",
+    title: "Đăng nhập",
     href: ROUTES.LOGIN,
     current: false,
   },

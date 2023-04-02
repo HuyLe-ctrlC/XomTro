@@ -15,6 +15,8 @@ import { Search } from "./Search";
 import Swal from "sweetalert2";
 import { Form } from "./Form";
 import { Transition } from "@headlessui/react";
+import Success from "../../components/Toast/success";
+import Error from "../../components/Toast/error";
 export const Category = () => {
   //redux
   const dispatch = useDispatch();
@@ -99,33 +101,35 @@ export const Category = () => {
     const msg = action.payload;
     // console.log("msg", msg);
     if (addDataAction.fulfilled.match(action)) {
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-        width: 500,
-      });
+      // const Toast = Swal.mixin({
+      //   toast: true,
+      //   position: "bottom-end",
+      //   showConfirmButton: false,
+      //   timer: 1500,
+      //   timerProgressBar: true,
+      //   width: 500,
+      // });
 
-      Toast.fire({
-        icon: "success",
-        title: msg.message,
-      });
+      // Toast.fire({
+      //   icon: "success",
+      //   title: msg.message,
+      // });
+      Success(msg.message);
     } else {
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-        width: 500,
-      });
+      // const Toast = Swal.mixin({
+      //   toast: true,
+      //   position: "bottom-end",
+      //   showConfirmButton: false,
+      //   timer: 1500,
+      //   timerProgressBar: true,
+      //   width: 500,
+      // });
 
-      Toast.fire({
-        icon: "error",
-        title: msg.message ?? (serverError && "Máy chủ đang bận!"),
-      });
+      // Toast.fire({
+      //   icon: "error",
+      //   title: msg.message ?? (serverError && "Máy chủ đang bận!"),
+      // });
+      Error(msg?.message, serverError);
     }
   };
 
@@ -144,33 +148,35 @@ export const Category = () => {
     // console.log("msg", msg);
 
     if (updateDataAction.fulfilled.match(updateAction)) {
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-        width: 500,
-      });
+      // const Toast = Swal.mixin({
+      //   toast: true,
+      //   position: "bottom-end",
+      //   showConfirmButton: false,
+      //   timer: 1500,
+      //   timerProgressBar: true,
+      //   width: 500,
+      // });
 
-      Toast.fire({
-        icon: "success",
-        title: msg.message,
-      });
+      // Toast.fire({
+      //   icon: "success",
+      //   title: msg.message,
+      // });
+      Success(msg.message);
     } else {
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-        width: 500,
-      });
+      // const Toast = Swal.mixin({
+      //   toast: true,
+      //   position: "bottom-end",
+      //   showConfirmButton: false,
+      //   timer: 1500,
+      //   timerProgressBar: true,
+      //   width: 500,
+      // });
 
-      Toast.fire({
-        icon: "error",
-        title: msg.message ?? (serverError && "Máy chủ đang bận!"),
-      });
+      // Toast.fire({
+      //   icon: "error",
+      //   title: msg.message ?? (serverError && "Máy chủ đang bận!"),
+      // });
+      Error(msg?.message, serverError);
     }
   };
 

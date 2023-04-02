@@ -1,7 +1,8 @@
+import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-function PrivateProtectRoute({ userAuth, children }) {
+export default function OutletProtectRoute({ userAuth }) {
   const navigate = useNavigate();
   if (!userAuth) {
     Swal.fire({
@@ -18,7 +19,5 @@ function PrivateProtectRoute({ userAuth, children }) {
       }
     });
   }
-  return children;
+  return <Outlet/>;
 }
-
-export default PrivateProtectRoute;

@@ -7,7 +7,7 @@ export default function LabelXomTro(props) {
       <div className="w-full lg:w-fit relative mb-4">
         <div
           className={`absolute left-0 w-1 bg-green-400 ${
-            subLabel ? "h-20" : "h-10"
+            subLabel ? "h-16" : "h-10"
           }`}
         ></div>
         <div className="flex-none flex-shrink-0 ml-3">

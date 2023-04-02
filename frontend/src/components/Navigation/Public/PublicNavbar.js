@@ -6,7 +6,7 @@ import { BsBook } from "react-icons/bs";
 import { HiOutlineLogin } from "react-icons/hi";
 import * as ROUTES from "../../../constants/routes/routes";
 import { navigationPublic } from "../../../constants/navigation/navigation";
-
+import NavItem from "../NavItem";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -35,21 +35,7 @@ const PublicNavbar = () => {
                   <BsBook className="h-10 w-10 text-yellow-200" />
                 </div>
                 <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
-                  {navigationPublic.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={classNames(
-                        item.current
-                          ? "bg-gray-900 text-white"
-                          : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                        "px-3 py-2 rounded-md text-sm font-medium"
-                      )}
-                      aria-current={item.current ? "page" : undefined}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
+                  <NavItem navigationArr={navigationPublic}/>
                 </div>
               </div>
               <div className="flex items-center">
@@ -83,9 +69,9 @@ const PublicNavbar = () => {
           </div>
           <Disclosure.Panel className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {navigationPublic.map((item) => (
+              {navigationPublic.map((item, index) => (
                 <Link
-                  key={item.name}
+                  key={index}
                   to={item.href}
                   className={classNames(
                     item.current
