@@ -62,7 +62,7 @@ export default function Promotion() {
     <>
       <div className="flex-initial flex flex-col lg:w-3/12 w-full border-2 rounded-t-lg">
         <div className="p-2">
-          <LabelXomTro label="Vị trí" fontSize={2} rFontSize={3} />
+          <LabelXomTro label="Vị trí" fontSize='2xl' rFontSize='3xl' heightOfLine="h-10"/>
 
           {/* <LoadScript googleMapsApiKey={API_KEY}>
             <GoogleMap

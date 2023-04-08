@@ -12,4 +12,12 @@ const DateFormatter = ({ date }) => {
   );
 };
 
+export const DateConverter = ({ date }) => {
+  return (
+    <Moment locale="vi" format="D/MM/YY" withTitle>
+      {date}
+    </Moment>
+  );
+};
+
 export default DateFormatter;

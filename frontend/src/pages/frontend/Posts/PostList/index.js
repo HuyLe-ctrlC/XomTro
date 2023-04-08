@@ -64,7 +64,7 @@ export default function PostsList() {
   useEffect(() => {
     getData(params);
     handleGetAllCate();
-  }, []);
+  }, []); 
 
   // useEffect(() => {
   //   dispatch(getAllAction(params));
@@ -142,8 +142,9 @@ export default function PostsList() {
                 <div className="w-full">
                   <LabelXomTro
                     label="Tìm phòng theo loại"
-                    fontSize={2}
-                    rFontSize={3}
+                    fontSize="2xl"
+                    rFontSize="3xl"
+                    heightOfLine="h-10"
                   />
                 </div>
                 <div className="py-4 px-6 bg-gradient-to-r from-green-300 to-blue-300 shadow-md rounded border-2">
@@ -187,7 +188,12 @@ export default function PostsList() {
                 ) : appError || serverError ? (
                   <h1 className=" text-center text-lg ">
                     {/* {serverError} {appError} */}
-                    {serverError == "Cannot read properties of null (reading 'token')" ? "Vui lòng đăng nhập để thực hiện chức năng này!" : <Error />}
+                    {serverError ==
+                    "Cannot read properties of null (reading 'token')" ? (
+                      "Vui lòng đăng nhập để thực hiện chức năng này!"
+                    ) : (
+                      <Error />
+                    )}
                   </h1>
                 ) : data === undefined || data?.length <= 0 ? (
                   <h1 className=" text-lg text-center">

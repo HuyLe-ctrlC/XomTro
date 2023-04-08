@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
-import { selectCategory } from "../../redux/slices/category/categorySlice";
+import { selectCategory } from "../../../redux/slices/category/categorySlice";
+import {
+  getDistrict,
+  selectLocation,
+  resetDistrict,
+} from "../../../redux/slices/location/locationSlices";
 const customStyles = {
   container: (provided) => ({
     ...provided,
@@ -24,36 +29,38 @@ const customStyles = {
   }),
 };
 
-export default function CategoryDropDown(props) {
-  const [cateValue, setCateValue] = useState(props?.value?.label);
+export default function CityDropdown(props) {
+  const dispatch = useDispatch();
+  const [cityValue, setCityValue] = useState(props?.value?.label);
 
   //get data from redux
-  const category = useSelector(selectCategory);
-  const { data, loading, totalPage, appError, serverError } = category;
-  const allCategories = data?.map((category) => {
+  const getCity = useSelector(selectLocation);
+  const { dataCity, loading, totalPage, appError, serverError } = getCity;
+  const allCity = dataCity?.map((city) => {
     return {
-      label: category?.title,
-      value: category?._id,
+      label: city?.name,
+      value: city?.id,
     };
   });
   useEffect(() => {
-    // console.log("props.isUpdating", props.isUpdating);
     if (props.isUpdating) {
-      setCateValue(props.isUpdating);
+      setCityValue(props.isUpdating);
     }
   }, [props.isUpdating]);
 
   const handleChange = (value) => {
-    props.onChange("category", value);
-    setCateValue(value);
+    console.log("🚀 ~ file: index.js:52 ~ handleChange ~ value:", value);
+    props.onChange("city", value);
+    setCityValue(value);
+    dispatch(getDistrict(value.value));
   };
   const handleBlur = () => {
-    props.onBlur("category", true);
+    props.onBlur("city", true);
   };
   return (
     <div>
       <Select
-        options={allCategories}
+        options={allCity}
         styles={customStyles}
         placeholder={
           loading ? (
@@ -64,7 +71,7 @@ export default function CategoryDropDown(props) {
         }
         onChange={handleChange}
         onBlur={handleBlur}
-        value={cateValue}
+        value={cityValue}
         // value={props?.value?.label}
       />
       {/* Display */}

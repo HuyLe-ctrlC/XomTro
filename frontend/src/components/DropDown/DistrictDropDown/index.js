@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
-import { selectCategory } from "../../redux/slices/category/categorySlice";
+import {
+  getWard,
+  selectLocation,
+} from "../../../redux/slices/location/locationSlices";
 const customStyles = {
   container: (provided) => ({
     ...provided,
@@ -24,36 +27,42 @@ const customStyles = {
   }),
 };
 
-export default function CategoryDropDown(props) {
-  const [cateValue, setCateValue] = useState(props?.value?.label);
+export default function DistrictDropdown(props) {
+  const dispatch = useDispatch();
+  const [districtValue, setDistrictValue] = useState(props?.value?.label);
 
   //get data from redux
-  const category = useSelector(selectCategory);
-  const { data, loading, totalPage, appError, serverError } = category;
-  const allCategories = data?.map((category) => {
+  const getDistrict = useSelector(selectLocation);
+  const { dataDistrict, loading, totalPage, appError, serverError } =
+    getDistrict;
+  const allDistrict = dataDistrict?.map((district) => {
     return {
-      label: category?.title,
-      value: category?._id,
+      label: district?.name,
+      value: district?.id,
     };
   });
   useEffect(() => {
-    // console.log("props.isUpdating", props.isUpdating);
     if (props.isUpdating) {
-      setCateValue(props.isUpdating);
+      setDistrictValue(props.isUpdating);
     }
   }, [props.isUpdating]);
 
   const handleChange = (value) => {
-    props.onChange("category", value);
-    setCateValue(value);
+    props.onChange("district", value);
+    setDistrictValue(value);
+    const params = {
+      cityId: props.valueCity?.value,
+      districtId: value.value,
+    };
+    dispatch(getWard(params));
   };
   const handleBlur = () => {
-    props.onBlur("category", true);
+    props.onBlur("district", true);
   };
   return (
     <div>
       <Select
-        options={allCategories}
+        options={allDistrict}
         styles={customStyles}
         placeholder={
           loading ? (
@@ -64,7 +73,7 @@ export default function CategoryDropDown(props) {
         }
         onChange={handleChange}
         onBlur={handleBlur}
-        value={cateValue}
+        value={districtValue}
         // value={props?.value?.label}
       />
       {/* Display */}

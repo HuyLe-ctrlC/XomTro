@@ -3,25 +3,25 @@ import { AiFillDollarCircle } from "react-icons/ai";
 import { BiArea } from "react-icons/bi";
 import { FaHandHoldingWater } from "react-icons/fa";
 import { GiElectric } from "react-icons/gi";
-import {useSelector } from "react-redux";
-import {
-  selectPosts,
-} from "../../../../../redux/slices/posts/postsSlices";
+import { useSelector } from "react-redux";
+import { selectPosts } from "../../../../../redux/slices/posts/postsSlices";
 import LabelXomTro from "../../../../../components/LabelXomTro";
 import DateFormatter from "../../../../../utils/DateFormatter";
 
 export default function PostInfo() {
-
   const posts = useSelector(selectPosts);
 
   const { dataUpdate } = posts;
 
-
-  
   return (
     <>
       <div className="flex-initial lg:w-3/4 w-full rounded-md mr-2">
-        <LabelXomTro label="Thông tin phòng" fontSize={2} rFontSize={3} />
+        <LabelXomTro
+          label="Thông tin phòng"
+          fontSize="2xl"
+          rFontSize="3xl"
+          heightOfLine="h-10"
+        />
         <div className="flex flex-col">
           <div>
             <span className="text-3xl tracking-wide">{dataUpdate?.title}</span>

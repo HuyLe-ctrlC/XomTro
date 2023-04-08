@@ -13,18 +13,18 @@ const createRoomCtrl = expressAsyncHandler(async (req, res) => {
   //check user isBlocked
   blockUser(user);
   const { _id } = req.user;
-  validateMongodbId(_id);
   const { xomtro } = req.body;
+  validateMongodbId(_id);
+  validateMongodbId(xomtro);
   try {
     const xomtroTarget = await Xomtro.findById({ _id: xomtro });
     if (xomtroTarget) {
       const room = await Room.create({
         ...req.body,
         user: req?.user,
-        price: xomtroTarget.price,
+        // price: xomtroTarget.price,
         maxPeople: xomtroTarget.maxPeople,
         services: xomtroTarget.services,
-        internetServices: xomtroTarget.internetServices,
         invoiceDate: xomtroTarget.invoiceDate,
         paymentDeadline: xomtroTarget.paymentDeadline,
       });
@@ -176,10 +176,14 @@ const fetchRoomsByIdXomTroCtrl = expressAsyncHandler(async (req, res) => {
       searchCount: searchCountRename = [],
     } = resultNoLimit;
     const totalPage = Math.ceil(searchCountRename[0]?.total / limit);
+
+    //get name Xomtro
+    const nameXomtro = await Xomtro.findById(xomtroId).select("nameXomtro services");
     res.json({
       data: searchResult,
       searchCount: searchCount[0]?.total || 0,
       totalPage,
+      nameXomtro,
     });
   } catch (err) {
     res.json(err);
@@ -253,7 +257,7 @@ const deleteRoomCtrl = expressAsyncHandler(async (req, res) => {
     if (deleteRoom) {
       res.json({
         result: true,
-        data: deleteRoom,
+        roomId: deleteRoom._id,
         message: MESSAGE.DELETE_SUCCESS,
       });
     } else {

@@ -16,16 +16,16 @@ const imageSchema = new mongoose.Schema({
 
 const citySchema = new mongoose.Schema({
   id: { type: String, required: true },
-  name: { type: String, required: [true, "City is required"] },
+  name: { type: String, required: [true, "Thành phố là bắt buộc"] },
 });
 const districtSchema = new mongoose.Schema({
   id: { type: String, required: true },
-  name: { type: String, required: [true, "District is required"] },
+  name: { type: String, required: [true, "Quận/huyện là bắt buộc"] },
 });
 const wardSchema = new mongoose.Schema({
   id: { type: String, required: true },
-  name: { type: String, required: [true, "Ward is required"] },
-  prefix: { type: String, required: true },
+  name: { type: String, required: [true, "Phường/xã là bắt buộc"] },
+  prefix: { type: String, required: [true, "Tiền tố phường/xã là bắt buộc"] },
 });
 
 const postSchema = new mongoose.Schema(

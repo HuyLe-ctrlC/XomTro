@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
-import { selectCategory } from "../../redux/slices/category/categorySlice";
+import {
+  getWard,
+  selectLocation,
+} from "../../../redux/slices/location/locationSlices";
 const customStyles = {
   container: (provided) => ({
     ...provided,
@@ -24,36 +27,38 @@ const customStyles = {
   }),
 };
 
-export default function CategoryDropDown(props) {
-  const [cateValue, setCateValue] = useState(props?.value?.label);
+export default function WardDropdown(props) {
+  const dispatch = useDispatch();
+  const [wardValue, setWardValue] = useState(props?.value?.label);
 
   //get data from redux
-  const category = useSelector(selectCategory);
-  const { data, loading, totalPage, appError, serverError } = category;
-  const allCategories = data?.map((category) => {
+  const getWard = useSelector(selectLocation);
+  const { dataWard, loading } =
+    getWard;
+  const allWard = dataWard?.map((ward) => {
     return {
-      label: category?.title,
-      value: category?._id,
+      label: ward?.name,
+      value: ward?.id,
+      prefix: ward?.prefix
     };
   });
   useEffect(() => {
-    // console.log("props.isUpdating", props.isUpdating);
     if (props.isUpdating) {
-      setCateValue(props.isUpdating);
+      setWardValue(props.isUpdating);
     }
   }, [props.isUpdating]);
 
   const handleChange = (value) => {
-    props.onChange("category", value);
-    setCateValue(value);
+    props.onChange("ward", value);
+    setWardValue(value);
   };
   const handleBlur = () => {
-    props.onBlur("category", true);
+    props.onBlur("ward", true);
   };
   return (
     <div>
       <Select
-        options={allCategories}
+        options={allWard}
         styles={customStyles}
         placeholder={
           loading ? (
@@ -64,7 +69,7 @@ export default function CategoryDropDown(props) {
         }
         onChange={handleChange}
         onBlur={handleBlur}
-        value={cateValue}
+        value={wardValue}
         // value={props?.value?.label}
       />
       {/* Display */}

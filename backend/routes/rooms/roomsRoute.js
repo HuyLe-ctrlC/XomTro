@@ -16,9 +16,9 @@ const authMiddleware = require("../../middlewares/auth/authMiddleware");
 const roomRoutes = express.Router();
 
 roomRoutes.post("/", authMiddleware, createRoomCtrl);
+roomRoutes.get("/search", authMiddleware, fetchRoomsCtrl);
 roomRoutes.get("/roomByXomtroId", authMiddleware, fetchRoomsByIdXomTroCtrl);
 roomRoutes.get("/:id", authMiddleware, fetchRoomCtrl);
-roomRoutes.get("/search", authMiddleware, fetchRoomsCtrl);
 roomRoutes.put("/update-utility", authMiddleware, updateUtilityCtrl);
 roomRoutes.put("/:id", authMiddleware, updateRoomCtrl);
 roomRoutes.delete("/delete-utility/:id", authMiddleware, deleteUtilityCtrl);

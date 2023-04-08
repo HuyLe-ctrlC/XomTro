@@ -9,8 +9,9 @@ export const addDataAction = createAsyncThunk(
     try {
       // console.log("xomtro", xomtro);
       const response = await xomtroApi.add(data);
+      // console.log("🚀 ~ file: xomtrosSlices.js:12 ~ response:", response);
       const results = {
-        data: response.data,
+        data: response.data.xomtro,
         message: response.message,
       };
       return results;
@@ -18,7 +19,7 @@ export const addDataAction = createAsyncThunk(
       if (!error) {
         throw error;
       }
-      return rejectWithValue(error?.response?.data);
+      return rejectWithValue(error);
     }
   }
 );
@@ -32,7 +33,7 @@ export const updateDataAction = createAsyncThunk(
     const xomtro = data.data;
     try {
       const response = await xomtroApi.update(id, xomtro);
-      // console.log("response", response);
+      console.log("response", response);
       if (response.result) {
         const results = {
           id: id,
@@ -42,13 +43,13 @@ export const updateDataAction = createAsyncThunk(
         // console.log('results', results);
         return results;
       } else {
-        return rejectWithValue(response.errors[0].msg);
+        return rejectWithValue(response);
       }
     } catch (error) {
       if (!error) {
         throw error;
       }
-      return rejectWithValue(error?.response?.data);
+      return rejectWithValue(error);
     }
   }
 );
@@ -71,7 +72,7 @@ export const getAllAction = createAsyncThunk(
       if (!error) {
         throw error;
       }
-      return rejectWithValue(error?.response?.data);
+      return rejectWithValue(error);
     }
   }
 );
@@ -84,12 +85,43 @@ export const getByIdAction = createAsyncThunk(
       // call Api
       const response = await xomtroApi.getById(id);
       // console.log(response);
-      return response;
+      if (response.result) {
+        const results = {
+          dataUpdate: response.data,
+          message: response.message,
+        };
+        // console.log('results', results);
+        return results;
+      } else {
+        return rejectWithValue(response.errors[0].msg);
+      }
     } catch (error) {
       if (!error.response) {
         throw error;
       }
-      return rejectWithValue(error?.response?.data);
+      return rejectWithValue(error);
+    }
+  }
+);
+
+//get by user
+export const getByUserAction = createAsyncThunk(
+  "xomtro/getByUser",
+  async (params, { rejectWithValue, getState, dispatch }) => {
+    //http call
+    try {
+      const response = await xomtroApi.getByUser(params);
+      const results = {
+        data: response.data,
+        totalPage: response.totalPage,
+        searchCount: response.searchCount,
+      };
+      return results;
+    } catch (error) {
+      if (!error) {
+        throw error;
+      }
+      return rejectWithValue(error);
     }
   }
 );
@@ -115,7 +147,7 @@ export const deleteAction = createAsyncThunk(
       if (!error.response) {
         throw error;
       }
-      return rejectWithValue(error?.response?.data);
+      return rejectWithValue(error);
     }
   }
 );
@@ -171,12 +203,30 @@ const xomtroSlices = createSlice({
       })
       .addCase(getByIdAction.fulfilled, (state, action) => {
         // state.loading = false;
-        state.dataUpdate = action?.payload;
+        state.dataUpdate = action?.payload?.dataUpdate;
         state.appError = undefined;
         state.serverError = undefined;
       })
       .addCase(getByIdAction.rejected, (state, action) => {
         // state.loading = false;
+        state.appError = action?.payload?.message;
+        state.serverError = action?.error?.message;
+      });
+    //get by user
+    builder
+      .addCase(getByUserAction.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(getByUserAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action?.payload.data;
+        state.totalPage = action?.payload?.totalPage;
+        state.searchCount = action?.payload?.searchCount;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(getByUserAction.rejected, (state, action) => {
+        state.loading = false;
         state.appError = action?.payload?.message;
         state.serverError = action?.error?.message;
       });

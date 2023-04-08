@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import locationApi from "../../../api/locationApi";
 
 //get all action
@@ -63,8 +63,9 @@ export const getWard = createAsyncThunk(
   }
 );
 
-//slices = reducer
+export const resetDistrict = createAction("reset/district");
 
+//slices = reducer
 const locationSlices = createSlice({
   name: "location",
   initialState: { dataCity: [], totalPage: 0, dataDistrict: [], dataWard: [] },
@@ -86,6 +87,10 @@ const locationSlices = createSlice({
         state.appError = action?.payload?.message;
         state.serverError = action?.error?.message;
       });
+    //reset District
+    builder.addCase(resetDistrict, (state, action) => {
+      state.dataDistrict = undefined;
+    });
     //get district
     builder
       .addCase(getDistrict.pending, (state, action) => {

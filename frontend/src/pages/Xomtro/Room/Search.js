@@ -21,7 +21,7 @@ export const Search = (props) => {
   //   });
   return (
     <div className="h-16 flex items-center w-full bg-slate-100 mt-3">
-      <form className="w-full md:w-1/2">
+      <form className="w-full md:w-3/12">
         <label
           htmlFor="default-search"
           className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"

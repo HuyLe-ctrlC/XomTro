@@ -203,7 +203,7 @@ export const Form = (props) => {
     validationSchema: formSendEmailSchema,
   });
 
-  //check Expire
+  //check isUpdate then push or pull element
   useEffect(() => {
     if (isUpdate === true) {
       const index = formSchema._nodes.indexOf("password");

@@ -191,6 +191,125 @@ const fetchXomtrosCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
+/*-------------------
+//TODO: Fetch Xomtro By User
+//-------------------*/
+
+const fetchXomtroByUserCtrl = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.user;
+
+  const { keyword = "", offset = 0, limit = 10 } = req.query;
+  let pipeline = [];
+  try {
+    pipeline.push({
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    });
+
+    pipeline.push({
+      $match: {
+        "user._id": _id,
+        $or: [
+          {
+            nameXomtro: {
+              $regex: keyword,
+              $options: "i",
+            },
+          },
+          {
+            "user.firstName": {
+              $regex: removeVietnameseTones(keyword),
+              $options: "i",
+            },
+          },
+          {
+            "user.lastName": {
+              $regex: removeVietnameseTones(keyword),
+              $options: "i",
+            },
+          },
+        ],
+      },
+    });
+    pipeline.push({
+      $project: {
+        nameXomtro: 1,
+        numberRoom: 1,
+        category: 1,
+        numberOfFloors: 1,
+        acreage: 1,
+        price: 1,
+        maxPeople: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        addressDetail: 1,
+        services: 1,
+        internetServices: 1,
+        assetManagement: 1,
+        vehicleManagement: 1,
+        invoiceDate: 1,
+        paymentDeadline: 1,
+        roomCount: 1,
+        user: {
+          $arrayToObject: [
+            [
+              {
+                k: "firstName",
+                v: { $arrayElemAt: ["$user.firstName", 0] },
+              },
+              {
+                k: "lastName",
+                v: { $arrayElemAt: ["$user.lastName", 0] },
+              },
+              { k: "email", v: { $arrayElemAt: ["$user.email", 0] } },
+              {
+                k: "profilePhoto",
+                v: { $arrayElemAt: ["$user.profilePhoto", 0] },
+              },
+            ],
+          ],
+        },
+      },
+    });
+    pipeline.push({ $skip: parseInt(offset) });
+    pipeline.push({ $limit: parseInt(limit) });
+    pipeline.push({
+      $facet: {
+        searchResult: [{ $sort: { createdAt: -1 } }],
+        searchCount: [{ $count: "total" }],
+      },
+    });
+
+    const updatedPipeline = pipeline.filter((element) => {
+      return !("$limit" in element);
+    });
+    const [result] = await Xomtro.aggregate(pipeline);
+    const [resultNoLimit] = await Xomtro.aggregate(updatedPipeline);
+    const { searchResult = [], searchCount = [] } = result;
+
+    const {
+      searchResult: searchResultNoLimit = [],
+      searchCount: searchCountRename = [],
+    } = resultNoLimit;
+    const totalPage = Math.ceil(searchCountRename[0]?.total / limit);
+    res.json({
+      data: searchResult,
+      searchCount: searchCount[0]?.total || 0,
+      totalPage,
+    });
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+/*-------------------
+//TODO: Fetch Xomtro By ID
+//-------------------*/
+
 const fetchXomtroCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
@@ -324,5 +443,6 @@ module.exports = {
   deleteXomtroCtrl,
   updateXomtroCtrl,
   addUtilityXomtroCtrl,
-  fetchXomtroCtrl
+  fetchXomtroCtrl,
+  fetchXomtroByUserCtrl
 };

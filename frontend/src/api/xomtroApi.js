@@ -11,6 +11,10 @@ const xomtroApi = {
     const url = `/${module}/${id}`;
     return axiosClient.get(url);
   },
+  getByUser: (params) => {
+    const url = `/${module}/getByUser`;
+    return axiosClient.get(url, { params });
+  },
   add: (data) => {
     const url = `/${module}`;
     return axiosClient.post(url, data);

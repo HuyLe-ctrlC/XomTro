@@ -11,7 +11,7 @@ const districtSchema = new mongoose.Schema({
 const wardSchema = new mongoose.Schema({
   id: { type: String, required: true },
   name: { type: String, required: [true, "Phường/xã là bắt buộc"] },
-  prefix: { type: String, required: true },
+  prefix: { type: String, required: [true, "Tiền tố phường/xã là bắt buộc"] },
 });
 
 const servicesXomtroSchema = new mongoose.Schema({
@@ -21,12 +21,15 @@ const servicesXomtroSchema = new mongoose.Schema({
     required: [true, `Giá dịch vụ là bắt buộc`],
     min: [0, `Giá dịch vụ phải lớn hơn hoặc bằng 0`],
   },
+  oldValue: { type: String, default: 0 },
+  newValue: { type: String, default: 0 },
   paymentMethod: {
     type: String,
     required: [true, "Phương thức thanh toán là bắt buộc"],
     default: "Theo tháng",
   },
-  _id: Number
+  measurement: { type: String},
+  _id: Number,
 });
 
 const xomtroSchema = new mongoose.Schema(

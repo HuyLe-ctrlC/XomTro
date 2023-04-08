@@ -11,8 +11,16 @@ const Footer = () => {
           <h1 className="w-full md:w-2/3">Tìm trọ nhanh với XomTro</h1>
         </div>
         <div className="flex mt-8 flex-col md:flex-row md:justify-between">
-          <p className="w-full md:w-2/3 text-gray-800">
-            Cung cấp các nhà trọ được chất lượng đã được kiểm duyệt từ website.
+          <p className="w-full md:w-2/3 text-gray-800 text-justify leading-loose italic">
+            Xin chào! Chào mừng bạn đến với trang web XomTro - nơi kết nối phòng
+            trọ và người thuê trọ tại Việt Nam. Chúng tôi cung cấp một nền tảng
+            trực tuyến để giúp các bạn dễ dàng tìm kiếm phòng trọ phù hợp với
+            nhu cầu của mình. Đồng thời, chúng tôi cũng giúp chủ nhà có thể dễ
+            dàng đăng tin và quản lý phòng trọ của mình một cách tiện lợi. Các
+            tính năng trên website được xây dựng để phù hợp cho cả người thuê và
+            người cho thuê. Chắc chắn bạn sẽ tìm thấy một căn phòng trọ ưng ý
+            tại đây. Hãy tham gia cùng chúng tôi để tìm kiếm ngôi nhà mới cho
+            bạn!
           </p>
           <div className="w-44 pt-6 md:pt-0">
             <a
@@ -48,7 +56,7 @@ const Footer = () => {
               <a>
                 <ZaloIcon />
               </a>
-              <a>
+              <a href="https://www.facebook.com/profile.php?id=100091681926923">
                 <BsFacebook className="text-blue-500 text-2xl" />
               </a>
               <a href="https://www.youtube.com/channel/UCjtCbnkIaiCJgj13sEZ9iqw">
