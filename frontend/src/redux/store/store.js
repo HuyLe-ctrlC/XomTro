@@ -6,6 +6,7 @@ import locationsReducer from "../slices/location/locationSlices";
 import commentsReducer from "../slices/comments/commentSlices";
 import roomReducer from "../slices/rooms/roomsSlices";
 import xomtroReducer from "../slices/xomtros/xomtrosSlices";
+import selectReducer from "../slices/selectedSlices";
 
 const store = configureStore({
   reducer: {
@@ -15,7 +16,8 @@ const store = configureStore({
     locations: locationsReducer,
     comments: commentsReducer,
     rooms: roomReducer,
-    xomtros: xomtroReducer
+    xomtros: xomtroReducer,
+    selects: selectReducer,
   },
 });
 

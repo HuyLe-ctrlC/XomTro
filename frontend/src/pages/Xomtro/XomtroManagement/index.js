@@ -8,6 +8,7 @@ import {
   getAllAction,
   getByIdAction,
   selectXomtro,
+  setCookieXomtroIdAction,
 } from "../../../redux/slices/xomtros/xomtrosSlices";
 import { HiPencilAlt } from "react-icons/hi";
 import { BsTrash, BsTrashFill } from "react-icons/bs";
@@ -22,7 +23,7 @@ export default function XomtroManagement({
   //set form status
   // const [formStatusState, setFormStatusState] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(20);
   const [keyword, setKeyword] = useState("");
   const [xomtroId, setXomtroId] = useState("");
 
@@ -48,6 +49,7 @@ export default function XomtroManagement({
 
   const handleGetRoom = (id) => {
     const newParams = { ...params, xomtroId: id };
+    dispatch(setCookieXomtroIdAction(id));
     dispatch(getByXomtroIdAction(newParams));
   };
 

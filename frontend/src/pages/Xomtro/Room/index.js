@@ -21,6 +21,8 @@ import {
 } from "../../../redux/slices/rooms/roomsSlices";
 import { AiFillSetting } from "react-icons/ai";
 import Footer from "../../../components/Footer";
+import { selectXomtro } from "../../../redux/slices/xomtros/xomtrosSlices";
+import Cookies from "js-cookie";
 
 export default function Room() {
   //redux
@@ -31,7 +33,7 @@ export default function Room() {
   const title = "Quản lý phòng trọ";
   const [currentPage, setCurrentPage] = useState(1);
   const [active, setActive] = useState("");
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(20);
   const [keyword, setKeyword] = useState("");
   const [xomtroId, setXomtroId] = useState("");
   //set offset
@@ -49,6 +51,7 @@ export default function Room() {
   // const { data, loading, totalPage, appError, serverError } = posts;
   //get user to check isAdmin
   const user = useSelector(selectUser);
+  const getXomtro = useSelector(selectXomtro);
   const { userAuth } = user;
 
   const getData = (newParams) => {
@@ -60,10 +63,6 @@ export default function Room() {
     dispatch(getByXomtroIdAction(newParams));
   };
 
-  useEffect(() => {
-    document.title = title;
-  }, []);
-
   const getRoom = useSelector(selectRooms);
   const {
     dataRoom,
@@ -73,6 +72,29 @@ export default function Room() {
     nameXomtro,
     dataUpdate,
   } = getRoom;
+
+  //
+  useEffect(() => {
+    // Check if rooms data is already available in the store
+    // if (!dataRoom?.length && getXomtro.searchCount === 1) {
+    //   dispatch(getByXomtroIdAction(params));
+    // } else if (!dataRoom?.length) {
+    //   const newParams = {
+    //     ...params,
+    //     xomtroId: Cookies.get("xomtroIDCookie"),
+    //   };
+    //   dispatch(getByXomtroIdAction(newParams));
+    // }
+    if (!dataRoom?.length) {
+      const newParams = {
+        ...params,
+        xomtroId: Cookies.get("xomtroIDCookie"),
+      };
+      dispatch(getByXomtroIdAction(newParams));
+    }
+
+    document.title = title;
+  }, []);
 
   // search data
   const handleSearch = (keyword) => {

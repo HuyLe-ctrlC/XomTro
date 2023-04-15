@@ -49,7 +49,7 @@ export default function CityDropdown(props) {
   }, [props.isUpdating]);
 
   const handleChange = (value) => {
-    console.log("🚀 ~ file: index.js:52 ~ handleChange ~ value:", value);
+    // console.log("🚀 ~ file: index.js:52 ~ handleChange ~ value:", value);
     props.onChange("city", value);
     setCityValue(value);
     dispatch(getDistrict(value.value));

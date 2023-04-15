@@ -5,8 +5,21 @@ import roomApi from "../../../api/roomApi";
 export const updateMultiDataAction = createAsyncThunk(
   "room/update-multiple",
   async (data, { rejectWithValue, getState, dispatch }) => {
+    // console.log("🚀 ~ file: roomsSlices.js:8 ~ data:", data)
     //http call
     try {
+      const response = await roomApi.updateUtility(data);
+      // console.log("response", response);
+      if (response.result) {
+        const results = {
+          newData: response.newData,
+          message: response.message,
+        };
+        // console.log('results', results);
+        return results;
+      } else {
+        return rejectWithValue(response.error);
+      }
     } catch (error) {
       if (!error) {
         throw error;
@@ -24,7 +37,7 @@ export const addDataAction = createAsyncThunk(
     try {
       // console.log("xomtro", xomtro);
       const response = await roomApi.add(data);
-      console.log("🚀 ~ file: xomtrosSlices.js:12 ~ response:", response);
+      // console.log("🚀 ~ file: xomtrosSlices.js:12 ~ response:", response);
       const results = {
         data: response.data,
         message: response.message,
@@ -39,7 +52,7 @@ export const addDataAction = createAsyncThunk(
   }
 );
 
-//add action
+//update action
 export const updateDataAction = createAsyncThunk(
   "room/update",
   async (data, { rejectWithValue, getState, dispatch }) => {
@@ -69,10 +82,38 @@ export const updateDataAction = createAsyncThunk(
   }
 );
 
+//add utility room action
+export const addUtilityRoomAction = createAsyncThunk(
+  "room/add-utility",
+  async (data, { rejectWithValue, getState, dispatch }) => {
+    //http call
+    try {
+      const response = await roomApi.addUtility(data);
+      // console.log("response", response);
+      if (response.result) {
+        const results = {
+          newData: response.newData,
+          message: response.message,
+        };
+        // console.log('results', results);
+        return results;
+      } else {
+        return rejectWithValue(response);
+      }
+    } catch (error) {
+      if (!error) {
+        throw error;
+      }
+      return rejectWithValue(error);
+    }
+  }
+);
+
 //get data by id
 export const getByXomtroIdAction = createAsyncThunk(
   "room/roomByXomtroId",
   async (params, { rejectWithValue, getState, dispatch }) => {
+    // console.log("🚀 ~ file: roomsSlices.js:103 ~ params:", params)
     try {
       // call Api
       const response = await roomApi.getByXomtroId(params);
@@ -81,7 +122,7 @@ export const getByXomtroIdAction = createAsyncThunk(
         data: response.data,
         totalPage: response.totalPage,
         searchCount: response.searchCount,
-        nameXomtro: response.nameXomtro,
+        nameAndServicesXomtro: response.nameAndServicesXomtro,
       };
       return results;
     } catch (error) {
@@ -100,7 +141,33 @@ export const deleteAction = createAsyncThunk(
     try {
       // call api
       const response = await roomApi.delete(_id);
-      console.log("🚀 ~ file: roomsSlices.js:103 ~ response:", response);
+      if (response.result) {
+        const result = {
+          _id,
+          message: response.message,
+        };
+        return result;
+      } else {
+        return rejectWithValue(response);
+      }
+    } catch (error) {
+      // console.log('Failed to fetch data list: ', error);
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error);
+    }
+  }
+);
+//delete utility by id
+export const deleteUtilityAction = createAsyncThunk(
+  "room/delete-utility",
+  async (data, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const body1 = data.data;
+      const _id = data._id;
+      // call api
+      const response = await roomApi.deleteUtility(_id, body1);
       if (response.result) {
         const result = {
           _id,
@@ -147,34 +214,38 @@ export const getByIdAction = createAsyncThunk(
   }
 );
 
-export const toggleItemAction = createAction("room/toggle-item");
-export const clearSelectionAction = createAction("room/clear-selection");
-export const selectAllAction = createAction("room/select-all");
+//get data by id
+export const getUtilityAction = createAsyncThunk(
+  "room/get-utility",
+  async (params, { rejectWithValue, getState, dispatch }) => {
+    try {
+      // call Api
+      const response = await roomApi.getUtility(params);
+      // console.log(response);
+      if (response.result) {
+        const results = {
+          dataUpdate: response.dataUpdate,
+          message: response.message,
+        };
+        // console.log('results', results);
+        return results;
+      } else {
+        return rejectWithValue(response.errors[0].msg);
+      }
+    } catch (error) {
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error);
+    }
+  }
+);
 
 //this is change a little bit in dataRoom
 const roomSlices = createSlice({
   name: "rooms",
   initialState: { selected: [], dataRoom: [], totalPage: 0, dataUpdate: [] },
   extraReducers: (builder, state) => {
-    builder.addCase(toggleItemAction, (state, action) => {
-      const { itemSelected } = action.payload;
-      //check exist
-      const index = state.selected
-        .map((item) => item.id)
-        .indexOf(itemSelected.id);
-      if (index === -1) {
-        state.selected.push(itemSelected);
-      } else {
-        state.selected.splice(index, 1);
-      }
-    });
-    builder.addCase(clearSelectionAction, (state, action) => {
-      state.selected = [];
-    });
-    builder.addCase(selectAllAction, (state, action) => {
-      const data = action.payload;
-      data?.map((item) => state.selected.push(item));
-    });
     //update data
     builder
       .addCase(updateDataAction.pending, (state, action) => {
@@ -210,7 +281,7 @@ const roomSlices = createSlice({
       .addCase(getByXomtroIdAction.fulfilled, (state, action) => {
         // state.loading = false;
         state.dataRoom = action?.payload?.data;
-        state.nameXomtro = action?.payload?.nameXomtro;
+        state.nameAndServicesXomtro = action?.payload?.nameAndServicesXomtro;
         state.appRoomError = undefined;
         state.serverRoomError = undefined;
       })
@@ -246,8 +317,8 @@ const roomSlices = createSlice({
       })
       .addCase(updateMultiDataAction.fulfilled, (state, action) => {
         state.loadingRoom = false;
-        // state.data = action?.payload.data;
-        // state.totalPage = action?.payload?.totalPage;
+        const { newData } = action?.payload;
+        state.nameAndServicesXomtro.services = newData;
         state.appRoomError = undefined;
         state.serverRoomError = undefined;
       })
@@ -291,6 +362,61 @@ const roomSlices = createSlice({
       .addCase(deleteAction.rejected, (state, action) => {
         // state.loading = false;
         state.appError = action?.payload;
+        state.serverError = action?.error?.message;
+      });
+    //delete utility by id
+    builder
+      .addCase(deleteUtilityAction.pending, (state, action) => {
+        // state.loading = true;
+      })
+      .addCase(deleteUtilityAction.fulfilled, (state, action) => {
+        // state.loading = false;
+        // delete row dataRoom in store
+        state.nameAndServicesXomtro.services =
+          state.nameAndServicesXomtro.services.filter(
+            (arrow) => arrow._id !== action.payload._id
+          );
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(deleteUtilityAction.rejected, (state, action) => {
+        // state.loading = false;
+        state.appError = action?.payload;
+        state.serverError = action?.error?.message;
+      });
+    //Add Utility from Room
+    builder
+      .addCase(addUtilityRoomAction.pending, (state, action) => {
+        // state.loading = true;
+      })
+      .addCase(addUtilityRoomAction.fulfilled, (state, action) => {
+        state.loading = false;
+        const { newData } = action?.payload;
+        state.nameAndServicesXomtro.services = newData;
+        // state.data = action?.payload;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(addUtilityRoomAction.rejected, (state, action) => {
+        state.loading = false;
+        state.appError = action?.payload?.message;
+        state.serverError = action?.error?.message;
+      });
+    //get Utility Action
+    builder
+      .addCase(getUtilityAction.pending, (state, action) => {
+        // state.loading = true;
+      })
+      .addCase(getUtilityAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.dataUpdate = action?.payload.dataUpdate;
+        // state.data = action?.payload;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(getUtilityAction.rejected, (state, action) => {
+        state.loading = false;
+        state.appError = action?.payload?.message;
         state.serverError = action?.error?.message;
       });
   },

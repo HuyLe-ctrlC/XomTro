@@ -20,6 +20,13 @@ import CityDropdown from "../../components/DropDown/CityDropDown";
 import { NUMBER_OF_FLOORS } from "../../constants/xomtro/numberOfFloors";
 import DistrictDropdown from "../../components/DropDown/DistrictDropDown";
 import WardDropdown from "../../components/DropDown/WardDropDown";
+import {
+  electricityService,
+  flatElectricityPrice,
+  garbageService,
+  internetService,
+  waterService,
+} from "../../constants/xomtro/measurement";
 
 const addSchema = Yup.object().shape({
   nameXomtro: Yup.string().required("*Dữ liệu bắt buộc!"),
@@ -71,11 +78,11 @@ export const Form = (props) => {
   const [garbagePrice, setGarbagePrice] = useState("");
   const [internetPrice, setInterenetPrice] = useState("");
   //service names
-  const [waterService] = useState("Tiền điện");
-  const [garbageService] = useState("Tiền nước");
-  const [electricityService] = useState("Tiền rác");
-  const [internetService] = useState("Tiền internet");
-  const [paymentMethod] = useState("Theo tháng");
+  // const [waterService] = useState("Tiền điện");
+  // const [garbageService] = useState("Tiền nước");
+  // const [electricityService] = useState("Tiền rác");
+  // const [internetService] = useState("Tiền internet");
+  const [paymentMethod] = useState("Tháng");
   const [price, setPrice] = useState("");
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
@@ -229,24 +236,24 @@ export const Form = (props) => {
       {
         serviceName: electricityService,
         price: formik.values?.electricityPrice,
-        paymentMethod: paymentMethod,
-        measurement: "kWh"
+        paymentMethod: flatElectricityPrice,
+        measurement: "kWh",
       },
       {
         serviceName: waterService,
         price: formik.values?.waterPrice,
-        paymentMethod: paymentMethod,
-        measurement: "m3"
+        paymentMethod: flatElectricityPrice,
+        measurement: "m3",
       },
       {
         serviceName: garbageService,
         price: formik.values?.garbagePrice,
-        paymentMethod: paymentMethod,
+        measurement: "Tháng",
       },
       {
         serviceName: internetService,
         price: formik.values?.internetPrice,
-        paymentMethod: paymentMethod,
+        measurement: "Tháng",
       },
     ];
 
@@ -668,24 +675,6 @@ export const Form = (props) => {
               >
                 Chọn tỉnh thành
               </label>
-              {/* <select
-                id="city"
-                className="bg-white block w-full p-2 text-sm text-gray-500 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                value={JSON.stringify(formik.values.city.name)}
-                onChange={(event) => {
-                  event.preventDefault();
-                  formik.handleChange("city")(event);
-                  getDataDistrict(event, JSON.parse(event.target.value)?.id);
-                }}
-                onBlur={formik.handleBlur("city")}
-              >
-                <option value="">-- Chọn --</option>
-                {dataCity?.map((item, index) => (
-                  <option value={JSON.stringify(item)} key={item.id}>
-                    {item.name}
-                  </option>
-                ))}
-              </select> */}
               <CityDropdown
                 value={formik.values.city?.label}
                 onChange={formik.setFieldValue}
@@ -705,30 +694,6 @@ export const Form = (props) => {
               >
                 Chọn quận huyện
               </label>
-              {/* <select
-                id="district"
-                className="bg-white block w-full p-2 text-sm text-gray-500 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                value={JSON.stringify(formik.values.district.name)}
-                onChange={(event) => {
-                  event.preventDefault();
-                  formik.handleChange("district")(event);
-                  getDataWard(
-                    event,
-                    JSON.parse(event.target.value)?.id,
-                    JSON.parse(formik?.values?.city).id
-                  );
-                }}
-                onBlur={formik.handleBlur("district")}
-              >
-                <option value="">
-                  {loading ? `Đang tải ...` : `-- Chọn --`}
-                </option>
-                {dataDistrict?.map((item, index) => (
-                  <option value={JSON.stringify(item)} key={item.id}>
-                    {item.name}
-                  </option>
-                ))}
-              </select> */}
               <DistrictDropdown
                 value={formik.values.district?.label}
                 onChange={formik.setFieldValue}
@@ -751,25 +716,6 @@ export const Form = (props) => {
               >
                 Chọn phường/xã
               </label>
-              {/* <select
-                id="ward"
-                className="bg-white block w-full p-2 text-sm text-gray-500 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                value={JSON.stringify(formik.values.ward.name)}
-                onChange={(event) => {
-                  event.preventDefault();
-                  formik.handleChange("ward")(event);
-                }}
-                onBlur={formik.handleBlur("ward")}
-              >
-                <option value="">
-                  {loading ? `Đang tải ...` : `-- Chọn --`}
-                </option>
-                {dataWard?.map((item, index) => (
-                  <option value={JSON.stringify(item)} key={item.id}>
-                    {item.prefix} {item.name}
-                  </option>
-                ))}
-              </select> */}
               <WardDropdown
                 value={formik.values.ward?.label}
                 onChange={formik.setFieldValue}

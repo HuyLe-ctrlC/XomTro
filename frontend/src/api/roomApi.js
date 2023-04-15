@@ -35,9 +35,14 @@ const roomApi = {
     const url = `/${module}/update-utility`;
     return axiosClient.put(url, body);
   },
-  deleteUtility: (body, id) => {
-    const url = `/${module}/delete-utility/id`;
-    return axiosClient.delete(url, body);
+  deleteUtility: (id, body) => {
+    console.log("body", body);
+    const url = `/${module}/delete-utility/${id}`;
+    return axiosClient.put(url, body);
+  },
+  getUtility: (params) => {
+    const url = `/${module}/get-utility`;
+    return axiosClient.get(url, { params });
   },
 };
 

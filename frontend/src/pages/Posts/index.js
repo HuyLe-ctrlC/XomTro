@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import * as tf from "@tensorflow/tfjs";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addDataAction,
@@ -24,6 +25,7 @@ import {
   getCity,
   selectLocation,
 } from "../../redux/slices/location/locationSlices";
+import { getAllAction as getCategories } from "../../redux/slices/category/categorySlice";
 
 export default function CreatePost() {
   //redux
@@ -33,8 +35,7 @@ export default function CreatePost() {
   const [isUpdate, setIsUpdate] = useState(false);
   const title = "Quản lý bài viết";
   const [currentPage, setCurrentPage] = useState(1);
-  const [active, setActive] = useState("");
-  const [limit, setLimit] = useState(10);
+  const [limit] = useState(10);
   const [keyword, setKeyword] = useState("");
 
   //set offset
@@ -48,7 +49,7 @@ export default function CreatePost() {
 
   //get data from redux
   const posts = useSelector(selectPosts);
-  const { data, loading, totalPage, appError, serverError } = posts;
+  const { data, loading, totalPage, serverError } = posts;
   //get user to check isAdmin
   const user = useSelector(selectUser);
   const { userAuth } = user;
@@ -60,11 +61,28 @@ export default function CreatePost() {
       ? dispatch(getAllAction(params))
       : dispatch(getByUserAction(params));
     dispatch(getCity());
+    dispatch(getCategories({ offset: 0, limit: 10, keyword: "" }));
   };
 
   useEffect(() => {
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  //classify image Xomtro
+  // const [model, setModel] = useState(null);
+
+  // useEffect(() => {
+  //   async function loadModel() {
+  //     const model = await tf.loadLayersModel(
+  //       "http://localhost:3000/static/model.json"
+  //     );
+  //     setModel(model);
+  //     console.log("Model loaded");
+  //     // console.log(model.summary());
+  //   }
+  //   loadModel();
+  // }, []);
 
   const locations = useSelector(selectLocation);
   const { dataCity } = locations;
@@ -221,6 +239,7 @@ export default function CreatePost() {
           addData={handleAddData}
           updateData={handleUpdateData}
           dataCity={dataCity}
+          // model={model}
         />
       );
     }

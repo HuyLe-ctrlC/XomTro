@@ -16,20 +16,16 @@ import ListItem from "./ListItem";
 import { openForm, closeForm } from "../../../redux/slices/formSlices";
 import Swal from "sweetalert2";
 import Form from "./Form";
-import * as Yup from "yup";
-import { useFormik } from "formik";
+
 import { selectUser } from "../../../redux/slices/users/usersSlice";
 import { AiFillWarning } from "react-icons/ai";
+import InputComment from "./InputComment";
 
-const formSchema = Yup.object({
-  description: Yup.string().required("*Dữ liệu bắt buộc!"),
-});
 export default function Comments() {
   let { postId } = useParams();
-  const inputRef = useRef(null);
   const dispatch = useDispatch();
   const [isUpdate, setIsUpdate] = useState(false);
-  const [description, setDescription] = useState("");
+
   //select comments details from store
   const comments = useSelector(selectComments);
   const user = useSelector(selectUser);
@@ -53,7 +49,6 @@ export default function Comments() {
     // const dataJson = JSON.stringify(data);
 
     const action = await dispatch(addDataAction(data));
-    handleClear();
     const msg = action.payload;
     // console.log("msg", msg);
     if (addDataAction.fulfilled.match(action)) {
@@ -97,7 +92,6 @@ export default function Comments() {
     };
     // console.log("dataUpdate", dataUpdate);
     const updateAction = await dispatch(updateDataAction(dataUpdate));
-
     const msg = updateAction.payload;
     // console.log("msg", msg);
 
@@ -162,21 +156,8 @@ export default function Comments() {
       );
     }
   };
-  //formik
-  const formik = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      description,
-    },
-    validationSchema: formSchema,
-  });
-  const handleClear = () => {
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    } else {
-      console.log("Textarea reference is null");
-    }
-  };
+
+
   return (
     <>
       <section className="py-8 lg:py-16">
@@ -197,7 +178,7 @@ export default function Comments() {
               Bình luận ({totalComment})
             </h2>
           </div>
-          {userAuth && (
+          {/* {userAuth && (
             <form className="mb-6">
               <div className="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border-2 border-gray-200 ">
                 <label htmlFor="comment" className="sr-only">
@@ -208,21 +189,29 @@ export default function Comments() {
                   rows="6"
                   className="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none "
                   placeholder="Viết gì đó để bình luận..."
-                  value={formik.values.description}
-                  onChange={formik.handleChange("description")}
-                  onBlur={formik.handleBlur("description")}
+                  value={formik.values.commentDescription}
+                  onChange={formik.handleChange("commentDescription")}
+                  onBlur={formik.handleBlur("commentDescription")}
                   ref={inputRef}
                 />
               </div>
               <button
-                onClick={() => handleAddData(postId, formik.values.description)}
+                onClick={() =>
+                  handleAddData(postId, formik.values.commentDescription)
+                }
                 type="button"
-                className="inline-flex items-center bg-blue-700 py-2.5 px-4 text-xs font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 hover:bg-primary-800"
+                className="inline-flex items-center bg-blue-700 py-2.5 px-4 text-xs font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 hover:bg-primary-800 disabled:bg-blue-500 disabled:cursor-not-allowed"
+                disabled={!formik.isValid}
               >
                 Bình luận
               </button>
             </form>
-          )}
+          )} */}
+          <InputComment
+            userAuth={userAuth}
+            addData={handleAddData}
+            postId={postId}
+          />
           {loading ? (
             <LoadingComponent />
           ) : appError || serverError ? (

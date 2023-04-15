@@ -191,7 +191,6 @@ const commentsSlices = createSlice({
       .addCase(getByIdDetailAction.fulfilled, (state, action) => {
         // state.loading = false;
         state.dataUpdate = action?.payload.dataUpdate;
-        state.totalComment = action?.payload.totalComment;
         state.message = action?.payload.message;
         state.appError = undefined;
         state.serverError = undefined;

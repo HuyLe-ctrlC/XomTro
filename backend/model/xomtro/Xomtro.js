@@ -15,6 +15,7 @@ const wardSchema = new mongoose.Schema({
 });
 
 const servicesXomtroSchema = new mongoose.Schema({
+  _id: Number,
   serviceName: { type: String, required: [true, "Tên dịch vụ là bắt buộc"] },
   price: {
     type: Number,
@@ -25,11 +26,16 @@ const servicesXomtroSchema = new mongoose.Schema({
   newValue: { type: String, default: 0 },
   paymentMethod: {
     type: String,
-    required: [true, "Phương thức thanh toán là bắt buộc"],
-    default: "Theo tháng",
   },
-  measurement: { type: String},
-  _id: Number,
+  measurement: { type: String },
+  appliedBy: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Room",
+      },
+    ],
+  },
 });
 
 const xomtroSchema = new mongoose.Schema(
@@ -73,21 +79,6 @@ const xomtroSchema = new mongoose.Schema(
       required: [true, "Địa chỉ Xomtro là bắt buộc"],
     },
     services: [servicesXomtroSchema],
-    // waterServices: {
-    //   type: String,
-    //   required: [true, "Dịch vụ nước là bắt buộc"],
-    //   default: "Theo đồng hồ",
-    // },
-    // garbageServices: {
-    //   type: String,
-    //   required: [true, "Dịch vụ rác là bắt buộc"],
-    //   default: "Theo tháng",
-    // },
-    // internetServices: {
-    //   type: String,
-    //   required: [true, "Dịch vụ internet là bắt buộc"],
-    //   default: "Theo tháng",
-    // },
     assetManagement: {
       type: Boolean,
       default: false,

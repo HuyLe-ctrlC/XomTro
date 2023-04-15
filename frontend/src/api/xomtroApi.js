@@ -31,6 +31,10 @@ const xomtroApi = {
     const url = `/${module}/add-utility`;
     return axiosClient.post(url, body);
   },
+  getUtilityApplied: (params) => {
+    const url = `/${module}/get-utility-applied`;
+    return axiosClient.get(url, { params });
+  },
 };
 
 export default xomtroApi;

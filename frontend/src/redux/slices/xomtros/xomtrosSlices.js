@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import xomtroApi from "../../../api/xomtroApi";
-
+import Cookies from "js-cookie";
+import roomApi from "../../../api/roomApi";
 //add action
 export const addDataAction = createAsyncThunk(
   "xomtro/create",
@@ -126,6 +127,7 @@ export const getByUserAction = createAsyncThunk(
   }
 );
 
+
 //delete data by id
 export const deleteAction = createAsyncThunk(
   "xomtro/delete",
@@ -151,12 +153,20 @@ export const deleteAction = createAsyncThunk(
     }
   }
 );
-//slices = reducer
 
+export const removeCookieXomtroIdAction = createAction("xomtro/get-cookie");
+export const setCookieXomtroIdAction = createAction("xomtro/set-cookie");
+//slices = reducer
 const xomtroSlices = createSlice({
   name: "xomtro",
   initialState: { data: [], totalPage: 0, dataUpdate: [] },
   extraReducers: (builder, state) => {
+    builder.addCase(removeCookieXomtroIdAction, (state, action) => {
+      Cookies.remove("xomtroIDCookie");
+    });
+    builder.addCase(setCookieXomtroIdAction, (state, action) => {
+      Cookies.set("xomtroIDCookie", action.payload, { expires: 1 });
+    });
     //get All
     builder
       .addCase(getAllAction.pending, (state, action) => {

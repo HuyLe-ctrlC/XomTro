@@ -7,6 +7,7 @@ const MESSAGE = require("../../utils/constantsMessage");
 const validateMongodbId = require("../../utils/validateMongodbID");
 const blockUser = require("../../utils/blockUser");
 const mongoose = require("mongoose");
+const idMaxInRoom = require("../../utils/idMaxInRoom");
 const createRoomCtrl = expressAsyncHandler(async (req, res) => {
   //1. Get the user
   const user = req.user;
@@ -178,12 +179,14 @@ const fetchRoomsByIdXomTroCtrl = expressAsyncHandler(async (req, res) => {
     const totalPage = Math.ceil(searchCountRename[0]?.total / limit);
 
     //get name Xomtro
-    const nameXomtro = await Xomtro.findById(xomtroId).select("nameXomtro services");
+    const nameAndServicesXomtro = await Xomtro.findById(xomtroId).select(
+      "nameXomtro services"
+    );
     res.json({
       data: searchResult,
       searchCount: searchCount[0]?.total || 0,
       totalPage,
-      nameXomtro,
+      nameAndServicesXomtro,
     });
   } catch (err) {
     res.json(err);
@@ -274,22 +277,26 @@ const deleteRoomCtrl = expressAsyncHandler(async (req, res) => {
 //add multi for all room or some room
 const addUtilityCtrl = expressAsyncHandler(async (req, res) => {
   try {
-    const updates = req.body;
+    const { xomtroId, listRoomId, dataAdded } = req.body;
 
-    for (const update of updates) {
-      const { id, dataAdded } = update;
+    const room = await Room.find({ xomtro: xomtroId }).select("services");
+    let maxIdServiceInRoom = idMaxInRoom(room);
+    const xomtro = await Xomtro.findById(xomtroId);
+    let latestId = 0;
 
-      // Get the latest _id used in the services array
-      const room = await Room.findById(id);
-      let latestId = 0;
-      if (room && room.services && room.services.length > 0) {
-        latestId = room.services[room.services.length - 1]._id;
-      }
+    if (xomtro && xomtro.services && xomtro.services.length > 0) {
+      latestId = xomtro.services[xomtro.services.length - 1]._id;
+    }
 
+    if (maxIdServiceInRoom < latestId) {
       dataAdded["_id"] = latestId + 1;
+    } else {
+      dataAdded["_id"] = maxIdServiceInRoom + 1;
+    }
 
+    for (const roomId of listRoomId) {
       await Room.findByIdAndUpdate(
-        id,
+        roomId,
         {
           $push: { services: dataAdded },
         },
@@ -300,8 +307,22 @@ const addUtilityCtrl = expressAsyncHandler(async (req, res) => {
       );
     }
 
+    dataAdded["appliedBy"] = listRoomId;
+
+    const xomtroTargeted = await Xomtro.findByIdAndUpdate(
+      xomtroId,
+      {
+        $push: { services: dataAdded },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
     res.json({
       result: true,
+      newData: xomtroTargeted.services,
       message: MESSAGE.UPDATE_SUCCESS,
     });
   } catch (error) {
@@ -310,36 +331,51 @@ const addUtilityCtrl = expressAsyncHandler(async (req, res) => {
 });
 //update multi for all room or some room
 const updateUtilityCtrl = expressAsyncHandler(async (req, res) => {
-  const updates = req.body;
+  const { xomtroId, listRoomId, dataUpdated } = req.body;
+
+  const updateService = async (service) => {
+    if (dataUpdated.serviceName !== undefined) {
+      service.serviceName = dataUpdated.serviceName;
+    }
+    if (dataUpdated.price !== undefined) {
+      service.price = dataUpdated.price;
+    }
+    if (dataUpdated.paymentMethod !== undefined) {
+      service.paymentMethod = dataUpdated.paymentMethod;
+    }
+    if (dataUpdated.oldValue !== undefined) {
+      service.oldValue = dataUpdated.oldValue;
+    }
+    if (dataUpdated.newValue !== undefined) {
+      service.newValue = dataUpdated.newValue;
+    }
+    if (dataUpdated.measurement !== undefined) {
+      service.measurement = dataUpdated.measurement;
+    }
+    await service.parent().save();
+  };
+
   try {
     await Promise.all(
-      updates.map(async (update) => {
-        const { id, dataUpdated } = update;
-        const roomTargeted = await Room.findById(id);
+      listRoomId.map(async (roomId) => {
+        const roomTargeted = await Room.findById(roomId);
         const service = roomTargeted.services.id(dataUpdated._id);
         if (service) {
-          if (dataUpdated.serviceName !== undefined) {
-            service.serviceName = dataUpdated.serviceName;
-          }
-          if (dataUpdated.price !== undefined) {
-            service.price = dataUpdated.price;
-          }
-          if (dataUpdated.paymentMethod !== undefined) {
-            service.paymentMethod = dataUpdated.paymentMethod;
-          }
-          if (dataUpdated.oldValue !== undefined) {
-            service.oldValue = dataUpdated.oldValue;
-          }
-          if (dataUpdated.newValue !== undefined) {
-            service.newValue = dataUpdated.newValue;
-          }
-          await roomTargeted.save();
+          await updateService(service);
         }
       })
     );
 
+    const xomtroTargeted = await Xomtro.findById(xomtroId);
+    const serviceXomtro = xomtroTargeted.services.id(dataUpdated._id);
+    if (serviceXomtro) {
+      serviceXomtro.appliedBy = listRoomId;
+      await updateService(serviceXomtro);
+    }
+
     res.json({
       result: true,
+      newData: xomtroTargeted.services,
       message: MESSAGE.UPDATE_SUCCESS,
     });
   } catch (error) {
@@ -353,7 +389,9 @@ const deleteUtilityCtrl = expressAsyncHandler(async (req, res) => {
   //check user isBlocked
   blockUser(user);
   const { id } = req.params;
+
   const { xomtroId } = req.body;
+
   // validateMongodbId(id);
   try {
     await Xomtro.updateMany(
@@ -382,6 +420,42 @@ const deleteUtilityCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
+/*-------------------
+//TODO: Get utility HUYPRO
+//-------------------*/
+const getUtilityByIdCtrl = expressAsyncHandler(async (req, res) => {
+  const { xomtroId, serviceId } = req.query;
+  validateMongodbId(xomtroId);
+  try {
+    // const xomtroTargeted = await Xomtro.findById({
+    //   _id: xomtroId,
+    // }).select("services");
+    const xomtroTargeted = await Xomtro.findById({ _id: xomtroId })
+      .select("services")
+      .populate({
+        path: "services.appliedBy",
+        model: "Room",
+        select: "roomName",
+      });
+    if (!xomtroTargeted) {
+      return res.json({ result: false, message: MESSAGE.NOT_FOUND_XOMTRO });
+    }
+    const found = xomtroTargeted.services.find(
+      (element) => element._id == serviceId
+    );
+    let dataUpdate = {
+      price: found.price,
+      nameService: found.serviceName,
+      measurement: found.measurement,
+      paymentMethod: found.paymentMethod,
+      _id: found._id,
+    };
+    res.json({ result: true, dataUpdate });
+  } catch (error) {
+    res.json(error);
+  }
+});
+
 module.exports = {
   createRoomCtrl,
   fetchRoomsCtrl,
@@ -392,4 +466,5 @@ module.exports = {
   deleteUtilityCtrl,
   fetchRoomsByIdXomTroCtrl,
   fetchRoomCtrl,
+  getUtilityByIdCtrl,
 };

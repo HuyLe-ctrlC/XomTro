@@ -63,7 +63,7 @@ export const getWard = createAsyncThunk(
   }
 );
 
-export const resetDistrict = createAction("reset/district");
+export const resetLocation = createAction("reset/location");
 
 //slices = reducer
 const locationSlices = createSlice({
@@ -88,8 +88,9 @@ const locationSlices = createSlice({
         state.serverError = action?.error?.message;
       });
     //reset District
-    builder.addCase(resetDistrict, (state, action) => {
-      state.dataDistrict = undefined;
+    builder.addCase(resetLocation, (state, action) => {
+      state.dataDistrict = [];
+      state.dataWard = [];
     });
     //get district
     builder

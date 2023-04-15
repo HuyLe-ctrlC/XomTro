@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectRooms,
-  toggleItemAction,
-  clearSelectionAction,
   updateDataAction,
-  selectAllAction,
 } from "../../../redux/slices/rooms/roomsSlices";
+import Utility from "./Utility";
+import TenantMonthlyUtilities from "./TenantMonthlyUtilities";
+import { clearSelectionAction, selectAllAction, toggleItemAction } from "../../../redux/slices/selectedSlices";
 
 const myItems = [
   {
@@ -47,10 +47,9 @@ export default function UtilityManagement() {
   const handleSelectAll = () => {
     dispatch(selectAllAction(myItems));
   };
-
   return (
     <>
-      <button onClick={handleClearSelection}>Clear selection</button>
+      {/* <button onClick={handleClearSelection}>Clear selection</button>
       <button onClick={handleSelectAll}>Select All</button>
       <ul>
         {myItems.map((item) => (
@@ -70,7 +69,15 @@ export default function UtilityManagement() {
           </li>
         )}
       </ul>
-      <button onClick={handleSend}>SEND</button>
+      <button onClick={handleSend}>SEND</button> */}
+      <div className="flex flex-col md:flex-row space-x-2 bg-slate-50 mx-2 rounded-xl p-4 drop-shadow-sm">
+        <div className="flex-initial w-full md:w-2/5 ">
+          <Utility />
+        </div>
+        <div className="flex-initial w-full md:w-3/5">
+          <TenantMonthlyUtilities />
+        </div>
+      </div>
     </>
   );
 }

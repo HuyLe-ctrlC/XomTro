@@ -21,9 +21,11 @@ export const CATEGORY_LIST = "/category-list";
 //Xomtro
 export const XOMTRO = "/xomtro";
 export const ROOM = "room";
-export const XOMTRO_ROOM  = "/xomtro/room";
 export const UTILITY_MANAGEMENT = "utility-management";
 export const INVOICE = "invoices";
 export const TENANTS = "tenants";
 export const CONTRACTS = "contracts";
 export const REVENUE = "revenue";
+
+export const XOMTRO_ROOM = "/xomtro/room";
+export const XOMTRO_UTILITY = "/xomtro/utility-management";

@@ -9,13 +9,32 @@ import {
   Polyline,
 } from "@react-google-maps/api";
 import LabelXomTro from "../../../../../components/LabelXomTro";
+import { useSelector } from "react-redux";
+import { selectPosts } from "../../../../../redux/slices/posts/postsSlices";
 const API_KEY = process.env.API_GOOGLE_MAP_KEY;
 const GEOCODE_API_KEY = process.env.API_GEOCODE_MAP_KEY;
-Geocode.setApiKey(GEOCODE_API_KEY);
+// Geocode.setApiKey(GEOCODE_API_KEY);
 export default function Promotion() {
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
+  //select post details from store
+  const post = useSelector(selectPosts);
+  const { dataUpdate } = post;
+
+  // const addressMap =
+  //   dataUpdate.ward?.prefix +
+  //   " " +
+  //   dataUpdate.ward?.name +
+  //   " " +
+  //   dataUpdate.district?.name +
+  //   " " +
+  //   dataUpdate.city?.name;
+  // console.log(
+  //   "🚀 ~ file: Promotion.js:26 ~ Promotion ~ addressMap:",
+  //   addressMap
+  // );
+
   const addressMap = "91 Lê Văn Tách, Bình Đường 1, An Bình, Dĩ An, Bình Dương";
   // useEffect(() => {
   //   Geocode.fromAddress(addressMap).then(
@@ -28,7 +47,7 @@ export default function Promotion() {
   //       console.error(error);
   //     }
   //   );
-  // }, []);
+  // }, [addressMap]);
 
   // useEffect(() => {
   //   navigator.geolocation.getCurrentPosition(
@@ -43,6 +62,7 @@ export default function Promotion() {
   //     }
   //   );
   // }, []);
+
   const containerStyle = {
     width: "100%",
     height: "400px",
@@ -58,11 +78,18 @@ export default function Promotion() {
   };
 
   const options = { closeBoxURL: "", enableEventPropagation: true };
+  // console.log("lat", lat);
+  // console.log("lng", lng);
   return (
     <>
       <div className="flex-initial flex flex-col lg:w-3/12 w-full border-2 rounded-t-lg">
         <div className="p-2">
-          <LabelXomTro label="Vị trí" fontSize='2xl' rFontSize='3xl' heightOfLine="h-10"/>
+          <LabelXomTro
+            label="Vị trí"
+            fontSize="2xl"
+            rFontSize="3xl"
+            heightOfLine="h-10"
+          />
 
           {/* <LoadScript googleMapsApiKey={API_KEY}>
             <GoogleMap

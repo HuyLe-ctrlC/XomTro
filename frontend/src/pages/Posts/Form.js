@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import * as tf from "@tensorflow/tfjs";
 import { useDispatch, useSelector } from "react-redux";
 import { selectPosts } from "../../redux/slices/posts/postsSlices";
 import * as Yup from "yup";
@@ -41,6 +42,13 @@ const formSchema = Yup.object().shape({
       );
     }),
 });
+
+const FLOWER_CLASS = {
+  0: "Chung cư",
+  1: "Ký túc xá",
+  2: "Nhà trọ",
+};
+
 export const Form = (props) => {
   const dispatch = useDispatch();
 
@@ -59,9 +67,10 @@ export const Form = (props) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [timeRule, setTimeRule] = useState("");
   const [files, setFiles] = useState([]);
+  const [predictionFile, setPredictionFile] = useState(false);
 
   // get props to index components
-  const { closeForm, isUpdate, addData, updateData, dataCity } = props;
+  const { closeForm, isUpdate, addData, updateData, dataCity, model } = props;
   const locations = useSelector(selectLocation);
   const { dataDistrict, dataWard } = locations;
   // get data update to redux
@@ -103,6 +112,7 @@ export const Form = (props) => {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataUpdate]);
 
   // close form event
@@ -120,15 +130,33 @@ export const Form = (props) => {
       removeVietnameseTones(formik.values.title.trim())
     );
     formData.append("category", formik.values.category.label.trim());
-    formData.append("acreage", formik.values.acreage.trim());
-    formData.append("waterPrice", formik.values.waterPrice.trim());
-    formData.append("electricityPrice", formik.values.electricityPrice.trim());
+    formData.append(
+      "acreage",
+      typeof formik.values.acreage == "string"
+        ? formik.values.acreage.replace(/,/g, "")
+        : formik.values.acreage
+    );
+    formData.append(
+      "waterPrice",
+      typeof formik.values.waterPrice == "string"
+        ? formik.values.waterPrice.replace(/,/g, "")
+        : formik.values.waterPrice
+    );
+    formData.append(
+      "electricityPrice",
+      typeof formik.values.electricityPrice == "string"
+        ? formik.values.electricityPrice.replace(/,/g, "")
+        : formik.values.electricityPrice
+    );
     formData.append(
       "price",
       typeof formik.values.price == "string"
         ? formik.values.price.replace(/,/g, "")
         : formik.values.price
     );
+    // formData.append("acreage", formik.values.acreage.trim());
+    // formData.append("waterPrice", formik.values.waterPrice.trim());
+    // formData.append("electricityPrice", formik.values.electricityPrice.trim());
     // formData.append("price", formik.values.price.trim());
     formData.append("addressDetail", formik.values.addressDetail.trim());
     formData.append("houseLessor", formik.values.houseLessor.trim());
@@ -166,15 +194,33 @@ export const Form = (props) => {
       removeVietnameseTones(formik.values.title.trim())
     );
     formData.append("category", formik.values.category.label.trim());
-    formData.append("acreage", formik.values.acreage.trim());
-    formData.append("waterPrice", formik.values.waterPrice.trim());
-    formData.append("electricityPrice", formik.values.electricityPrice.trim());
+    formData.append(
+      "acreage",
+      typeof formik.values.acreage == "string"
+        ? formik.values.acreage.replace(/,/g, "")
+        : formik.values.acreage
+    );
+    formData.append(
+      "waterPrice",
+      typeof formik.values.waterPrice == "string"
+        ? formik.values.waterPrice.replace(/,/g, "")
+        : formik.values.waterPrice
+    );
+    formData.append(
+      "electricityPrice",
+      typeof formik.values.electricityPrice == "string"
+        ? formik.values.electricityPrice.replace(/,/g, "")
+        : formik.values.electricityPrice
+    );
     formData.append(
       "price",
       typeof formik.values.price == "string"
         ? formik.values.price.replace(/,/g, "")
         : formik.values.price
     );
+    // formData.append("acreage", formik.values.acreage.trim());
+    // formData.append("waterPrice", formik.values.waterPrice.trim());
+    // formData.append("electricityPrice", formik.values.electricityPrice.trim());
     // formData.append("price", formik.values.price.trim());
     formData.append("addressDetail", formik.values.addressDetail.trim());
     formData.append("houseLessor", formik.values.houseLessor.trim());
@@ -205,6 +251,7 @@ export const Form = (props) => {
           className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-300 disabled:hover:bg-blue-300"
           disabled={
             !formik.isValid ||
+            // predictionFile === false ||
             files[0]?.size > 1800000 ||
             files[1]?.size > 1800000 ||
             files[2]?.size > 1800000 ||
@@ -222,6 +269,7 @@ export const Form = (props) => {
           className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 disabled:bg-green-300 disabled:hover:bg-green-300"
           disabled={
             !formik.isValid ||
+            // predictionFile === false ||
             files[0]?.size > 1800000 ||
             files[1]?.size > 1800000 ||
             files[2]?.size > 1800000 ||
@@ -285,6 +333,47 @@ export const Form = (props) => {
       "image/*": [],
     },
     onDrop: async (acceptedFiles) => {
+      // document.getElementById("result_info").textContent = "";
+      // const file = acceptedFiles[0];
+      // const reader = new FileReader();
+      // reader.onload = async function (event) {
+      //   const img = new Image();
+      //   img.onload = async function () {
+      //     const width = img.width;
+      //     const height = img.height;
+      //     const canvas = document.createElement("canvas");
+      //     canvas.width = 224;
+      //     canvas.height = 224;
+      //     const ctx = canvas.getContext("2d");
+      //     ctx.drawImage(img, 0, 0, width, height, 0, 0, 224, 224);
+      //     const tensor = tf.browser.fromPixels(canvas);
+      //     const normalizationOffset = tf.scalar(255 / 2);
+      //     const normalized = tensor
+      //       .sub(normalizationOffset)
+      //       .div(normalizationOffset);
+      //     const reshaped = normalized.reshape([1, 224, 224, 3]);
+      //     const prediction = await model.predict(reshaped);
+      //     console.log(
+      //       "🚀 ~ file: XomtroClassifier.js:71 ~ prediction:",
+      //       prediction.dataSync()
+      //     );
+      //     const classIndex = prediction.argMax(1).dataSync()[0];
+      //     // const className = FLOWER_CLASS[classIndex];
+      //     // document.getElementById("result_info").textContent = className;
+      //     let className = FLOWER_CLASS[classIndex];
+      //     if (prediction.max().dataSync()[0] < 0.9) {
+      //       document.getElementById("result_info").textContent =
+      //         "Hình ảnh không hợp lệ";
+      //       setPredictionFile(false);
+      //     } else {
+      //       document.getElementById("result_info").textContent = className;
+      //       setPredictionFile(true);
+      //     }
+      //   };
+      //   img.src = event.target.result;
+      // };
+      // reader.readAsDataURL(file);
+
       const newFiles = acceptedFiles.map((file) => {
         return Object.assign(file, {
           preview: URL.createObjectURL(file),
@@ -345,6 +434,7 @@ export const Form = (props) => {
   useEffect(() => {
     // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
     return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //get District
@@ -395,7 +485,9 @@ export const Form = (props) => {
     }
   };
   // console.log("files", formik.values);
+  // console.log("prediction", predictionFile);
   // console.log("Error", formik.errors);
+
   return (
     <>
       <div className="bg-black opacity-50 fixed w-full h-full top-0 z-40"></div>
@@ -462,8 +554,20 @@ export const Form = (props) => {
             </div>
             <div className="flex flex-col w-full ml-1">
               <div className="relative z-0 group border border-gray-300 rounded-md">
-                <input
+                {/* <input
                   type="acreage"
+                  name="floating_acreage"
+                  id="floating_acreage"
+                  className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  value={formik.values.acreage}
+                  onChange={formik.handleChange("acreage")}
+                  onBlur={formik.handleBlur("acreage")}
+                /> */}
+                <NumericFormat
+                  thousandsGroupStyle="thousand"
+                  thousandSeparator=","
+                  type="text"
                   name="floating_acreage"
                   id="floating_acreage"
                   className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
@@ -488,8 +592,21 @@ export const Form = (props) => {
           <div className="flex flex-row justify-between mb-2">
             <div className="flex flex-col w-full mr-1">
               <div className="relative z-0 group border border-gray-300 rounded-md ">
-                <input
+                {/* <input
                   type="electricityPrice"
+                  name="floating_electricityPrice"
+                  id="floating_electricityPrice"
+                  className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  value={formik.values.electricityPrice}
+                  onChange={formik.handleChange("electricityPrice")}
+                  onBlur={formik.handleBlur("electricityPrice")}
+                /> */}
+
+                <NumericFormat
+                  thousandsGroupStyle="thousand"
+                  thousandSeparator=","
+                  type="text"
                   name="floating_electricityPrice"
                   id="floating_electricityPrice"
                   className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
@@ -512,8 +629,21 @@ export const Form = (props) => {
             </div>
             <div className="flex flex-col w-full ml-1">
               <div className="relative z-0 group border border-gray-300 rounded-md">
-                <input
+                {/* <input
                   type="waterPrice"
+                  name="floating_waterPrice"
+                  id="floating_waterPrice"
+                  className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  value={formik.values.waterPrice}
+                  onChange={formik.handleChange("waterPrice")}
+                  onBlur={formik.handleBlur("waterPrice")}
+                /> */}
+
+                <NumericFormat
+                  thousandsGroupStyle="thousand"
+                  thousandSeparator=","
+                  type="text"
                   name="floating_waterPrice"
                   id="floating_waterPrice"
                   className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
@@ -755,6 +885,12 @@ export const Form = (props) => {
                   Chọn hình ảnh để đăng tin tại đây
                 </p>
               </div>
+              {/* <div
+                className={`result_id ${
+                  predictionFile ? "text-green-500" : "text-red-500"
+                } text-base italic`}
+                id="result_info"
+              ></div> */}
               <aside className="flex flex-row flex-wrap mt-4 justify-evenly">
                 {thumbs}
               </aside>

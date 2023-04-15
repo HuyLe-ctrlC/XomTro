@@ -7,7 +7,7 @@ export const addDataAction = createAsyncThunk(
     //http call
     try {
       const response = await postsApi.add(data);
-      // console.log("response", response);
+      console.log("response", response);
       const results = {
         data: response?.data?.data,
         message: response?.data?.message,

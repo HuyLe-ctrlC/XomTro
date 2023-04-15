@@ -17,7 +17,7 @@ export default function Form(props) {
   const { dataUpdate } = commentData;
   // console.log("dataUpdate", dataUpdate);
   //useRef
-  const inputRef = useRef();
+  const inputUpdateRef = useRef();
   //get dataUpdate
   useEffect(() => {
     focus();
@@ -67,7 +67,7 @@ export default function Form(props) {
   });
 
   const focus = () => {
-    inputRef.current?.focus();
+    inputUpdateRef.current?.focus();
   };
   return (
     <>
@@ -94,7 +94,7 @@ export default function Form(props) {
               value={formik.values.description}
               onChange={formik.handleChange("description")}
               onBlur={formik.handleBlur("description")}
-              ref={inputRef}
+              ref={inputUpdateRef}
             />
             <div className="text-red-500 text-base">
               {formik.touched.description && formik.errors.description}

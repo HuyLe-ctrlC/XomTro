@@ -437,6 +437,40 @@ const addUtilityXomtroCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
+/*-------------------
+//TODO: Get utility applied HUYPRO
+//-------------------*/
+const getUtilityAppliedByIdCtrl = expressAsyncHandler(async (req, res) => {
+  const { xomtroId, serviceId } = req.query;
+  validateMongodbId(xomtroId);
+  try {
+    // const xomtroTargeted = await Xomtro.findById({
+    //   _id: xomtroId,
+    // }).select("services");
+    const xomtroTargeted = await Xomtro.findById({ _id: xomtroId })
+      .select("services")
+      .populate({
+        path: "services.appliedBy",
+        model: "Room",
+        select: "roomName",
+      });
+    if (!xomtroTargeted) {
+      return res.json({ result: false, message: MESSAGE.NOT_FOUND_XOMTRO });
+    }
+    const found = xomtroTargeted.services.find(
+      (element) => element._id == serviceId
+    );
+    let appliedBy = found.appliedBy;
+    if (appliedBy.length === 0) {
+      appliedBy = await Room.find({ xomtro: xomtroId }).select("roomName");
+    }
+    res.json({ result: true, data: appliedBy });
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+
 module.exports = {
   createXomtroCtrl,
   fetchXomtrosCtrl,
@@ -444,5 +478,6 @@ module.exports = {
   updateXomtroCtrl,
   addUtilityXomtroCtrl,
   fetchXomtroCtrl,
-  fetchXomtroByUserCtrl
+  fetchXomtroByUserCtrl,
+  getUtilityAppliedByIdCtrl
 };

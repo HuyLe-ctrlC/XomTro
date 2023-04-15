@@ -9,6 +9,7 @@ const {
   deleteUtilityCtrl,
   fetchRoomsByIdXomTroCtrl,
   fetchRoomCtrl,
+  getUtilityByIdCtrl,
 } = require("../../controllers/rooms/roomsCtrl");
 
 const authMiddleware = require("../../middlewares/auth/authMiddleware");
@@ -18,10 +19,11 @@ const roomRoutes = express.Router();
 roomRoutes.post("/", authMiddleware, createRoomCtrl);
 roomRoutes.get("/search", authMiddleware, fetchRoomsCtrl);
 roomRoutes.get("/roomByXomtroId", authMiddleware, fetchRoomsByIdXomTroCtrl);
+roomRoutes.get("/get-utility", authMiddleware, getUtilityByIdCtrl);
 roomRoutes.get("/:id", authMiddleware, fetchRoomCtrl);
 roomRoutes.put("/update-utility", authMiddleware, updateUtilityCtrl);
 roomRoutes.put("/:id", authMiddleware, updateRoomCtrl);
-roomRoutes.delete("/delete-utility/:id", authMiddleware, deleteUtilityCtrl);
+roomRoutes.put("/delete-utility/:id", authMiddleware, deleteUtilityCtrl);
 roomRoutes.delete("/:id", authMiddleware, deleteRoomCtrl);
 roomRoutes.post("/add-utility", authMiddleware, addUtilityCtrl);
 

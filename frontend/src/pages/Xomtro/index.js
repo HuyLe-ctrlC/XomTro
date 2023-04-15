@@ -28,6 +28,7 @@ import { Form } from "./Form";
 import { updateDataAction } from "../../redux/slices/xomtros/xomtrosSlices";
 import Swal from "sweetalert2";
 import { addDataAction } from "../../redux/slices/xomtros/xomtrosSlices";
+import Cookies from "js-cookie";
 export default function Xomtro() {
   const location = useLocation();
   //redux
@@ -59,25 +60,26 @@ export default function Xomtro() {
     getXomtro;
 
   const getRoom = useSelector(selectRooms);
-  const { dataRoom, nameXomtro } = getRoom;
+  const { dataRoom, nameAndServicesXomtro } = getRoom;
 
   const getCategory = useSelector(selectCategory);
   const { data: dataCategories } = getCategory;
   const getData = () => {
     document.title = title;
     // console.log("keyword", params.keyword);
+    //get Xomtro by User
     userAuth?.isAdmin
       ? dispatch(getAllAction(params))
       : dispatch(getByUserAction(params));
-    // dispatch(getCity());
+    dispatch(getCity());
     dispatch(getAllCategoryAction(params));
   };
 
   useEffect(() => {
+    // setFormXomtroState(true);
+    // const action = openForm();
+    // dispatch(action);
     getData();
-    setFormXomtroState(true);
-    const action = openForm();
-    dispatch(action);
   }, []);
   const locations = useSelector(selectLocation);
   const { dataCity } = locations;
@@ -86,6 +88,12 @@ export default function Xomtro() {
   // if the current route is XOMTRO, redirect to the ROOM route
   if (isXomtroRoute) {
     return <Navigate to={ROUTES.ROOM} replace />;
+    // if (location.pathname === ROUTES.XOMTRO_ROOM) {
+    //   return <Navigate to={ROUTES.ROOM} replace />;
+    // }
+    // if (location.pathname === ROUTES.XOMTRO_UTILITY) {
+    //   return <Navigate to={ROUTES.UTILITY_MANAGEMENT} replace />;
+    // }
   }
 
   // open create form event
@@ -256,7 +264,7 @@ export default function Xomtro() {
         >
           {displayFormList()}
         </Transition>
-        <div className="flex flex-col bg-slate-50 mx-2 rounded-2xl p-4 drop-shadow-sm">
+        <div className="flex flex-col bg-slate-50 mx-2 rounded-xl p-4 drop-shadow-sm">
           <div className="flex flex-row ml-2">
             <div
               onClick={() => handleOpenFormList()}
@@ -272,7 +280,7 @@ export default function Xomtro() {
               <div>
                 <p className="text-xs italic">Xomtro đang quản lý</p>
                 <p className="text-green-600 font-semibold italic">
-                  {nameXomtro?.nameXomtro}
+                  {nameAndServicesXomtro?.nameXomtro}
                 </p>
               </div>
             </div>
