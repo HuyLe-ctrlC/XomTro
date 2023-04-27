@@ -30,6 +30,9 @@ export const getUtilityAppliedAction = createAsyncThunk(
 export const toggleItemAction = createAction("select/toggle-item");
 export const clearSelectionAction = createAction("select/clear-selection");
 export const selectAllAction = createAction("select/select-all");
+export const toggleItemServiceAction = createAction(
+  "select/toggle-item-service"
+);
 
 //this is change a little bit in dataRoom
 const selectSlices = createSlice({
@@ -40,8 +43,20 @@ const selectSlices = createSlice({
       const { itemSelected } = action.payload;
       //check exist
       const index = state.selected
-        .map((item) => item.id.toString())
-        .indexOf(itemSelected.id.toString());
+        .map((item) => item._id?.toString())
+        .indexOf(itemSelected._id?.toString());
+      if (index === -1) {
+        state.selected.push(itemSelected);
+      } else {
+        state.selected.splice(index, 1);
+      }
+    });
+    builder.addCase(toggleItemServiceAction, (state, action) => {
+      const { itemSelected } = action.payload;
+      //check exist
+      const index = state.selected
+        .map((item) => item._id?.toString())
+        .indexOf(itemSelected._id?.toString());
       if (index === -1) {
         state.selected.push(itemSelected);
       } else {

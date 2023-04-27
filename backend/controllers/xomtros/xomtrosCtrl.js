@@ -48,7 +48,6 @@ const createXomtroCtrl = expressAsyncHandler(async (req, res) => {
               _id: index + 1,
             };
           }),
-          internetServices: req.body.internetServices,
           invoiceDate: req.body.invoiceDate,
           paymentDeadline: req.body.paymentDeadline,
         });

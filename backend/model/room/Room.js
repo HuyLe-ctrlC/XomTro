@@ -9,13 +9,12 @@ const serviceSchema = new mongoose.Schema({
     required: [true, `Giá dịch vụ là bắt buộc`],
     min: [0, `Giá dịch vụ phải lớn hơn hoặc bằng 1000`],
   },
-  oldValue: { type: String },
-  newValue: { type: String },
+  oldValue: { type: String, default: 0 },
+  newValue: { type: String, default: 0 },
   paymentMethod: {
     type: String,
-    default: false,
-    required: [true, "Xét thay đổi là bắt buộc"],
   },
+  measurement: { type: String },
   _id: Number,
 });
 
@@ -26,6 +25,12 @@ const roomSchema = new mongoose.Schema(
       ref: "Xomtro",
       required: [true, "Xomtro là bắt buộc"],
     },
+    invoice: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Invoice",
+      },
+    ],
     user: {
       type: Object,
       required: [true, "User là bắt buộc"],

@@ -100,7 +100,7 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
     <>
       {data?.map((item) => (
         <tr className="bg-gray-50" key={item._id}>
-          <td className="px-4 py-4 whitespace-nowrap">
+          <td className="px-4 py-4 whitespace-nowrap border border-slate-500">
             <div className="flex items-center">
               <div className="flex-shrink-0 h-10 w-10">
                 <img
@@ -113,41 +113,41 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
                 <div className="text-sm font-medium text-gray-900">
                   {item?.user?.firstName} {item?.user?.lastName}
                 </div>
-                <div className="text-sm text-gray-500">{item?.user?.email}</div>
+                <div className="text-sm text-gray-800">{item?.user?.email}</div>
               </div>
             </div>
           </td>
-          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 border border-slate-500">
             {item.title}
           </td>
-          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 border border-slate-500">
             {item.category}
           </td>
-          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 border border-slate-500">
             <div className="flex items-center">
               <div className="space-y-2">
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-800">
                   Giá phòng: {new Intl.NumberFormat("de-DE").format(item.price)}
                   /tháng
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-800">
                   Diện tích: {item.acreage} m2
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-800">
                   Tiền điện: {item.electricityPrice}/Kw
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-800">
                   Tiền nước: {item.waterPrice}/Khối
                 </div>
               </div>
             </div>
           </td>
-          <td className="px-4 py-4 whitespace text-sm text-gray-500 overflow-hidden max-w-[220px]">
+          <td className="px-4 py-4 whitespace text-sm text-gray-800 overflow-hidden max-w-[220px] border border-slate-500">
             {item?.addressDetail},&#160;{item?.ward?.prefix},&#160;
             {item.ward?.name},&#160;
             {item.district?.name},&#160;{item?.city?.name}
           </td>
-          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 border border-slate-500">
             <label className="relative inline-flex items-center cursor-pointer">
               {userAuth?.isAdmin && (
                 <>
@@ -165,12 +165,12 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
                 </>
               )}
 
-              <span className="ml-3 text-sm text-gray-500">
+              <span className="ml-3 text-sm text-gray-800">
                 {item.isPublish ? "Đã duyệt" : "Đang chờ duyệt"}
               </span>
             </label>
           </td>
-          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 border border-slate-500">
             {/* <img src={item.image[0].img} alt="thumb" className="w-20 h-20" /> */}
             <button
               onClick={() => openSlideShow(item?._id)}
@@ -179,12 +179,12 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
               Xem image
             </button>
           </td>
-          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 border border-slate-500">
             <time>
               <DateFormatter date={item?.createdAt} />
             </time>
           </td>
-          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 border border-slate-500">
             <button
               className="text-4xl"
               onClick={() => handleOpenFormUpdate(item._id)}

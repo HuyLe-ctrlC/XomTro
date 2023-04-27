@@ -312,60 +312,60 @@ export default function CreatePost() {
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                   <div className="shadow overflow-hidden border border-gray-200 sm:rounded-lg ">
-                    <table className="min-w-full divide-y divide-gray-200 table-auto">
+                    <table className="min-w-full divide-y divide-gray-200 table-auto border border-slate-500 border-collapse">
                       <thead className="bg-gray-50">
                         <tr>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="px-6 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500"
                           >
                             Tác giả
                           </th>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="px-6 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500"
                           >
                             Tên bài viết
                           </th>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="px-6 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500"
                           >
                             Thể loại
                           </th>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="px-6 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500"
                           >
                             Thông tin phòng
                           </th>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="px-6 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500"
                           >
                             Địa chỉ
                           </th>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="px-6 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500"
                           >
                             Trạng thái
                           </th>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="px-6 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500"
                           >
                             Hình ảnh
                           </th>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="px-6 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500"
                           >
                             Ngày tạo
                           </th>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="px-6 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500"
                           >
                             Hành động
                           </th>

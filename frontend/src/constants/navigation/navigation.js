@@ -8,11 +8,6 @@ export const navigationPrivate = [
     href: ROUTES.POSTS,
     current: false,
   },
-  {
-    title: "Hồ sơ",
-    href: ROUTES.USERS,
-    current: false,
-  },
 ];
 
 export const navigationAdmin = [

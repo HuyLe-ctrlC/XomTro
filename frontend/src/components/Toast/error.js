@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 
 export default function Error(message, serverError) {
-  console.log("🚀 ~ file: error.js:4 ~ Error ~ message:", message);
+  // console.log("🚀 ~ file: error.js:4 ~ Error ~ message:", message);
   const Toast = Swal.mixin({
     toast: true,
     position: "bottom-end",

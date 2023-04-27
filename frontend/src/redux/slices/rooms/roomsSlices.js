@@ -61,7 +61,7 @@ export const updateDataAction = createAsyncThunk(
     const xomtro = data.data;
     try {
       const response = await roomApi.update(id, xomtro);
-      console.log("response", response);
+      // console.log("response", response);
       if (response.result) {
         const results = {
           id: id,
@@ -117,7 +117,7 @@ export const getByXomtroIdAction = createAsyncThunk(
     try {
       // call Api
       const response = await roomApi.getByXomtroId(params);
-      // console.log("response", response);
+      console.log("response", response);
       const results = {
         data: response.data,
         totalPage: response.totalPage,
@@ -240,12 +240,16 @@ export const getUtilityAction = createAsyncThunk(
     }
   }
 );
-
+export const clearRoomAction = createAction("room/clear-room");
 //this is change a little bit in dataRoom
 const roomSlices = createSlice({
   name: "rooms",
   initialState: { selected: [], dataRoom: [], totalPage: 0, dataUpdate: [] },
   extraReducers: (builder, state) => {
+    //reset dateRoom
+    builder.addCase(clearRoomAction, (state, action) => {
+      state.dataRoom = [];
+    });
     //update data
     builder
       .addCase(updateDataAction.pending, (state, action) => {

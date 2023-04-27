@@ -77,11 +77,7 @@ export const Form = (props) => {
   const [electricityPrice, setElectricityPrice] = useState("");
   const [garbagePrice, setGarbagePrice] = useState("");
   const [internetPrice, setInterenetPrice] = useState("");
-  //service names
-  // const [waterService] = useState("Tiền điện");
-  // const [garbageService] = useState("Tiền nước");
-  // const [electricityService] = useState("Tiền rác");
-  // const [internetService] = useState("Tiền internet");
+
   const [paymentMethod] = useState("Tháng");
   const [price, setPrice] = useState("");
   const [city, setCity] = useState("");

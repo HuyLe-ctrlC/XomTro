@@ -27,6 +27,20 @@ const renterSchema = new mongoose.Schema(
       ref: "Room",
       required: [true, "Phòng trọ là bắt buộc"],
     },
+    xomtro: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Xomtro",
+      required: [true, "Xomtro là bắt buộc"],
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "User là bắt buộc"],
+    },
+    invoice: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Invoice",
+    },
     renterName: {
       type: String,
       required: [true, "Tên khách thuê là bắt buộc"],

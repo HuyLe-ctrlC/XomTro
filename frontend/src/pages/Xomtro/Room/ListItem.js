@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { HiPencilAlt } from "react-icons/hi";
+import { FaDollarSign } from "react-icons/fa";
 import {
   BsChevronUp,
   BsPeopleFill,
@@ -8,18 +9,19 @@ import {
 } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
-import {
-  deleteAction,
-} from "../../../redux/slices/rooms/roomsSlices";
+import { deleteAction } from "../../../redux/slices/rooms/roomsSlices";
 import { DateConverter } from "../../../utils/DateFormatter";
 import houseStatus from "../../../img/house-status.png";
 
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 
-export const ListItem = ({ data, openFormUpdate, openSlide }) => {
+export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
   const dispatch = useDispatch();
   const handleOpenFormUpdate = (id) => {
     openFormUpdate(id);
+  };
+  const handleOpenFormAddInvoice = (id) => {
+    openFormAddInvoice(id);
   };
   // delete data event
   const handleDelete = (id) => {
@@ -85,6 +87,9 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
     );
   }, [data]);
   // console.log("groupByFloor", groupByFloor);
+  const isNotPaid = (currentValue) =>
+    currentValue.invoiceStatus === "Chưa thu tiền";
+  const isPaid = (currentValue) => currentValue.invoiceStatus === "Đã thu tiền";
   return (
     <>
       {groupByFloor?.map((item, index) => (
@@ -146,7 +151,7 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
                       </div>
                       <div className="p-4 border border-slate-400 whitespace text-sm text-gray-800 flex items-center overflow-hidden max-w-[220px]">
                         <div className="flex items-center">
-                          <BsPeopleFill className="text-xl mr-2"/>
+                          <BsPeopleFill className="text-xl mr-2" />
                           0/{item.maxPeople}
                         </div>
                       </div>
@@ -173,8 +178,22 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
                           {item.rentalStatus}
                         </span>
                       </div>
-                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center ">
-                        {item.paymentStatus}
+                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-white flex items-center ">
+                        <span
+                          className={`p-2 rounded-lg ${
+                            item.invoices?.find(isNotPaid)
+                              ? "bg-red-500"
+                              : item.invoices?.find(isPaid)
+                              ? "bg-green-500"
+                              : "bg-orange-500"
+                          }`}
+                        >
+                          {item.invoices?.find(isNotPaid)
+                            ? "Chưa thu tiền"
+                            : item.invoices?.find(isPaid)
+                            ? "Đã thu tiền"
+                            : "Chờ chu kỳ tới"}
+                        </span>
                       </div>
                       <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center">
                         <Menu as="div" className="ml-3 relative">
@@ -204,22 +223,37 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
                                 >
                                   <Menu.Item>
                                     {({ activeEdit, activeDelete }) => (
-                                      <div>
+                                      <div className="space-y-2">
                                         <div
                                           onClick={() =>
                                             handleOpenFormUpdate(item._id)
                                           }
                                           className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
                                         >
-                                          Chỉnh sửa
+                                          <div className="flex items-center space-x-2">
+                                            <HiPencilAlt className="text-2xl" />
+                                            <span>Chỉnh sửa phòng</span>
+                                          </div>
                                         </div>
                                         <div
                                           onClick={() =>
-                                            handleDelete(item._id)
+                                            handleOpenFormAddInvoice(item._id)
                                           }
                                           className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
                                         >
-                                          Xóa
+                                          <div className="flex items-center space-x-2">
+                                            <FaDollarSign className="text-2xl" />
+                                            <span>Lập hóa đơn</span>
+                                          </div>
+                                        </div>
+                                        <div
+                                          onClick={() => handleDelete(item._id)}
+                                          className="hover:bg-gray-100 block px-4 py-2 text-sm text-red-500"
+                                        >
+                                          <div className="flex items-center space-x-2">
+                                            <BsTrash className="text-2xl" />
+                                            <span>Xóa phòng</span>
+                                          </div>
                                         </div>
                                       </div>
                                     )}

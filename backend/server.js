@@ -12,6 +12,8 @@ const categoryRoutes = require("./routes/categories/categoryRoute");
 const locationRoutes = require("./routes/location/locationRoute");
 const xomtroRoutes = require("./routes/xomtros/xomtrosRoute");
 const roomRoutes = require("./routes/rooms/roomsRoute");
+const invoiceRoutes = require("./routes/invoice/invoiceRoute");
+const renterRoutes = require("./routes/renters/renterRoute");
 const app = express();
 //DB
 dbConnect();
@@ -36,6 +38,10 @@ app.use("/api/location", locationRoutes);
 app.use("/api/xomtro", xomtroRoutes);
 //room route
 app.use("/api/room", roomRoutes);
+//invoice route
+app.use("/api/invoice", invoiceRoutes);
+//invoice route
+app.use("/api/renter", renterRoutes);
 //error handler
 app.use(notFound);
 app.use(errorHandler);

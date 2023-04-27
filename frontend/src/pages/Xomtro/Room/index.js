@@ -8,21 +8,26 @@ import { ListItem } from "./ListItem";
 import { Search } from "./Search";
 import Swal from "sweetalert2";
 import { Form } from "./Form";
+import { Form as FormInvoice } from "../Invoice/Form";
 import { Transition } from "@headlessui/react";
 import React from "react";
-import Slider from "../../../components/Slider";
 
 import {
   addDataAction,
+  clearRoomAction,
   getByIdAction,
   getByXomtroIdAction,
   selectRooms,
   updateDataAction,
 } from "../../../redux/slices/rooms/roomsSlices";
-import { AiFillSetting } from "react-icons/ai";
+import {
+  selectInvoices,
+  addDataAction as addInvoiceAction,
+} from "../../../redux/slices/invoices/invoicesSlices";
 import Footer from "../../../components/Footer";
 import { selectXomtro } from "../../../redux/slices/xomtros/xomtrosSlices";
 import Cookies from "js-cookie";
+import { clearSelectionAction } from "../../../redux/slices/selectedSlices";
 
 export default function Room() {
   //redux
@@ -30,6 +35,8 @@ export default function Room() {
 
   const [formStatusState, setFormStatusState] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
+  const [formInvoice, setFormInvoice] = useState(false);
+  const [isAddInvoiceInRoom, setIsAddInvoiceInRoom] = useState(false);
   const title = "Quản lý phòng trọ";
   const [currentPage, setCurrentPage] = useState(1);
   const [active, setActive] = useState("");
@@ -69,7 +76,7 @@ export default function Room() {
     loadingRoom,
     appRoomError,
     serverRoomError,
-    nameXomtro,
+    nameAndServicesXomtro,
     dataUpdate,
   } = getRoom;
 
@@ -85,6 +92,8 @@ export default function Room() {
     //   };
     //   dispatch(getByXomtroIdAction(newParams));
     // }
+    
+    //check if in the store have date then not call api
     if (!dataRoom?.length) {
       const newParams = {
         ...params,
@@ -102,7 +111,7 @@ export default function Room() {
       ...params,
       keyword: keyword,
       offset: 0,
-      xomtroId: nameXomtro?.id,
+      xomtroId: nameAndServicesXomtro?.id,
     };
     getData(newParams);
   };
@@ -208,12 +217,68 @@ export default function Room() {
     dispatch(getByIdAction(id));
   };
 
+  const handleOpenFormAddInvoice = (id) => {
+    setFormInvoice(true);
+    setIsAddInvoiceInRoom(true);
+    const action = openForm();
+    dispatch(action);
+    // get room by ID
+    dispatch(getByIdAction(id));
+  };
+
+  const handleAddDataInRoom = async (id, dataUpdateRoom, dataInvoice) => {
+    const dataServiceRoom = { services: dataUpdateRoom };
+    const data = {
+      id,
+      data: dataServiceRoom,
+    };
+
+    setFormInvoice(false);
+    const action = await dispatch(addInvoiceAction(dataInvoice));
+    dispatch(updateDataAction(data));
+    dispatch(clearSelectionAction());
+    dispatch(clearRoomAction());
+    const msg = action.payload;
+    // console.log("msg", msg);
+    if (addInvoiceAction.fulfilled.match(action)) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        width: 500,
+      });
+
+      Toast.fire({
+        icon: "success",
+        title: msg.message,
+      });
+    } else {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        width: 500,
+      });
+
+      Toast.fire({
+        icon: "error",
+        title: msg.message ?? (serverRoomError && "Máy chủ đang bận!"),
+      });
+    }
+  };
+
   // close form event
   const handleCloseForm = () => {
     setFormStatusState(false);
+    setFormInvoice(false);
     const action = closeForm();
     dispatch(action);
     setIsUpdate(false);
+    setIsAddInvoiceInRoom(false);
   };
   // check show form
   const displayForm = () => {
@@ -224,9 +289,23 @@ export default function Room() {
           isUpdate={isUpdate}
           addData={handleAddData}
           updateData={handleUpdateData}
-          xomtroServices={nameXomtro?.services}
-          xomtroWithId={nameXomtro?._id}
+          xomtroServices={nameAndServicesXomtro?.services}
+          xomtroWithId={nameAndServicesXomtro?._id}
           dataUpdate={dataUpdate}
+        />
+      );
+    }
+  };
+  // check show form
+  const displayFormInvoice = () => {
+    if (formInvoice) {
+      return (
+        <FormInvoice
+          closeForm={handleCloseForm}
+          isAddInvoiceInRoom={isAddInvoiceInRoom}
+          addDataInRoom={handleAddDataInRoom}
+          // updateData={handleUpdateData}
+          dataAddInRoom={dataUpdate}
         />
       );
     }
@@ -245,6 +324,17 @@ export default function Room() {
           leaveTo="opacity-0"
         >
           {displayForm()}
+        </Transition>
+        <Transition
+          show={formInvoice}
+          enter="transition-opacity duration-75"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity duration-150"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          {displayFormInvoice()}
         </Transition>
         <div className="flex flex-col bg-slate-50 mx-2 rounded-2xl p-4">
           <div className="flex flex-row ml-2">
@@ -314,6 +404,9 @@ export default function Room() {
                       <ListItem
                         data={dataRoom}
                         openFormUpdate={(id) => handleOpenFormUpdate(id)}
+                        openFormAddInvoice={(id) =>
+                          handleOpenFormAddInvoice(id)
+                        }
                       />
                     )}
                   </div>

@@ -58,6 +58,7 @@ const createRoomCtrl = expressAsyncHandler(async (req, res) => {
 const fetchRoomsCtrl = expressAsyncHandler(async (req, res) => {
   try {
     const { keyword = "", offset = 0, limit = 10 } = req.query;
+
     let pipeline = [];
 
     pipeline.push({
@@ -65,6 +66,7 @@ const fetchRoomsCtrl = expressAsyncHandler(async (req, res) => {
         $or: [{ roomName: { $regex: keyword, $options: "i" } }],
       },
     });
+
     pipeline.push({
       $project: {
         roomName: 1,
@@ -130,12 +132,35 @@ const fetchRoomsByIdXomTroCtrl = expressAsyncHandler(async (req, res) => {
         },
       });
     }
-
     pipeline.push({
       $match: {
         $or: [{ roomName: { $regex: keyword, $options: "i" } }],
       },
     });
+
+    // pipeline.push({
+    //   $lookup: {
+    //     from: "invoices",
+    //     let: { roomId: "$_id" },
+    //     pipeline: [
+    //       {
+    //         $match: {
+    //           $expr: {
+    //             $and: [{ $eq: ["$room", "$$roomId"] }],
+    //           },
+    //         },
+    //       },
+    //       // project invoice fields
+    //       {
+    //         $project: {
+    //           invoiceStatus: 1,
+    //           paymentPurpose: 1,
+    //         },
+    //       },
+    //     ],
+    //     as: "invoices",
+    //   },
+    // });
 
     pipeline.push({
       $project: {
@@ -154,8 +179,61 @@ const fetchRoomsByIdXomTroCtrl = expressAsyncHandler(async (req, res) => {
         paymentStatus: 1,
         securityDeposit: 1,
         moveInDate: 1,
+
+        // // extract first element of invoices array
+        // invoice: { $arrayElemAt: ["$invoices", 0] },
+        // extract all elements of invoices array
+        invoices: {
+          $map: {
+            input: "$invoices",
+            as: "invoice",
+            in: {
+              invoicePurpose: "$$invoice.invoicePurpose",
+              invoiceStatus: "$$invoice.invoiceStatus",
+            },
+          },
+        },
       },
     });
+
+    // Add the $lookup stage to get invoices from rooms
+    pipeline.push({
+      $lookup: {
+        from: "invoices",
+        let: { roomId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [{ $eq: ["$room", "$$roomId"] }],
+              },
+            },
+          },
+          // project invoice fields
+          {
+            $project: {
+              invoicePurpose: 1,
+              invoiceStatus: 1,
+            },
+          },
+        ],
+        as: "invoices",
+      },
+    });
+
+    //@note Get all data (specific field above) when a collection does not contain _id
+    // Add the $lookup stage to get invoices from rooms
+    // pipeline.push({
+    //   $lookup: {
+    //     from: "invoices",
+    //     localField: "_id",
+    //     foreignField: "room",
+    //     as: "invoices",
+    //   },
+    // });
+
+    // Add the $lookup stage to get invoices from rooms
+
     pipeline.push({ $skip: parseInt(offset) });
     pipeline.push({ $limit: parseInt(limit) });
     pipeline.push({
@@ -228,7 +306,7 @@ const updateRoomCtrl = expressAsyncHandler(async (req, res) => {
         ...req?.body,
       },
       { new: true, runValidators: true }
-    );
+    ).populate({ path: "invoice", select: "invoiceStatus paymentPurpose" });
     if (updateRoom) {
       res.json({
         result: true,

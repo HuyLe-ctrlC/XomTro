@@ -14,6 +14,7 @@ import { HiPencilAlt } from "react-icons/hi";
 import { BsTrash, BsTrashFill } from "react-icons/bs";
 import { getByXomtroIdAction } from "../../../redux/slices/rooms/roomsSlices";
 import Swal from "sweetalert2";
+import { resetInvoiceAction } from "../../../redux/slices/invoices/invoicesSlices";
 export default function XomtroManagement({
   closeForm,
   openFormUpdate,
@@ -51,6 +52,7 @@ export default function XomtroManagement({
     const newParams = { ...params, xomtroId: id };
     dispatch(setCookieXomtroIdAction(id));
     dispatch(getByXomtroIdAction(newParams));
+    dispatch(resetInvoiceAction());
   };
 
   // delete data event

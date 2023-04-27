@@ -340,12 +340,6 @@ export const Form = (props) => {
                 </div>
               </li>
             ))}
-            {/* {selected?.length === 0 && (
-              <li>
-                <input type="checkbox" checked={false} readOnly />
-                <span>No items selected</span>
-              </li>
-            )} */}
           </ul>
           {showButtonAction()}
           <button
