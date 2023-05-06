@@ -174,9 +174,9 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
             {/* <img src={item.image[0].img} alt="thumb" className="w-20 h-20" /> */}
             <button
               onClick={() => openSlideShow(item?._id)}
-              className="bg-blue-500 p-3 text-white rounded-md"
+              className="bg-blue-500 p-3 text-white rounded-md min-w-full"
             >
-              Xem image
+              Xem ảnh
             </button>
           </td>
           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 border border-slate-500">

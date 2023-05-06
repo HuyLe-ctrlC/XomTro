@@ -41,6 +41,10 @@ const renterSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Invoice",
     },
+    roomName: {
+      type: String,
+      required: [true, "Tên phòng là bắt buộc"],
+    },
     renterName: {
       type: String,
       required: [true, "Tên khách thuê là bắt buộc"],
@@ -86,13 +90,16 @@ const renterSchema = new mongoose.Schema(
     },
     IDCardPhoto: [imageSchema],
     isContact: {
-      type: String,
+      type: Boolean,
+      default: false,
     },
     isVerified: {
-      type: String,
+      type: Boolean,
+      default: false,
     },
     isRegister: {
-      type: String,
+      type: Boolean,
+      default: false,
     },
   },
   {

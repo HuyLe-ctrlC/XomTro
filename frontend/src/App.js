@@ -27,6 +27,8 @@ import Xomtro from "./pages/Xomtro";
 import Room from "./pages/Xomtro/Room";
 import OutletProtectRoute from "./utils/ProtectRoutes/OutletProtectRoute";
 import Invoice from "./pages/Xomtro/Invoice";
+import Renter from "./pages/Xomtro/Renter";
+import Revenue from "./pages/Xomtro/Revenue";
 function App() {
   const user = useSelector(selectUser);
   const userAuth = user?.userAuth;
@@ -95,6 +97,14 @@ function App() {
               <Route
                 path={ROUTES.UTILITY_MANAGEMENT}
                 element={<UtilityManagement />}
+              />
+              <Route
+                path={ROUTES.RENTERS}
+                element={<Renter />}
+              />
+              <Route
+                path={ROUTES.REVENUE}
+                element={<Revenue />}
               />
             </Route>
           </Route>

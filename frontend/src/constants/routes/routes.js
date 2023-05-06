@@ -24,6 +24,7 @@ export const ROOM = "room";
 export const UTILITY_MANAGEMENT = "utility-management";
 export const INVOICE = "invoices";
 export const TENANTS = "tenants";
+export const RENTERS = "renters";
 export const CONTRACTS = "contracts";
 export const REVENUE = "revenue";
 

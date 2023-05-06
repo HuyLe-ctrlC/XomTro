@@ -193,6 +193,16 @@ const fetchRoomsByIdXomTroCtrl = expressAsyncHandler(async (req, res) => {
             },
           },
         },
+        renters: {
+          $map: {
+            input: "$renters",
+            as: "renter",
+            in: {
+              renterName: "$$renter.renterName",
+              roomName: "$$renter.roomName",
+            },
+          },
+        },
       },
     });
 
@@ -218,6 +228,30 @@ const fetchRoomsByIdXomTroCtrl = expressAsyncHandler(async (req, res) => {
           },
         ],
         as: "invoices",
+      },
+    });
+    // Add the $lookup stage to get invoices from rooms
+    pipeline.push({
+      $lookup: {
+        from: "renters",
+        let: { roomId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [{ $eq: ["$room", "$$roomId"] }],
+              },
+            },
+          },
+          // project invoice fields
+          {
+            $project: {
+              renterName: 1,
+              roomName: 1,
+            },
+          },
+        ],
+        as: "renters",
       },
     });
 

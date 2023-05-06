@@ -1,5 +1,11 @@
 const express = require("express");
-const { createRenterCtrl } = require("../../controllers/renters/rentersCtrl");
+const {
+  createRenterCtrl,
+  fetchRentersCtrl,
+  fetchRenterByIdCtrl,
+  updateRenterCtrl,
+  deleteRenterCtrl,
+} = require("../../controllers/renters/rentersCtrl");
 const authMiddleware = require("../../middlewares/auth/authMiddleware");
 
 const {
@@ -17,5 +23,14 @@ renterRoutes.post(
   postImgResize,
   createRenterCtrl
 );
-
+renterRoutes.get("/search", authMiddleware, fetchRentersCtrl);
+renterRoutes.get("/:id", authMiddleware, fetchRenterByIdCtrl);
+renterRoutes.put(
+  "/:id",
+  authMiddleware,
+  photoUpload.array("image", 2),
+  postImgResize,
+  updateRenterCtrl
+);
+renterRoutes.delete("/:id", authMiddleware, deleteRenterCtrl);
 module.exports = renterRoutes;

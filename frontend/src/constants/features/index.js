@@ -61,7 +61,7 @@ export const FeaturesNotDescription = [
     _id: 4,
     icon: hopDong,
     title: "Tất cả khách thuê",
-    href: ROUTES.TENANTS,
+    href: ROUTES.RENTERS,
   },
   {
     _id: 5,

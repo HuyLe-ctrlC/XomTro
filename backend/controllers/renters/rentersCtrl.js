@@ -59,7 +59,7 @@ const fetchRentersCtrl = expressAsyncHandler(async (req, res) => {
       ? mongoose.Types.ObjectId(req.query.xomtroId)
       : null;
     const roomId = req.query.roomId
-      ? mongoose.Types.ObjectId(req.query.xomtroId)
+      ? mongoose.Types.ObjectId(req.query.roomId)
       : null;
     let pipeline = [];
 
@@ -90,6 +90,7 @@ const fetchRentersCtrl = expressAsyncHandler(async (req, res) => {
         user: 1,
         invoice: 1,
         renterName: 1,
+        roomName: 1,
         numberPhone: 1,
         zaloNumber: 1,
         nationalID: 1,
@@ -143,4 +144,118 @@ const fetchRentersCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createRenterCtrl };
+/*-------------------
+//TODO: Fetch a Renter
+//-------------------*/
+
+const fetchRenterByIdCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const renter = await Renter.findById(id).populate({path: 'room', select: "_id roomName"});
+
+    if (renter) {
+      res.json({
+        result: true,
+        dataUpdate: renter,
+        message: MESSAGE.GET_DATA_SUCCESS,
+      });
+    } else {
+      res.json({ result: false, message: MESSAGE.DATA_NOT_FOUND });
+    }
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+/*-------------------
+//TODO: Update a Renter
+//-------------------*/
+
+const updateRenterCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+
+  const files = req.resizedAndFormattedImages;
+  if (!files.length) {
+    const postUpdate = await Renter.findByIdAndUpdate(
+      id,
+
+      {
+        ...req.body,
+        user: req?.user,
+      },
+      { new: true }
+    );
+
+    return res.json({
+      result: true,
+      message: MESSAGE.UPDATE_SUCCESS,
+      newData: postUpdate,
+    });
+  }
+  // console.log("files", files)
+  const imgUploaded = files.map((file) => {
+    if (file?.preview?.startsWith("/")) {
+      const filename = file?.filename;
+      const type = file?.type;
+      const preview = file?.preview;
+      return { filename, preview, type };
+    } else {
+      const filename = file?.filename;
+      const type = file?.type;
+      const preview = file?.buffer?.toString("base64");
+      const filepath = `public/images/posts/${filename}`;
+      fs.unlinkSync(filepath);
+      return { filename, preview, type };
+    }
+  });
+
+  const renterUpdate = await Renter.findByIdAndUpdate(
+    id,
+    {
+      ...req.body,
+      user: req?.user,
+      IDCardPhoto: imgUploaded,
+    },
+    { new: true }
+  ).populate("user", "email lastName firstName profilePhoto");
+
+  res.json({
+    result: true,
+    message: MESSAGE.UPDATE_SUCCESS,
+    newData: renterUpdate,
+  });
+});
+
+/*-------------------
+//TODO: Delete a Renter
+//-------------------*/
+const deleteRenterCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+
+    const renter = await Renter.findOneAndDelete(id);
+
+    if (renter) {
+      res.json({
+        result: true,
+        _id: renter._id,
+        message: MESSAGE.DELETE_SUCCESS,
+      });
+    } else {
+      res.json({ result: false, message: MESSAGE.MESSAGE_FAILED });
+    }
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+module.exports = {
+  createRenterCtrl,
+  fetchRentersCtrl,
+  fetchRenterByIdCtrl,
+  updateRenterCtrl,
+  deleteRenterCtrl
+};

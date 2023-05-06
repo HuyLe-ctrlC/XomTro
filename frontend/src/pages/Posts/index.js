@@ -388,7 +388,7 @@ export default function CreatePost() {
                           <ListItem
                             data={data}
                             openFormUpdate={(id) => handleOpenFormUpdate(id)}
-                            openSlide={(images) => handleOpenSlide(images)}
+                            openSlide={(imageId) => handleOpenSlide(imageId)}
                           />
                         )}
                       </tbody>

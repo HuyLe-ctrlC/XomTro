@@ -286,7 +286,7 @@ export const Form = (props) => {
   // create data event
   const handleAddData = (e) => {
     e.preventDefault();
-    const listRoomId = selected?.map((item) => item._id);
+    const listRoomId = selected?.map((item) => item.id);
     const noServices = xomtroServices?.map((item) => {
       return {
         ...item,

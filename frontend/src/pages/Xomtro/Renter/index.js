@@ -14,12 +14,11 @@ import React from "react";
 
 import {
   addDataAction,
-  clearRoomAction,
   getByIdAction,
-  getByXomtroIdAction,
-  selectRooms,
+  resetDataUpdateAction,
+  selectRenter,
   updateDataAction,
-} from "../../../redux/slices/rooms/roomsSlices";
+} from "../../../redux/slices/renters/rentersSlices";
 import {
   selectInvoices,
   addDataAction as addInvoiceAction,
@@ -28,8 +27,12 @@ import Footer from "../../../components/Footer";
 import { selectXomtro } from "../../../redux/slices/xomtros/xomtrosSlices";
 import Cookies from "js-cookie";
 import { clearSelectionAction } from "../../../redux/slices/selectedSlices";
+import { getAllAction } from "../../../redux/slices/renters/rentersSlices";
+import { getByXomtroIdAction } from "../../../redux/slices/rooms/roomsSlices";
+import Slide from "./Slide";
+import { selectRooms } from "../../../redux/slices/rooms/roomsSlices";
 
-export default function Room() {
+export default function Renter() {
   //redux
   const dispatch = useDispatch();
 
@@ -37,7 +40,7 @@ export default function Room() {
   const [isUpdate, setIsUpdate] = useState(false);
   const [formInvoice, setFormInvoice] = useState(false);
   const [isAddInvoiceInRoom, setIsAddInvoiceInRoom] = useState(false);
-  const title = "Quản lý phòng trọ";
+  const title = "Quản lý khách thuê";
   const [currentPage, setCurrentPage] = useState(1);
   const [active, setActive] = useState("");
   const [limit, setLimit] = useState(20);
@@ -67,8 +70,17 @@ export default function Room() {
     //   ? dispatch(getAllAction(params))
     //   : dispatch(getByUserAction(params));
     // dispatch(getCity());
-    dispatch(getByXomtroIdAction(newParams));
+    dispatch(getAllAction(newParams));
   };
+
+  const getRenter = useSelector(selectRenter);
+  const {
+    dataRenter,
+    loadingRenter,
+    appRenterError,
+    serverRenterError,
+    dataRenterUpdate,
+  } = getRenter;
 
   const getRoom = useSelector(selectRooms);
   const {
@@ -77,7 +89,7 @@ export default function Room() {
     appRoomError,
     serverRoomError,
     nameAndServicesXomtro,
-    dataUpdate,
+    dataUpdate: roomUpdate,
   } = getRoom;
 
   //
@@ -92,13 +104,14 @@ export default function Room() {
     //   };
     //   dispatch(getByXomtroIdAction(newParams));
     // }
-    
+
     //check if in the store have date then not call api
-    if (!dataRoom?.length) {
+    if (!dataRenter?.length) {
       const newParams = {
         ...params,
         xomtroId: Cookies.get("xomtroIDCookie"),
       };
+      dispatch(getAllAction(newParams));
       dispatch(getByXomtroIdAction(newParams));
     }
 
@@ -157,7 +170,7 @@ export default function Room() {
 
       Toast.fire({
         icon: "error",
-        title: msg.message ?? (serverRoomError && "Máy chủ đang bận!"),
+        title: msg.message ?? (serverRenterError && "Máy chủ đang bận!"),
       });
     }
   };
@@ -217,15 +230,6 @@ export default function Room() {
     dispatch(getByIdAction(id));
   };
 
-  const handleOpenFormAddInvoice = (id) => {
-    setFormInvoice(true);
-    setIsAddInvoiceInRoom(true);
-    const action = openForm();
-    dispatch(action);
-    // get room by ID
-    dispatch(getByIdAction(id));
-  };
-
   const handleAddDataInRoom = async (id, dataUpdateRoom, dataInvoice) => {
     const dataServiceRoom = { services: dataUpdateRoom };
     const data = {
@@ -237,7 +241,6 @@ export default function Room() {
     const action = await dispatch(addInvoiceAction(dataInvoice));
     dispatch(updateDataAction(data));
     dispatch(clearSelectionAction());
-    dispatch(clearRoomAction());
     const msg = action.payload;
     // console.log("msg", msg);
     if (addInvoiceAction.fulfilled.match(action)) {
@@ -266,8 +269,36 @@ export default function Room() {
 
       Toast.fire({
         icon: "error",
-        title: msg.message ?? (serverRoomError && "Máy chủ đang bận!"),
+        title: msg.message ?? (serverRenterError && "Máy chủ đang bận!"),
       });
+    }
+  };
+  const [slideStatusState, setSlideStatusState] = useState(false);
+
+  // close form event
+  const handleCloseSlide = () => {
+    setSlideStatusState(false);
+    const action = closeForm();
+    dispatch(action);
+    dispatch(resetDataUpdateAction());
+  };
+
+  const handleOpenSlide = (id) => {
+    setSlideStatusState(true);
+    const action = openForm();
+    dispatch(action);
+    dispatch(getByIdAction(id));
+  };
+
+  const showSlide = () => {
+    if (slideStatusState) {
+      // console.log("images", images);
+      return (
+        <div className="z-10 max-w-[1280px] h-[600px] m-auto py-16 px-4 group w-3/4 fixed left-1/2 ml-[-37.5%]">
+          <Slide closeForm={handleCloseSlide} isBigger={false} />
+        </div>
+      );
+      // return <Slider closeForm={handleCloseSlide} />;
     }
   };
 
@@ -289,27 +320,14 @@ export default function Room() {
           isUpdate={isUpdate}
           addData={handleAddData}
           updateData={handleUpdateData}
-          xomtroServices={nameAndServicesXomtro?.services}
           xomtroWithId={nameAndServicesXomtro?._id}
-          dataUpdate={dataUpdate}
+          dataUpdate={dataRenterUpdate}
+          roomStatus={dataRoom}
         />
       );
     }
   };
-  // check show form
-  const displayFormInvoice = () => {
-    if (formInvoice) {
-      return (
-        <FormInvoice
-          closeForm={handleCloseForm}
-          isAddInvoiceInRoom={isAddInvoiceInRoom}
-          addDataInRoom={handleAddDataInRoom}
-          // updateData={handleUpdateData}
-          dataAddInRoom={dataUpdate}
-        />
-      );
-    }
-  };
+
 
   return (
     <>
@@ -325,17 +343,8 @@ export default function Room() {
         >
           {displayForm()}
         </Transition>
-        <Transition
-          show={formInvoice}
-          enter="transition-opacity duration-75"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="transition-opacity duration-150"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          {displayFormInvoice()}
-        </Transition>
+        {showSlide()}
+
         <div className="flex flex-col bg-slate-50 mx-2 rounded-2xl p-4">
           <div className="flex flex-row ml-2">
             <div className="absolute left-5 w-1 bg-green-400 h-14"></div>
@@ -346,7 +355,7 @@ export default function Room() {
               </p>
             </div>
             {/* Add button */}
-            {dataRoom && (
+            {dataRenter && (
               <div className="flex items-center grow justify-end flex-shrink-0">
                 <HiOutlinePlusSm
                   onClick={() => handleOpenFormAdd()}
@@ -363,50 +372,57 @@ export default function Room() {
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                   <div className="shadow overflow-hidden border border-gray-200 sm:rounded-lg ">
-                    <div className="grid grid-cols-[150px_150px_150px_150px_150px_150px_200px_200px_150px_150px_150px] ">
-                      <div className="col-span-2 flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
-                        Tên phòng
+                    <div className="grid grid-cols-[200px_150px_150px_100px_400px_150px_150px_200px_150px_150px_200px_200px_150px] ">
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500">
+                        Tên khách hàng
                       </div>
-                      <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
-                        Nhóm
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                        Số điện thoại
                       </div>
-                      <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
-                        Giá thuê
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                        Ngày sinh
                       </div>
-                      <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
-                        Mức tiền cọc
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                        Giới tính
                       </div>
-                      <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
-                        Khách thuê
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                        Địa chỉ & Nghề nghiệp
                       </div>
-                      <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
-                        Ngày lập hóa đơn
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                        Số CCCD
                       </div>
-                      <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
-                        Ngày vào ở
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                        Ngày cấp
                       </div>
-                      <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
-                        Tình trạng
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                        Nơi cấp
                       </div>
-                      <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
-                        Tài chính
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                        Ảnh mặt trước & mặt sau CCCD
                       </div>
-                      <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                        Vai trò
+                      </div>
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                        Trạng thái giấy tờ
+                      </div>
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                        Trạng thái tạm trú
+                      </div>
+                      <div className="flex items-center justify-center px-6 py-3 text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
                         Hành động
                       </div>
                     </div>
                     {loadingRoom ? (
                       <div className="text-center">Không tìm thấy dữ liệu</div>
-                    ) : (dataRoom && dataRoom?.length <= 0) ||
-                      dataRoom == null ? (
+                    ) : (dataRenter && dataRenter?.length <= 0) ||
+                      dataRenter == null ? (
                       <div className="text-center">Không tìm thấy dữ liệu</div>
                     ) : (
                       <ListItem
-                        data={dataRoom}
+                        data={dataRenter}
                         openFormUpdate={(id) => handleOpenFormUpdate(id)}
-                        openFormAddInvoice={(id) =>
-                          handleOpenFormAddInvoice(id)
-                        }
+                        openSlide={(imageId) => handleOpenSlide(imageId)}
                       />
                     )}
                   </div>

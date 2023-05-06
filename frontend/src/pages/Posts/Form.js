@@ -218,10 +218,6 @@ export const Form = (props) => {
         ? formik.values.price.replace(/,/g, "")
         : formik.values.price
     );
-    // formData.append("acreage", formik.values.acreage.trim());
-    // formData.append("waterPrice", formik.values.waterPrice.trim());
-    // formData.append("electricityPrice", formik.values.electricityPrice.trim());
-    // formData.append("price", formik.values.price.trim());
     formData.append("addressDetail", formik.values.addressDetail.trim());
     formData.append("houseLessor", formik.values.houseLessor.trim());
     formData.append("phoneNumber", formik.values.phoneNumber.trim());
@@ -333,47 +329,6 @@ export const Form = (props) => {
       "image/*": [],
     },
     onDrop: async (acceptedFiles) => {
-      // document.getElementById("result_info").textContent = "";
-      // const file = acceptedFiles[0];
-      // const reader = new FileReader();
-      // reader.onload = async function (event) {
-      //   const img = new Image();
-      //   img.onload = async function () {
-      //     const width = img.width;
-      //     const height = img.height;
-      //     const canvas = document.createElement("canvas");
-      //     canvas.width = 224;
-      //     canvas.height = 224;
-      //     const ctx = canvas.getContext("2d");
-      //     ctx.drawImage(img, 0, 0, width, height, 0, 0, 224, 224);
-      //     const tensor = tf.browser.fromPixels(canvas);
-      //     const normalizationOffset = tf.scalar(255 / 2);
-      //     const normalized = tensor
-      //       .sub(normalizationOffset)
-      //       .div(normalizationOffset);
-      //     const reshaped = normalized.reshape([1, 224, 224, 3]);
-      //     const prediction = await model.predict(reshaped);
-      //     console.log(
-      //       "🚀 ~ file: XomtroClassifier.js:71 ~ prediction:",
-      //       prediction.dataSync()
-      //     );
-      //     const classIndex = prediction.argMax(1).dataSync()[0];
-      //     // const className = FLOWER_CLASS[classIndex];
-      //     // document.getElementById("result_info").textContent = className;
-      //     let className = FLOWER_CLASS[classIndex];
-      //     if (prediction.max().dataSync()[0] < 0.9) {
-      //       document.getElementById("result_info").textContent =
-      //         "Hình ảnh không hợp lệ";
-      //       setPredictionFile(false);
-      //     } else {
-      //       document.getElementById("result_info").textContent = className;
-      //       setPredictionFile(true);
-      //     }
-      //   };
-      //   img.src = event.target.result;
-      // };
-      // reader.readAsDataURL(file);
-
       const newFiles = acceptedFiles.map((file) => {
         return Object.assign(file, {
           preview: URL.createObjectURL(file),
@@ -885,12 +840,6 @@ export const Form = (props) => {
                   Chọn hình ảnh để đăng tin tại đây
                 </p>
               </div>
-              {/* <div
-                className={`result_id ${
-                  predictionFile ? "text-green-500" : "text-red-500"
-                } text-base italic`}
-                id="result_info"
-              ></div> */}
               <aside className="flex flex-row flex-wrap mt-4 justify-evenly">
                 {thumbs}
               </aside>

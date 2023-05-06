@@ -6,25 +6,25 @@ import {
   BsDot,
 } from "react-icons/bs";
 import { useSelector } from "react-redux";
-import { selectPosts } from "../../redux/slices/posts/postsSlices";
-import Loading from "../Loading/Loading";
-import { selectRenter } from "../../redux/slices/renters/rentersSlices";
+
+import { selectRenter } from "../../../redux/slices/renters/rentersSlices";
+
 export default function Slider(props) {
   //logic redux
   const { closeForm, isBigger } = props;
-  const posts = useSelector(selectPosts);
-  const { dataUpdate } = posts;
+  const renterImages = useSelector(selectRenter);
+  const { dataRenterUpdate } = renterImages;
   //logic slider
   const [currentIndex, setCurrentIndex] = useState(0);
   const prevSlide = () => {
     const isFirstSlide = currentIndex === 0;
     const newIndex = isFirstSlide
-      ? dataUpdate?.image?.length - 1
+      ? dataRenterUpdate?.IDCardPhoto?.length - 1
       : currentIndex - 1;
     setCurrentIndex(newIndex);
   };
   const nextSlide = () => {
-    const isLastSlide = currentIndex === dataUpdate?.image?.length - 1;
+    const isLastSlide = currentIndex === dataRenterUpdate?.IDCardPhoto?.length - 1;
     const newIndex = isLastSlide ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
   };
@@ -34,11 +34,11 @@ export default function Slider(props) {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex(
-        (currentIndex) => (currentIndex + 1) % dataUpdate?.image?.length
+        (currentIndex) => (currentIndex + 1) % dataRenterUpdate?.IDCardPhoto?.length
       );
     }, 5000);
     return () => clearInterval(interval);
-  }, [dataUpdate?.image]);
+  }, [dataRenterUpdate?.IDCardPhoto]);
   // close form event
   const handleCloseForm = () => {
     closeForm();
@@ -49,19 +49,19 @@ export default function Slider(props) {
     <div className="w-full h-full ">
       {!isBigger && (
         <button
-          className="absolute top-0 left-0 z-10 w-full inline-flex justify-end "
+          className="absolute -top-36 left-0 z-10 w-full inline-flex justify-end "
           onClick={() => handleCloseForm()}
         >
           <AiOutlineClose className="text-3xl text-white bg-slate-600 hover:bg-slate-400 rounded-lg" />
         </button>
       )}
-      {dataUpdate?.image?.map((imageUrl, index) => (
+      {dataRenterUpdate?.IDCardPhoto?.map((imageUrl, index) => (
         <img
           key={index}
           src={`data:image/jpeg;base64,${imageUrl.preview}`}
           alt=""
           className={`${
-            isBigger ? "top-[4.1rem] h-[570px]" : "top-0 h-full"
+            isBigger ? "top-[4.1rem] h-[570px]" : "-top-36 h-full"
           } absolute left-0 w-full transition-opacity duration-1000 rounded-2xl bg-center bg-contain ${
             index === currentIndex ? "opacity-100" : "opacity-0"
           } `}
@@ -69,7 +69,7 @@ export default function Slider(props) {
       ))}
       {isBigger && (
         <div className="flex absolute top-[630px] -translate-x-0 translate-y-[50%] left-1/2">
-          {dataUpdate?.image?.map((slide, slideIndex) => (
+          {dataRenterUpdate?.IDCardPhoto?.map((slide, slideIndex) => (
             <div key={slideIndex} onClick={() => goToSlide(slideIndex)}>
               <BsDot
                 className={`
@@ -85,11 +85,11 @@ export default function Slider(props) {
         </div>
       )}
       {/* Left arrow */}
-      <div className="hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[50%] left-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer">
+      <div className="hidden group-hover:block absolute top-[20%] -translate-x-0 translate-y-[50%] left-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer">
         <BsChevronCompactLeft size={30} onClick={prevSlide} />
       </div>
       {/* Right arrow */}
-      <div className="hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[50%] right-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer">
+      <div className="hidden group-hover:block absolute top-[20%] -translate-x-0 translate-y-[50%] right-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer">
         <BsChevronCompactRight size={30} onClick={nextSlide} />
       </div>
     </div>

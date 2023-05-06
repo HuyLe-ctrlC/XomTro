@@ -116,16 +116,6 @@ export const Form = (props) => {
           setNameXomtro(dataUpdate.nameXomtro);
         }
         if (dataUpdate.category !== undefined) {
-          // const foundElement = dataCategories?.find(
-          //   (el) => el._id === dataUpdate.category
-          // );
-          // if (foundElement) {
-          //   const newElement = {
-          //     value: foundElement._id,
-          //     label: foundElement.title,
-          //   };
-          //   setCategory(newElement);
-          // }
           const foundElement = dataCategories?.find(
             (el) => el._id === dataUpdate.category
           );
@@ -278,15 +268,6 @@ export const Form = (props) => {
         name: formik?.values?.ward?.label,
         prefix: formik?.values?.ward?.prefix,
       },
-      // district: {
-      //   id: JSON.parse(formik?.values?.district)?.id,
-      //   name: JSON.parse(formik?.values?.district)?.name,
-      // },
-      // ward: {
-      //   id: JSON.parse(formik?.values?.ward)?.id,
-      //   name: JSON.parse(formik?.values?.ward)?.name,
-      //   prefix: JSON.parse(formik?.values?.ward)?.prefix,
-      // },
       addressDetail: formik.values.addressDetail,
       invoiceDate: formik.values.invoiceDate,
       paymentDeadline: formik.values.paymentDeadline,
@@ -340,8 +321,6 @@ export const Form = (props) => {
       numberOfFloors,
       maxPeople,
       numberRoom,
-      // assetManagement,
-      // vehicleManagement,
       invoiceDate,
       paymentDeadline,
     },

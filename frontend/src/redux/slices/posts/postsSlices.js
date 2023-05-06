@@ -7,7 +7,7 @@ export const addDataAction = createAsyncThunk(
     //http call
     try {
       const response = await postsApi.add(data);
-      console.log("response", response);
+      // console.log("response", response);
       const results = {
         data: response?.data?.data,
         message: response?.data?.message,
@@ -239,7 +239,6 @@ const postsSlices = createSlice({
   extraReducers: (builder, state) => {
     //reset store
     builder.addCase(revertAllAction, () => initialState);
-    //Dispatch action
     builder.addCase(resetEditAction, (state, action) => {
       state.dataUpdate = [];
     });

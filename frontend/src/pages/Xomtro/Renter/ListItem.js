@@ -1,7 +1,9 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { HiPencilAlt } from "react-icons/hi";
-import { FaDollarSign } from "react-icons/fa";
+import { FaDollarSign, FaUser } from "react-icons/fa";
+import { MdPlace } from "react-icons/md";
 import {
+  BsBriefcaseFill,
   BsChevronUp,
   BsPeopleFill,
   BsThreeDotsVertical,
@@ -9,20 +11,20 @@ import {
 } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
-import { deleteAction } from "../../../redux/slices/rooms/roomsSlices";
+import { deleteAction } from "../../../redux/slices/renters/rentersSlices";
 import { DateConverter } from "../../../utils/DateFormatter";
 import houseStatus from "../../../img/house-status.png";
 
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-
-export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
-  console.log("🚀 ~ file: ListItem.js:19 ~ ListItem ~ data:", data)
+import Moment from "react-moment";
+import "moment/locale/vi";
+export const ListItem = ({ data, openFormUpdate, openSlide }) => {
   const dispatch = useDispatch();
   const handleOpenFormUpdate = (id) => {
     openFormUpdate(id);
   };
-  const handleOpenFormAddInvoice = (id) => {
-    openFormAddInvoice(id);
+  const openSlideShow = (id) => {
+    openSlide(id);
   };
   // delete data event
   const handleDelete = (id) => {
@@ -66,10 +68,10 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
   };
 
   const [groupByFloor, setGroupByFloor] = useState(undefined);
-  console.log("🚀 ~ file: ListItem.js:69 ~ ListItem ~ groupByFloor:", groupByFloor)
+
   useEffect(() => {
     const grouped = data.reduce((result, item) => {
-      const floor = item.floor;
+      const floor = item.roomName;
       if (!result[floor]) {
         result[floor] = [];
       }
@@ -77,14 +79,10 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
       return result;
     }, {});
 
-    // const result = Object.entries(grouped).map(([floor, rooms]) => ({
-    //   floor,
-    //   rooms,
-    // }));
     setGroupByFloor(
-      Object.entries(grouped).map(([floor, rooms]) => ({
+      Object.entries(grouped).map(([floor, renters]) => ({
         floor,
-        rooms,
+        renters,
       }))
     );
   }, [data]);
@@ -92,7 +90,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
   const isNotPaid = (currentValue) =>
     currentValue.invoiceStatus === "Chưa thu tiền";
   const isPaid = (currentValue) => currentValue.invoiceStatus === "Đã thu tiền";
-  
+
   return (
     <>
       {groupByFloor?.map((item, index) => (
@@ -103,7 +101,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                 <div>
                   <span className="text-gray-800">{item.floor}&#160;</span>
                   <span className="text-red-600">
-                    ({item.rooms?.length} phòng)
+                    ({item.renters?.length} khách thuê)
                   </span>
                 </div>
                 <BsChevronUp
@@ -113,90 +111,86 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                 />
               </Disclosure.Button>
               <Disclosure.Panel className="text-sm text-gray-800">
-                <div className="grid grid-cols-[150px_150px_150px_150px_150px_150px_200px_200px_150px_150px_150px] ">
-                  {item.rooms?.map((item) => (
+                <div className="grid grid-cols-[200px_150px_150px_100px_400px_150px_150px_200px_150px_150px_200px_200px_150px] ">
+                  {item.renters?.map((item) => (
                     <React.Fragment key={item._id}>
-                      <div className="p-4 border border-slate-400 whitespace-nowrap col-span-2">
+                      <div className="p-4 border border-slate-400 whitespace-nowrap overflow-auto">
                         <div className="flex items-center ">
                           <div
-                            className={`flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center ${
-                              item.rentalStatus === "Đang trống"
-                                ? "bg-red-500"
-                                : item.rentalStatus === "Đang ở"
-                                ? "bg-green-500"
-                                : "bg-orange-500"
-                            }`}
+                            className={`flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center bg-red-500`}
                           >
-                            <img
-                              className="h-8 w-8 p-1"
-                              src={houseStatus}
-                              alt="status room"
-                            />
+                            <FaUser className="text-white text-xl" />
                           </div>
                           <div className="ml-4 ">
                             <div className="text-sm text-gray-800 font-semibold">
-                              {item.roomName}
+                              {item.renterName}
                             </div>
                           </div>
                         </div>
                       </div>
 
                       <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800  flex items-center">
-                        {item.floor}
+                        {item.numberPhone}
                       </div>
-                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 font-semibold flex items-center">
-                        {new Intl.NumberFormat("de-DE").format(item.price)}
+                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800  flex items-center">
+                        <Moment
+                          format="DD/MM/YYYY"
+                          locale="vi"
+                          className="rounded-md block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-800 bg-transparent appearance-none"
+                        >
+                          {item.dateOfBirth}
+                        </Moment>
                       </div>
-                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center">
-                        {new Intl.NumberFormat("de-DE").format(
-                          item.securityDeposit
-                        )}
+                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800  flex items-center ">
+                        {item.gender}
                       </div>
-                      <div className="p-4 border border-slate-400 whitespace text-sm text-gray-800 flex items-center overflow-hidden max-w-[220px]">
-                        <div className="flex items-center">
-                          <BsPeopleFill className="text-xl mr-2" />
-                          0/{item.maxPeople}
+                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex flex-col items-start overflow-auto space-y-2">
+                        <div className="flex space-x-2 items-center">
+                          <MdPlace />
+                          <span>
+                            Địa chỉ:&#160;
+                            {item.ward?.prefix ? item.ward?.prefix + " " : ""}
+                            {item.ward?.name},&#160;
+                            {item.district?.name},&#160;
+                            {item.city?.name}
+                          </span>
+                        </div>
+                        <div className="flex space-x-2 items-center">
+                          <BsBriefcaseFill />
+                          <span>Nghề nghiệp: {item.career}</span>
                         </div>
                       </div>
-                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center ">
-                        {item.invoiceDate}
+                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center">
+                        {item.nationalID}
                       </div>
-                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center ">
-                        {item.moveInDate ? (
-                          <DateConverter date={item.moveInDate} />
-                        ) : (
-                          "Chưa vào ở"
-                        )}
-                      </div>
-                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-white flex items-center ">
-                        <span
-                          className={`p-2 rounded-lg text-center ${
-                            item.rentalStatus === "Đang trống"
-                              ? "bg-red-500 min-w-full"
-                              : item.rentalStatus === "Đang ở"
-                              ? "bg-green-500 min-w-full"
-                              : "bg-orange-500 min-w-full"
-                          }`}
+                      <div className="p-4 border border-slate-400 whitespace text-sm text-gray-800 flex items-center overflow-hidden max-w-[220px]">
+                        <Moment
+                          format="DD/MM/YYYY"
+                          locale="vi"
+                          className="rounded-md block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-800 bg-transparent appearance-none"
                         >
-                          {item.rentalStatus}
-                        </span>
+                          {item.nationalIdDate}
+                        </Moment>
                       </div>
-                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-white flex items-center ">
-                        <span
-                          className={`p-2 rounded-lg text-center ${
-                            item.invoices?.find(isNotPaid)
-                              ? "bg-red-500 min-w-full"
-                              : item.invoices?.find(isPaid)
-                              ? "bg-green-500 min-w-full"
-                              : "bg-orange-500 min-w-full"
-                          }`}
+                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center ">
+                        {item.nationalIdIssuer}
+                      </div>
+                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center ">
+                        <button
+                          onClick={() => openSlideShow(item?._id)}
+                          className="bg-blue-500 p-3 text-white rounded-md min-w-full"
                         >
-                          {item.invoices?.find(isNotPaid)
-                            ? "Chưa thu tiền"
-                            : item.invoices?.find(isPaid)
-                            ? "Đã thu tiền"
-                            : "Chờ chu kỳ tới"}
-                        </span>
+                          Xem ảnh
+                        </button>
+                      </div>
+                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center ">
+                        {item.isContact ? "Người liên hệ" : "Thành viên"}
+                      </div>
+                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center ">
+                        {item.isVerified ? "Đầy đủ" : "Chưa đầy đủ"}
+                      </div>
+                      <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center ">
+                        {item.isVerified ? "Đầy đủ" : "Chưa đầy đủ"}
                       </div>
                       <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center">
                         <Menu as="div" className="ml-3 relative">
@@ -235,18 +229,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                                         >
                                           <div className="flex items-center space-x-2">
                                             <HiPencilAlt className="text-2xl" />
-                                            <span>Chỉnh sửa phòng</span>
-                                          </div>
-                                        </div>
-                                        <div
-                                          onClick={() =>
-                                            handleOpenFormAddInvoice(item._id)
-                                          }
-                                          className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
-                                        >
-                                          <div className="flex items-center space-x-2">
-                                            <FaDollarSign className="text-2xl" />
-                                            <span>Lập hóa đơn</span>
+                                            <span>Chỉnh sửa thông tin</span>
                                           </div>
                                         </div>
                                         <div
@@ -255,7 +238,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                                         >
                                           <div className="flex items-center space-x-2">
                                             <BsTrash className="text-2xl" />
-                                            <span>Xóa phòng</span>
+                                            <span>Xóa khách thuê</span>
                                           </div>
                                         </div>
                                       </div>

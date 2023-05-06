@@ -28,7 +28,6 @@ const customStyles = {
 };
 
 export default function WardDropdown(props) {
-  const dispatch = useDispatch();
   const [wardValue, setWardValue] = useState(props?.value?.label);
 
   //get data from redux

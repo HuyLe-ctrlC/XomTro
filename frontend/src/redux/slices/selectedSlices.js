@@ -28,11 +28,11 @@ export const getUtilityAppliedAction = createAsyncThunk(
 );
 
 export const toggleItemAction = createAction("select/toggle-item");
-export const clearSelectionAction = createAction("select/clear-selection");
 export const selectAllAction = createAction("select/select-all");
 export const toggleItemServiceAction = createAction(
   "select/toggle-item-service"
 );
+export const clearSelectionAction = createAction("select/clear-selection");
 
 //this is change a little bit in dataRoom
 const selectSlices = createSlice({

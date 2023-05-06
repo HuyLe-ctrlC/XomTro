@@ -31,6 +31,12 @@ const roomSchema = new mongoose.Schema(
         ref: "Invoice",
       },
     ],
+    renter: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Renter",
+      },
+    ],
     user: {
       type: Object,
       required: [true, "User là bắt buộc"],
