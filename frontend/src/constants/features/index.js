@@ -63,12 +63,12 @@ export const FeaturesNotDescription = [
     title: "Tất cả khách thuê",
     href: ROUTES.RENTERS,
   },
-  {
-    _id: 5,
-    icon: ghiChu,
-    title: "Tất cả hợp đồng",
-    href: ROUTES.CONTRACTS,
-  },
+  // {
+  //   _id: 5,
+  //   icon: ghiChu,
+  //   title: "Tất cả hợp đồng",
+  //   href: ROUTES.CONTRACTS,
+  // },
   {
     _id: 6,
     icon: thongKe,

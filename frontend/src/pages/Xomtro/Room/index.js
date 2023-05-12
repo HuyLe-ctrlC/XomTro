@@ -80,6 +80,14 @@ export default function Room() {
     dataUpdate,
   } = getRoom;
 
+  const getRoomByXomtroIdHandler = () => {
+    const newParams = {
+      ...params,
+      xomtroId: Cookies.get("xomtroIDCookie"),
+    };
+    dispatch(getByXomtroIdAction(newParams));
+  };
+
   //
   useEffect(() => {
     // Check if rooms data is already available in the store
@@ -92,18 +100,19 @@ export default function Room() {
     //   };
     //   dispatch(getByXomtroIdAction(newParams));
     // }
-    
-    //check if in the store have date then not call api
-    if (!dataRoom?.length) {
-      const newParams = {
-        ...params,
-        xomtroId: Cookies.get("xomtroIDCookie"),
-      };
-      dispatch(getByXomtroIdAction(newParams));
-    }
 
+    //check if in the store have date then not call api
+    // if (!dataRoom?.length) {
+    //   const newParams = {
+    //     ...params,
+    //     xomtroId: Cookies.get("xomtroIDCookie"),
+    //   };
+    //   dispatch(getByXomtroIdAction(newParams));
+    //   getRoomByXomtroIdHandler();
+    // }
+    getRoomByXomtroIdHandler();
     document.title = title;
-  }, []);
+  }, [Cookies.get("xomtroIDCookie")]);
 
   // search data
   const handleSearch = (keyword) => {
@@ -235,9 +244,10 @@ export default function Room() {
 
     setFormInvoice(false);
     const action = await dispatch(addInvoiceAction(dataInvoice));
-    dispatch(updateDataAction(data));
+    // dispatch(updateDataAction(data));
+    getRoomByXomtroIdHandler();
     dispatch(clearSelectionAction());
-    dispatch(clearRoomAction());
+    // dispatch(clearRoomAction());
     const msg = action.payload;
     // console.log("msg", msg);
     if (addInvoiceAction.fulfilled.match(action)) {
@@ -358,12 +368,12 @@ export default function Room() {
           <Search handleSearch={handleSearch} />
 
           {/* Grid */}
-          <div>
-            <div className="flex flex-col overflow-hidden">
+          <div className="mt-6">
+            <div className="flex flex-col overflow-hidden items-center">
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                   <div className="shadow overflow-hidden border border-gray-200 sm:rounded-lg ">
-                    <div className="grid grid-cols-[150px_150px_150px_150px_150px_150px_200px_200px_150px_150px_150px] ">
+                    <div className="grid grid-cols-[150px_150px_150px_150px_150px_200px_150px_150px_150px] ">
                       <div className="col-span-2 flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
                         Tên phòng
                       </div>
@@ -373,18 +383,18 @@ export default function Room() {
                       <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
                         Giá thuê
                       </div>
-                      <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                      {/* <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
                         Mức tiền cọc
-                      </div>
+                      </div> */}
                       <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
                         Khách thuê
                       </div>
                       <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
                         Ngày lập hóa đơn
                       </div>
-                      <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
+                      {/* <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
                         Ngày vào ở
-                      </div>
+                      </div> */}
                       <div className="flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
                         Tình trạng
                       </div>

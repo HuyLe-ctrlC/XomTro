@@ -10,6 +10,7 @@ const {
   fetchRoomsByIdXomTroCtrl,
   fetchRoomCtrl,
   getUtilityByIdCtrl,
+  checkOutOfTheRoomCtrl,
 } = require("../../controllers/rooms/roomsCtrl");
 
 const authMiddleware = require("../../middlewares/auth/authMiddleware");
@@ -24,6 +25,7 @@ roomRoutes.get("/:id", authMiddleware, fetchRoomCtrl);
 roomRoutes.put("/update-utility", authMiddleware, updateUtilityCtrl);
 roomRoutes.put("/:id", authMiddleware, updateRoomCtrl);
 roomRoutes.put("/delete-utility/:id", authMiddleware, deleteUtilityCtrl);
+roomRoutes.put("/checkout/:id", authMiddleware, checkOutOfTheRoomCtrl);
 roomRoutes.delete("/:id", authMiddleware, deleteRoomCtrl);
 roomRoutes.post("/add-utility", authMiddleware, addUtilityCtrl);
 

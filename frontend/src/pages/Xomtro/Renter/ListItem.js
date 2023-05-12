@@ -190,7 +190,7 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
                         {item.isVerified ? "Đầy đủ" : "Chưa đầy đủ"}
                       </div>
                       <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center ">
-                        {item.isVerified ? "Đầy đủ" : "Chưa đầy đủ"}
+                        {item.isRegister ? "Đầy đủ" : "Chưa đầy đủ"}
                       </div>
                       <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-gray-800 flex items-center">
                         <Menu as="div" className="ml-3 relative">

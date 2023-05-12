@@ -69,20 +69,6 @@ export default function CreatePost() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //classify image Xomtro
-  // const [model, setModel] = useState(null);
-
-  // useEffect(() => {
-  //   async function loadModel() {
-  //     const model = await tf.loadLayersModel(
-  //       "http://localhost:3000/static/model.json"
-  //     );
-  //     setModel(model);
-  //     console.log("Model loaded");
-  //     // console.log(model.summary());
-  //   }
-  //   loadModel();
-  // }, []);
 
   const locations = useSelector(selectLocation);
   const { dataCity } = locations;

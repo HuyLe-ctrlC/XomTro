@@ -31,37 +31,233 @@ import {
 const addSchema = Yup.object().shape({
   nameXomtro: Yup.string().required("*Dữ liệu bắt buộc!"),
   category: Yup.object().required("*Dữ liệu bắt buộc!"),
-  numberRoom: Yup.string().required("*Dữ liệu bắt buộc!"),
   numberOfFloors: Yup.string().required("*Dữ liệu bắt buộc!"),
-  maxPeople: Yup.string().required("*Dữ liệu bắt buộc!"),
   acreage: Yup.string().required("*Dữ liệu bắt buộc!"),
-  waterPrice: Yup.string().required("*Dữ liệu bắt buộc!"),
-  electricityPrice: Yup.string().required("*Dữ liệu bắt buộc!"),
-  garbagePrice: Yup.string().required("*Dữ liệu bắt buộc!"),
-  internetPrice: Yup.string().required("*Dữ liệu bắt buộc!"),
-  price: Yup.string().required("*Dữ liệu bắt buộc!"),
+  numberRoom: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  maxPeople: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  // maxPeople: Yup.string().required("*Dữ liệu bắt buộc!"),
+  waterPrice: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  electricityPrice: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  garbagePrice: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  internetPrice: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  price: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  // waterPrice: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // electricityPrice: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // garbagePrice: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // internetPrice: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // price: Yup.string().required("*Dữ liệu bắt buộc!"),
   city: Yup.object().required("*Dữ liệu bắt buộc!"),
   district: Yup.object().required("*Dữ liệu bắt buộc!"),
   ward: Yup.object().required("*Dữ liệu bắt buộc!"),
   addressDetail: Yup.string().required("*Dữ liệu bắt buộc!"),
-  invoiceDate: Yup.string().required("*Dữ liệu bắt buộc!"),
-  paymentDeadline: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // invoiceDate: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // paymentDeadline: Yup.string().required("*Dữ liệu bắt buộc!"),
+  invoiceDate: Yup.number()
+    .integer("*Phải là số nguyên!")
+    .positive("*Phải là số nguyên dương!")
+    .min(1, "*Phải lớn hơn hoặc bằng 1!")
+    .max(31, "*Phải nhỏ hơn hoặc bằng 31!")
+    .required("*Dữ liệu bắt buộc!"),
+  paymentDeadline: Yup.number()
+    .integer("*Phải là số nguyên!")
+    .positive("*Phải là số nguyên dương!")
+    .min(1, "*Phải lớn hơn hoặc bằng 1!")
+    .max(31, "*Phải nhỏ hơn hoặc bằng 31!")
+    .required("*Dữ liệu bắt buộc!")
+    .moreThan(
+      Yup.ref("invoiceDate"),
+      "Hạn đóng tiền phải lớn hơn hoặc bằng ngày đóng!"
+    ),
+});
+const isElectricityTariffSchema = Yup.object().shape({
+  nameXomtro: Yup.string().required("*Dữ liệu bắt buộc!"),
+  category: Yup.object().required("*Dữ liệu bắt buộc!"),
+  numberOfFloors: Yup.string().required("*Dữ liệu bắt buộc!"),
+  acreage: Yup.string().required("*Dữ liệu bắt buộc!"),
+  numberRoom: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  maxPeople: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  waterPrice: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  electricityPrice: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  garbagePrice: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  internetPrice: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  price: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  priceTier2: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  priceTier3: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  // waterPrice: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // electricityPrice: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // garbagePrice: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // internetPrice: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // price: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // priceTier2: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // priceTier3: Yup.string().required("*Dữ liệu bắt buộc!"),
+  city: Yup.object().required("*Dữ liệu bắt buộc!"),
+  district: Yup.object().required("*Dữ liệu bắt buộc!"),
+  ward: Yup.object().required("*Dữ liệu bắt buộc!"),
+  addressDetail: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // invoiceDate: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // paymentDeadline: Yup.string().required("*Dữ liệu bắt buộc!"),
+  invoiceDate: Yup.number()
+    .integer("*Phải là số nguyên!")
+    .positive("*Phải là số nguyên dương!")
+    .min(1, "*Phải lớn hơn hoặc bằng 1!")
+    .max(31, "*Phải nhỏ hơn hoặc bằng 31!")
+    .required("*Dữ liệu bắt buộc!"),
+  paymentDeadline: Yup.number()
+    .integer("*Phải là số nguyên!")
+    .positive("*Phải là số nguyên dương!")
+    .min(1, "*Phải lớn hơn hoặc bằng 1!")
+    .max(31, "*Phải nhỏ hơn hoặc bằng 31!")
+    .required("*Dữ liệu bắt buộc!")
+    .moreThan(
+      Yup.ref("invoiceDate"),
+      "Hạn đóng tiền phải lớn hơn hoặc bằng ngày đóng!"
+    ),
 });
 
 const updateSchema = Yup.object().shape({
   nameXomtro: Yup.string().required("*Dữ liệu bắt buộc!"),
   category: Yup.object().required("*Dữ liệu bắt buộc!"),
-  numberRoom: Yup.string().required("*Dữ liệu bắt buộc!"),
+  numberRoom: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  maxPeople: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  price: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
   numberOfFloors: Yup.string().required("*Dữ liệu bắt buộc!"),
-  maxPeople: Yup.string().required("*Dữ liệu bắt buộc!"),
   acreage: Yup.string().required("*Dữ liệu bắt buộc!"),
-  price: Yup.string().required("*Dữ liệu bắt buộc!"),
   city: Yup.object().required("*Dữ liệu bắt buộc!"),
   district: Yup.object().required("*Dữ liệu bắt buộc!"),
   ward: Yup.object().required("*Dữ liệu bắt buộc!"),
   addressDetail: Yup.string().required("*Dữ liệu bắt buộc!"),
-  invoiceDate: Yup.string().required("*Dữ liệu bắt buộc!"),
-  paymentDeadline: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // invoiceDate: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // paymentDeadline: Yup.string().required("*Dữ liệu bắt buộc!"),
+  invoiceDate: Yup.number()
+    .integer("*Phải là số nguyên!")
+    .positive("*Phải là số nguyên dương!")
+    .min(1, "*Phải lớn hơn hoặc bằng 1!")
+    .max(31, "*Phải nhỏ hơn hoặc bằng 31!")
+    .required("*Dữ liệu bắt buộc!"),
+  paymentDeadline: Yup.number()
+    .integer("*Phải là số nguyên!")
+    .positive("*Phải là số nguyên dương!")
+    .min(1, "*Phải lớn hơn hoặc bằng 1!")
+    .max(31, "*Phải nhỏ hơn hoặc bằng 31!")
+    .required("*Dữ liệu bắt buộc!")
+    .moreThan(
+      Yup.ref("invoiceDate"),
+      "Hạn đóng tiền phải lớn hơn hoặc bằng ngày đóng!"
+    ),
 });
 export const Form = (props) => {
   const dispatch = useDispatch();
@@ -80,15 +276,15 @@ export const Form = (props) => {
 
   const [paymentMethod] = useState("Tháng");
   const [price, setPrice] = useState("");
+  const [priceTier2, setPriceTier2] = useState("");
+  const [priceTier3, setPriceTier3] = useState("");
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
   const [addressDetail, setAddressDetail] = useState("");
-  const [assetManagement, setAssetManagement] = useState(false);
-  const [vehicleManagement, setVehicleManagement] = useState(false);
   const [invoiceDate, setInvoiceDate] = useState("");
   const [paymentDeadline, setPaymentDeadline] = useState("");
-
+  const [isElectricityTariff, setIsElectricityTariff] = useState(true);
   // get props to index components
   const {
     closeForm,
@@ -221,24 +417,45 @@ export const Form = (props) => {
     const services = [
       {
         serviceName: electricityService,
-        price: formik.values?.electricityPrice,
+        price:
+          typeof formik.values.electricityPrice == "string"
+            ? formik.values.electricityPrice.replace(/,/g, "")
+            : formik.values.electricityPrice,
+        priceTier2:
+          typeof formik.values.priceTier2 == "string"
+            ? formik.values.priceTier2.replace(/,/g, "")
+            : formik.values.priceTier2,
+        priceTier3:
+          typeof formik.values.priceTier3 == "string"
+            ? formik.values.priceTier3.replace(/,/g, "")
+            : formik.values.priceTier3,
         paymentMethod: flatElectricityPrice,
         measurement: "kWh",
+        isElectricityTariff: isElectricityTariff,
       },
       {
         serviceName: waterService,
-        price: formik.values?.waterPrice,
+        price:
+          typeof formik.values.waterPrice == "string"
+            ? formik.values.waterPrice.replace(/,/g, "")
+            : formik.values.waterPrice,
         paymentMethod: flatElectricityPrice,
         measurement: "m3",
       },
       {
         serviceName: garbageService,
-        price: formik.values?.garbagePrice,
+        price:
+          typeof formik.values.garbagePrice == "string"
+            ? formik.values.garbagePrice.replace(/,/g, "")
+            : formik.values.garbagePrice,
         measurement: "Tháng",
       },
       {
         serviceName: internetService,
-        price: formik.values?.internetPrice,
+        price:
+          typeof formik.values.internetPrice == "string"
+            ? formik.values.internetPrice.replace(/,/g, "")
+            : formik.values.internetPrice,
         measurement: "Tháng",
       },
     ];
@@ -313,6 +530,8 @@ export const Form = (props) => {
       garbagePrice,
       internetPrice,
       price,
+      priceTier2,
+      priceTier3,
       city,
       district,
       ward,
@@ -324,7 +543,11 @@ export const Form = (props) => {
       invoiceDate,
       paymentDeadline,
     },
-    validationSchema: isUpdate ? updateSchema : addSchema,
+    validationSchema: isUpdate
+      ? updateSchema
+      : isElectricityTariff
+      ? isElectricityTariffSchema
+      : addSchema,
   });
 
   const focus = () => {
@@ -455,7 +678,7 @@ export const Form = (props) => {
             rFontSize="xl"
             heightOfLine="h-14"
           />
-          <div className="flex lg:flex-row flex-col justify-between mb-8 mt-8">
+          <div className="flex lg:flex-row flex-col justify-between mb-2 lg:mb-8 mt-4">
             <div className="flex flex-col w-full lg:mr-1 lg:mt-0">
               <div className="relative z-0 group border border-gray-300 rounded-md ">
                 <NumericFormat
@@ -509,10 +732,37 @@ export const Form = (props) => {
           {!isUpdate && (
             <>
               <div className="flex lg:flex-row flex-col justify-between mb-6">
+                <div className="flex flex-col w-full justify-center lg:ml-1 mt-6 lg:mt-0 lg:mb-0 mb-8">
+                  <div className="relative z-0 group ">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <>
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={isElectricityTariff}
+                          onChange={(e) =>
+                            setIsElectricityTariff(e.target.checked)
+                          }
+                          id={`publish_${isElectricityTariff}`}
+                        />
+                        <div
+                          htmlFor={`publish_${isElectricityTariff}`}
+                          className="w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+                        ></div>
+                      </>
+
+                      <span className="ml-3 text-sm text-gray-800">
+                        {isElectricityTariff ? "Theo định mức" : "Theo đồng hồ"}
+                      </span>
+                    </label>
+                  </div>
+                </div>
                 <div className="flex flex-col w-full lg:mr-1 lg:mt-0">
                   <div className="relative z-0 group border border-gray-300 rounded-md ">
-                    <input
-                      type="electricityPrice"
+                    <NumericFormat
+                      thousandsGroupStyle="thousand"
+                      thousandSeparator=","
+                      type="text"
                       name="floating_electricityPrice"
                       id="floating_electricityPrice"
                       className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
@@ -533,36 +783,70 @@ export const Form = (props) => {
                       formik.errors.electricityPrice}
                   </div>
                 </div>
-                <div className="flex flex-col w-full lg:ml-1 mt-6 lg:mt-0">
-                  <div className="relative z-0 group border border-gray-300 rounded-md">
-                    <input
-                      type="waterPrice"
-                      name="floating_waterPrice"
-                      id="floating_waterPrice"
-                      className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                      placeholder=" "
-                      value={formik.values.waterPrice}
-                      onChange={formik.handleChange("waterPrice")}
-                      onBlur={formik.handleBlur("waterPrice")}
-                    />
-                    <label
-                      htmlFor="floating_waterPrice"
-                      className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
-                    >
-                      Giá nước (m3) <span className="text-red-500">*</span>
-                    </label>
+              </div>
+
+              {isElectricityTariff && (
+                <div className="flex lg:flex-row flex-col justify-between mb-6 ">
+                  <div className="flex flex-col w-full lg:mr-1 lg:mt-0">
+                    <div className="relative z-0 group border border-gray-300 rounded-md ">
+                      <NumericFormat
+                        thousandsGroupStyle="thousand"
+                        thousandSeparator=","
+                        type="text"
+                        name="floating_priceTier2"
+                        id="floating_priceTier2"
+                        className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" "
+                        value={formik.values.priceTier2}
+                        onChange={formik.handleChange("priceTier2")}
+                        onBlur={formik.handleBlur("priceTier2")}
+                      />
+                      <label
+                        htmlFor="floating_priceTier2"
+                        className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
+                      >
+                        Mức 2 <span className="text-red-500">*</span>
+                      </label>
+                    </div>
+                    <div className="text-red-400 mb-2">
+                      {formik.touched.priceTier2 && formik.errors.priceTier2}
+                    </div>
                   </div>
-                  <div className="text-red-400 mb-2">
-                    {formik.touched.waterPrice && formik.errors.waterPrice}
+                  <div className="flex flex-col w-full lg:ml-1 mt-6 lg:mt-0">
+                    <div className="relative z-0 group border border-gray-300 rounded-md">
+                      <NumericFormat
+                        thousandsGroupStyle="thousand"
+                        thousandSeparator=","
+                        type="text"
+                        name="floating_priceTier3"
+                        id="floating_priceTier3"
+                        className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" "
+                        value={formik.values.priceTier3}
+                        onChange={formik.handleChange("priceTier3")}
+                        onBlur={formik.handleBlur("priceTier3")}
+                      />
+                      <label
+                        htmlFor="floating_priceTier3"
+                        className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
+                      >
+                        Mức 3 <span className="text-red-500">*</span>
+                      </label>
+                    </div>
+                    <div className="text-red-400 mb-2">
+                      {formik.touched.priceTier3 && formik.errors.priceTier3}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               <div className="flex lg:flex-row flex-col justify-between mb-6">
                 <div className="flex flex-col w-full lg:mr-1 lg:mt-0">
                   <div className="relative z-0 group border border-gray-300 rounded-md ">
-                    <input
-                      type="garbagePrice"
+                    <NumericFormat
+                      thousandsGroupStyle="thousand"
+                      thousandSeparator=","
+                      type="text"
                       name="floating_garbagePrice"
                       id="floating_garbagePrice"
                       className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
@@ -584,8 +868,10 @@ export const Form = (props) => {
                 </div>
                 <div className="flex flex-col w-full lg:ml-1 mt-6 lg:mt-0">
                   <div className="relative z-0 group border border-gray-300 rounded-md">
-                    <input
-                      type="internetPrice"
+                    <NumericFormat
+                      thousandsGroupStyle="thousand"
+                      thousandSeparator=","
+                      type="text"
                       name="floating_internetPrice"
                       id="floating_internetPrice"
                       className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
@@ -610,8 +896,43 @@ export const Form = (props) => {
             </>
           )}
 
-          <div className="flex flex-row justify-between mb-2">
-            <div className="flex flex-col w-full mr-1">
+          <div
+            className={`flex justify-between mb-2 ${
+              !isUpdate ? "lg:flex-row flex-col" : "flex-row"
+            }`}
+          >
+            {!isUpdate && (
+              <div className="flex flex-col w-full lg:ml-1 lg:mt-0">
+                <div className="relative z-0 group border border-gray-300 rounded-md">
+                  <NumericFormat
+                    thousandsGroupStyle="thousand"
+                    thousandSeparator=","
+                    type="text"
+                    name="floating_waterPrice"
+                    id="floating_waterPrice"
+                    className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=" "
+                    value={formik.values.waterPrice}
+                    onChange={formik.handleChange("waterPrice")}
+                    onBlur={formik.handleBlur("waterPrice")}
+                  />
+                  <label
+                    htmlFor="floating_waterPrice"
+                    className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
+                  >
+                    Giá nước (m3) <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                <div className="text-red-400 mb-2">
+                  {formik.touched.waterPrice && formik.errors.waterPrice}
+                </div>
+              </div>
+            )}
+            <div
+              className={`flex flex-col w-full lg:mr-1  ${
+                !isUpdate ? "mt-6 lg:mt-0" : "lg:mt-0"
+              }`}
+            >
               <div className="relative z-0 group border border-gray-300 rounded-md ">
                 <input
                   type="maxPeople"
@@ -642,7 +963,7 @@ export const Form = (props) => {
             rFontSize="xl"
             heightOfLine="h-14"
           />
-          <div className="flex lg:flex-row flex-col justify-between mb-0">
+          <div className="flex lg:flex-row flex-col justify-between mb-5">
             <div className="flex flex-col flex-1 lg:mr-1 lg:mt-0">
               <label
                 htmlFor="small"
@@ -658,11 +979,8 @@ export const Form = (props) => {
                 touched={formik.touched.city}
                 isUpdating={city}
               />
-              <div className="text-red-400 mb-6">
-                {formik.touched.city && formik.errors.city}
-              </div>
             </div>
-            <div className="flex flex-col flex-1 lg:ml-1 lg:mt-0">
+            <div className="flex flex-col flex-1 lg:ml-1 mt-4 lg:mt-0">
               <label
                 htmlFor="small"
                 className="block mb-2 text-sm font-sm text-gray-500 dark:text-gray-500"
@@ -678,12 +996,9 @@ export const Form = (props) => {
                 isUpdating={district}
                 valueCity={formik.values.city}
               />
-              <div className="text-red-400 mb-6">
-                {formik.touched.district && formik.errors.district}
-              </div>
             </div>
           </div>
-          <div className="flex flex-row justify-between mb-6">
+          <div className="flex flex-row justify-between mb-10">
             <div className="flex flex-col flex-1 mr-1">
               <label
                 htmlFor="small"
@@ -699,9 +1014,6 @@ export const Form = (props) => {
                 touched={formik.touched.ward}
                 isUpdating={ward}
               />
-              <div className="text-red-400 mb-2">
-                {formik.touched.ward && formik.errors.ward}
-              </div>
             </div>
           </div>
           <div className="flex flex-row justify-between mb-4">

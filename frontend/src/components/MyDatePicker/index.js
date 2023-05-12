@@ -7,7 +7,6 @@ function MyDatePicker(props) {
   const [selectedDate, setSelectedDate] = useState(
     props.isUpdating ?? props?.value
   );
-  console.log("props.isUpdating", props.isUpdating);
   useEffect(() => {
     if (props.isUpdating) {
       setSelectedDate(new Date(props.isUpdating));
@@ -15,7 +14,6 @@ function MyDatePicker(props) {
   }, [props.isUpdating]);
 
   const handleDateChange = (value) => {
-    console.log("🚀 ~ file: index.js:17 ~ handleDateChange ~ value:", value);
     const formattedDate = moment(value).format("YYYY-MM-DD");
     props.onChange(props.nameField, formattedDate);
     setSelectedDate(value);
@@ -39,7 +37,7 @@ function MyDatePicker(props) {
         maxDate={maxDate}
         minDate={minDate}
       />
-      {props?.error && (
+      {props?.error && props.touched && (
         // <div style={{ color: "red", marginTop: ".3rem" }}>{props?.error}</div>
         <div className="text-red-400 ">{props?.error}</div>
       )}

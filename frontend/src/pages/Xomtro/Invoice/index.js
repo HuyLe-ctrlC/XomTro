@@ -124,7 +124,6 @@ export default function Invoice() {
 
   // create data event
   const handleAddData = async (data) => {
-    console.log("🚀 ~ file: index.js:127 ~ handleAddData ~ data:", data)
     setFormStatusState(false);
 
     const action = await dispatch(addMultiDataAction(data));

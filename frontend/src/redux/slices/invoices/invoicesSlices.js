@@ -31,7 +31,6 @@ export const addMultiDataAction = createAsyncThunk(
     try {
       // console.log("xomtro", xomtro);
       const response = await invoiceApi.addManyInvoices(data);
-      console.log("🚀 ~ file: invoicesSlices.js:34 ~ response:", response);
       const results = {
         data: response.data,
         message: response.message,
@@ -84,12 +83,13 @@ export const getInvoiceByXomtroIdAction = createAsyncThunk(
     try {
       // call Api
       const response = await invoiceApi.getAll(params);
-      // console.log("response", response);
+
       const results = {
         data: response.data,
         maxService: response.maxService,
         totalPage: response.totalPage,
         searchCount: response.searchCount,
+        revenue: response.revenue,
       };
       return results;
     } catch (error) {
@@ -157,7 +157,13 @@ export const resetInvoiceAction = createAction("invoice/reset");
 //this is change a little bit in dataInvoice
 const invoiceSlices = createSlice({
   name: "invoices",
-  initialState: { roomId: "", dataInvoice: [], totalPage: 0, dataUpdate: [] },
+  initialState: {
+    roomId: "",
+    dataInvoice: [],
+    totalPage: 0,
+    dataUpdate: [],
+    revenue: [],
+  },
   extraReducers: (builder, state) => {
     builder.addCase(resetInvoiceAction, (state) => {
       state.dataInvoice = [];
@@ -198,6 +204,8 @@ const invoiceSlices = createSlice({
         // state.loadingInvoice = false;
         state.dataInvoice = action?.payload?.data;
         state.maxService = action?.payload?.maxService;
+        state.revenue = action?.payload?.revenue;
+        state.totalPage = action?.payload?.totalPage;
         state.appInvoiceError = undefined;
         state.serverInvoiceError = undefined;
       })

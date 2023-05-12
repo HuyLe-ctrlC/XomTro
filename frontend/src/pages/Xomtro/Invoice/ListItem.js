@@ -14,6 +14,7 @@ import {
   deleteAction,
   updateDataAction,
 } from "../../../redux/slices/invoices/invoicesSlices";
+import { updateDataAction as updateRoomAction } from "../../../redux/slices/rooms/roomsSlices";
 import { DateConverter } from "../../../utils/DateFormatter";
 import houseStatus from "../../../img/house-status.png";
 
@@ -41,6 +42,7 @@ export const ListItem = ({
     }).then(async (result) => {
       if (result.isConfirmed) {
         const action = await dispatch(deleteAction(id));
+        await dispatch(clearRoomAction());
         const message = action.payload;
         // console.log("msg", message);
         if (deleteAction.fulfilled.match(action)) {
@@ -72,13 +74,18 @@ export const ListItem = ({
     });
   };
   // update invoice status
-  const handleStatus = (id) => {
+  const handleStatus = (id, services, roomId) => {
+    const dataServiceRoom = { services: services };
     let data = {
       invoiceStatus: "Đã thu tiền",
     };
     const dataUpdate = {
       id: id,
       data,
+    };
+    const dataRoomUpdate = {
+      id: roomId,
+      data: dataServiceRoom,
     };
     Swal.fire({
       title: "Bạn đã thu tiền dịch vụ này rồi phải không?",
@@ -88,7 +95,8 @@ export const ListItem = ({
     }).then(async (result) => {
       if (result.isConfirmed) {
         const action = await dispatch(updateDataAction(dataUpdate));
-        dispatch(clearRoomAction());
+        await dispatch(updateRoomAction(dataRoomUpdate));
+        await dispatch(clearRoomAction());
         const message = action.payload;
         // console.log("msg", message);
         if (updateDataAction.fulfilled.match(action)) {
@@ -316,7 +324,8 @@ export const ListItem = ({
                                       </div>
                                     </div>
 
-                                    {item.invoiceStatus === "Chưa thu tiền" ? (
+                                    {item.invoiceStatus === "Chưa thu tiền" &&
+                                    item.isOtherInvoice === false ? (
                                       <>
                                         <div
                                           onClick={() =>
@@ -332,8 +341,18 @@ export const ListItem = ({
                                             <span>Chỉnh sửa hóa đơn</span>
                                           </div>
                                         </div>
+                                      </>
+                                    ) : null}
+                                    {item.invoiceStatus === "Chưa thu tiền" ? (
+                                      <>
                                         <div
-                                          onClick={() => handleStatus(item._id)}
+                                          onClick={() =>
+                                            handleStatus(
+                                              item._id,
+                                              item.services,
+                                              item.room?._id
+                                            )
+                                          }
                                           className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
                                         >
                                           <div className="flex items-center space-x-2">

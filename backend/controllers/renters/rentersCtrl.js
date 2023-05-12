@@ -61,84 +61,92 @@ const fetchRentersCtrl = expressAsyncHandler(async (req, res) => {
     const roomId = req.query.roomId
       ? mongoose.Types.ObjectId(req.query.roomId)
       : null;
+
     let pipeline = [];
-
-    if (xomtroId) {
+    if (xomtroId == null && xomtroId == null) {
+      res.json({
+        data: [],
+        searchCount: 0,
+        totalPage: 0,
+      });
+    } else {
+      if (xomtroId) {
+        pipeline.push({
+          $match: {
+            xomtro: xomtroId,
+          },
+        });
+      }
+      if (roomId) {
+        pipeline.push({
+          $match: {
+            room: roomId,
+          },
+        });
+      }
       pipeline.push({
         $match: {
-          xomtro: xomtroId,
+          $or: [{ roomName: { $regex: keyword, $options: "i" } }],
         },
       });
-    }
-    if (roomId) {
+
       pipeline.push({
-        $match: {
-          room: roomId,
+        $project: {
+          room: 1,
+          xomtro: 1,
+          user: 1,
+          invoice: 1,
+          renterName: 1,
+          roomName: 1,
+          numberPhone: 1,
+          zaloNumber: 1,
+          nationalID: 1,
+          dateOfBirth: 1,
+          gender: 1,
+          city: 1,
+          district: 1,
+          ward: 1,
+          addressDetail: 1,
+          career: 1,
+          nationalIdDate: 1,
+          nationalIdIssuer: 1,
+          IDCardPhoto: 1,
+          isContact: 1,
+          isVerified: 1,
+          isRegister: 1,
+          createdAt: 1,
+          updatedAt: 1,
         },
       });
+
+      pipeline.push({ $skip: parseInt(offset) });
+      pipeline.push({ $limit: parseInt(limit) });
+      pipeline.push({
+        $facet: {
+          searchResult: [{ $sort: { createdAt: -1 } }],
+          searchCount: [{ $count: "total" }],
+        },
+      });
+
+      const updatedPipeline = pipeline.filter((element) => {
+        return !("$limit" in element);
+      });
+      const [result] = await Renter.aggregate(pipeline);
+      const [resultNoLimit] = await Renter.aggregate(updatedPipeline);
+      const { searchResult = [], searchCount = [] } = result;
+
+      const {
+        searchResult: searchResultNoLimit = [],
+        searchCount: searchCountRename = [],
+      } = resultNoLimit;
+      const totalPage = Math.ceil(searchCountRename[0]?.total / limit);
+
+      res.json({
+        data: searchResult,
+        searchCount: searchCount[0]?.total || 0,
+        totalPage,
+      });
     }
-    pipeline.push({
-      $match: {
-        $or: [{ roomName: { $regex: keyword, $options: "i" } }],
-      },
-    });
-
-    pipeline.push({
-      $project: {
-        room: 1,
-        xomtro: 1,
-        user: 1,
-        invoice: 1,
-        renterName: 1,
-        roomName: 1,
-        numberPhone: 1,
-        zaloNumber: 1,
-        nationalID: 1,
-        dateOfBirth: 1,
-        gender: 1,
-        city: 1,
-        district: 1,
-        ward: 1,
-        addressDetail: 1,
-        career: 1,
-        nationalIdDate: 1,
-        nationalIdIssuer: 1,
-        IDCardPhoto: 1,
-        isContact: 1,
-        isVerified: 1,
-        isRegister: 1,
-        createdAt: 1,
-        updatedAt: 1,
-      },
-    });
-
-    pipeline.push({ $skip: parseInt(offset) });
-    pipeline.push({ $limit: parseInt(limit) });
-    pipeline.push({
-      $facet: {
-        searchResult: [{ $sort: { createdAt: -1 } }],
-        searchCount: [{ $count: "total" }],
-      },
-    });
-
-    const updatedPipeline = pipeline.filter((element) => {
-      return !("$limit" in element);
-    });
-    const [result] = await Renter.aggregate(pipeline);
-    const [resultNoLimit] = await Renter.aggregate(updatedPipeline);
-    const { searchResult = [], searchCount = [] } = result;
-
-    const {
-      searchResult: searchResultNoLimit = [],
-      searchCount: searchCountRename = [],
-    } = resultNoLimit;
-    const totalPage = Math.ceil(searchCountRename[0]?.total / limit);
-
-    res.json({
-      data: searchResult,
-      searchCount: searchCount[0]?.total || 0,
-      totalPage,
-    });
   } catch (err) {
     res.json(err);
   }
@@ -152,7 +160,10 @@ const fetchRenterByIdCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
   try {
-    const renter = await Renter.findById(id).populate({path: 'room', select: "_id roomName"});
+    const renter = await Renter.findById(id).populate({
+      path: "room",
+      select: "_id roomName",
+    });
 
     if (renter) {
       res.json({
@@ -235,7 +246,6 @@ const deleteRenterCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
   try {
-
     const renter = await Renter.findOneAndDelete(id);
 
     if (renter) {
@@ -257,5 +267,5 @@ module.exports = {
   fetchRentersCtrl,
   fetchRenterByIdCtrl,
   updateRenterCtrl,
-  deleteRenterCtrl
+  deleteRenterCtrl,
 };

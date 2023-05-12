@@ -117,7 +117,6 @@ export const getByXomtroIdAction = createAsyncThunk(
     try {
       // call Api
       const response = await roomApi.getByXomtroId(params);
-      console.log("response", response);
       const results = {
         data: response.data,
         totalPage: response.totalPage,
@@ -144,6 +143,32 @@ export const deleteAction = createAsyncThunk(
       if (response.result) {
         const result = {
           _id,
+          message: response.message,
+        };
+        return result;
+      } else {
+        return rejectWithValue(response);
+      }
+    } catch (error) {
+      // console.log('Failed to fetch data list: ', error);
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const checkoutOfTheRoomAction = createAsyncThunk(
+  "room/checkout-room",
+  async (_id, { rejectWithValue, getState, dispatch }) => {
+    try {
+      // call api
+      const response = await roomApi.checkoutOfTheRoom(_id);
+      if (response.result) {
+        const result = {
+          _id,
+          newData: response.newData,
           message: response.message,
         };
         return result;
@@ -270,6 +295,31 @@ const roomSlices = createSlice({
         state.serverError = undefined;
       })
       .addCase(updateDataAction.rejected, (state, action) => {
+        // state.loading = false;
+        state.msgSuccess = undefined;
+        state.appError = action?.payload;
+        state.serverError = action?.error?.message;
+      });
+    //check out of the room 
+    builder
+      .addCase(checkoutOfTheRoomAction.pending, (state, action) => {
+        // state.loading = true;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(checkoutOfTheRoomAction.fulfilled, (state, action) => {
+        // state.loading = false;
+        // find and update row data in store
+        const checkIndex = state.dataRoom.findIndex(
+          (row) => row._id.toString() === action?.payload?._id.toString()
+        );
+        if (checkIndex >= 0) {
+          state.dataRoom[checkIndex] = action?.payload?.newData;
+        }
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(checkoutOfTheRoomAction.rejected, (state, action) => {
         // state.loading = false;
         state.msgSuccess = undefined;
         state.appError = action?.payload;

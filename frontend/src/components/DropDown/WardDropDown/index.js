@@ -32,13 +32,12 @@ export default function WardDropdown(props) {
 
   //get data from redux
   const getWard = useSelector(selectLocation);
-  const { dataWard, loading } =
-    getWard;
+  const { dataWard, loading } = getWard;
   const allWard = dataWard?.map((ward) => {
     return {
       label: ward?.name,
       value: ward?.id,
-      prefix: ward?.prefix
+      prefix: ward?.prefix,
     };
   });
   useEffect(() => {
@@ -72,7 +71,7 @@ export default function WardDropdown(props) {
         // value={props?.value?.label}
       />
       {/* Display */}
-      {props?.error && (
+      {props?.error && props.touched && (
         // <div style={{ color: "red", marginTop: ".3rem" }}>{props?.error}</div>
         <div className="text-red-400 ">{props?.error}</div>
       )}

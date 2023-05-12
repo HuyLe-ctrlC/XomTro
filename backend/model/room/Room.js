@@ -9,6 +9,15 @@ const serviceSchema = new mongoose.Schema({
     required: [true, `Giá dịch vụ là bắt buộc`],
     min: [0, `Giá dịch vụ phải lớn hơn hoặc bằng 1000`],
   },
+  priceTier2: {
+    type: Number,
+    min: [0, `Giá dịch vụ phải lớn hơn hoặc bằng 0`],
+  },
+  priceTier3: {
+    type: Number,
+    min: [0, `Giá dịch vụ phải lớn hơn hoặc bằng 0`],
+  },
+  isElectricityTariff: { type: Boolean, default: false },
   oldValue: { type: String, default: 0 },
   newValue: { type: String, default: 0 },
   paymentMethod: {

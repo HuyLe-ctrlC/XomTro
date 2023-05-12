@@ -23,4 +23,6 @@ module.exports = {
   //xomtro
   ROOM_SUCCESS: "Thêm phòng thành công!",
   NOT_FOUND_XOMTRO: "Không tìm thấy Xomtro!",
+  CHECK_OUT_SUCCESS: "Thanh lý phòng thành công!",
+  CHECK_OUT_FAILED: "Thanh lý phòng thất bại!",
 };

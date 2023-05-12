@@ -34,7 +34,7 @@ export const updateDataAction = createAsyncThunk(
     const xomtro = data.data;
     try {
       const response = await xomtroApi.update(id, xomtro);
-      console.log("response", response);
+      // console.log("response", response);
       if (response.result) {
         const results = {
           id: id,

@@ -36,9 +36,12 @@ const roomApi = {
     return axiosClient.put(url, body);
   },
   deleteUtility: (id, body) => {
-    console.log("body", body);
     const url = `/${module}/delete-utility/${id}`;
     return axiosClient.put(url, body);
+  },
+  checkoutOfTheRoom: (id) => {
+    const url = `/${module}/checkout/${id}`;
+    return axiosClient.put(url);
   },
   getUtility: (params) => {
     const url = `/${module}/get-utility`;

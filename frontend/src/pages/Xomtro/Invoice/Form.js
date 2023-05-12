@@ -14,6 +14,7 @@ import {
   selectSelects,
   toggleItemServiceAction,
 } from "../../../redux/slices/selectedSlices";
+import electricityTariff from "../../../utils/electricityTariff";
 
 const formSchema = Yup.object().shape({
   paymentPurpose: Yup.string().required("*Dữ liệu bắt buộc!"),
@@ -157,7 +158,7 @@ export const Form = (props) => {
   //filter room applied
   useEffect(() => {
     let filterRoomWithNameAndId = roomStatus?.filter(
-      (item) => item.rentalStatus === "Đang ở"
+      (item) => item.renters.length > 0
     );
     let transformedRooms = filterRoomWithNameAndId?.map((item) => ({
       _id: item._id,
@@ -293,6 +294,7 @@ export const Form = (props) => {
         isSelected: false,
       };
     });
+
     const parseTotal = formikAddForm.values.total.replace(/,/g, "");
 
     let dataInvoice = {
@@ -307,6 +309,7 @@ export const Form = (props) => {
       numberOfDays: 0,
       isTakeProfit: isPlus,
       total: isPlus ? parseInt(parseTotal) * 1 : parseInt(parseTotal) * -1,
+      isOtherInvoice: true,
     };
 
     addData(dataInvoice);
@@ -314,10 +317,14 @@ export const Form = (props) => {
 
   const addDataInRoomHandler = (e) => {
     e.preventDefault();
+
     const roomId = dataAddInRoom._id;
     const xomtro = dataAddInRoom.xomtro;
     const updatedServices = dataAddInRoom?.services?.map((service, index) => {
-      if (service.paymentMethod === "Theo đồng hồ") {
+      if (
+        selected.find((element) => element._id === service._id) &&
+        service.paymentMethod === "Theo đồng hồ"
+      ) {
         return {
           ...service,
           oldValue: service.newValue,
@@ -327,6 +334,7 @@ export const Form = (props) => {
         return service;
       }
     });
+
     //@note check condition if two serviceName similar will change only price is 0
     // const servicesInvoice = updatedServices.map((item, index) => {
     //   if (item.serviceName == selected[index]?.serviceName) {
@@ -348,10 +356,7 @@ export const Form = (props) => {
         return { ...item, isSelected: false };
       }
     });
-    // console.log(
-    //   "🚀 ~ file: Form.js:228 ~ servicesInvoice ~ servicesInvoice:",
-    //   servicesInvoice
-    // );
+
     let dataInvoice = {
       room: roomId,
       xomtro,
@@ -365,6 +370,7 @@ export const Form = (props) => {
       isTakeProfit: total > 0 ? true : false,
       total: total,
     };
+
     addDataInRoom(roomId, updatedServices, dataInvoice);
   };
 
@@ -421,7 +427,6 @@ export const Form = (props) => {
   };
   const getSelects = useSelector(selectSelects);
   const { selected } = getSelects;
-  // console.log("🚀 ~ file: Form.js:374 ~ Form ~ selected:", selected);
   const handleSelection = (itemSelected) => {
     dispatch(toggleItemServiceAction({ itemSelected }));
   };
@@ -433,23 +438,36 @@ export const Form = (props) => {
   const handleSelectAll = () => {
     dispatch(selectAllAction(roomApplied));
   };
-
   useEffect(() => {
     const totalPriceServices = selected?.map((service, index) => {
       if (service.serviceName === "Tiền điện") {
         if (isUpdate) {
           return {
-            priceService:
-              (parseInt(valuesServices[0]?.newValue) -
-                parseInt(service.oldValue)) *
+            priceService: electricityTariff(
+              parseInt(valuesServices[0]?.newValue),
+              parseInt(service.oldValue),
               service.price,
+              service.priceTier2,
+              service.priceTier3
+            ),
+            // priceService:
+            //   (parseInt(valuesServices[0]?.newValue) -
+            //     parseInt(service.oldValue)) *
+            //   service.price,
           };
         }
         return {
-          priceService:
-            (parseInt(valuesServices[0]?.newValue) -
-              parseInt(service.newValue)) *
+          priceService: electricityTariff(
+            parseInt(valuesServices[0]?.newValue),
+            parseInt(service.oldValue),
             service.price,
+            service.priceTier2,
+            service.priceTier3
+          ),
+          // priceService:
+          //   (parseInt(valuesServices[0]?.newValue) -
+          //     parseInt(service.newValue)) *
+          //   service.price,
         };
       }
       if (service.serviceName === "Tiền nước") {
@@ -479,7 +497,6 @@ export const Form = (props) => {
 
     setTotalServices(sumTotalPriceServices);
   }, [selected, valuesServices]);
-
   return (
     <>
       <div className="bg-black opacity-50 fixed w-full h-full top-0 z-40"></div>
@@ -726,7 +743,7 @@ export const Form = (props) => {
 
           {isAddInvoiceInRoom || isUpdate ? (
             <>
-              <div className="flex lg:flex-row flex-col justify-between mb-2">
+              <div className="flex lg:flex-row flex-col justify-between mb-1 lg:mb-2">
                 <div className="flex flex-col flex-1 mt-3 lg:mt-0">
                   <label
                     htmlFor="small"
@@ -751,7 +768,7 @@ export const Form = (props) => {
                   </div>
                 </div>
               </div>
-              <div className="flex lg:flex-row flex-col justify-between mb-6">
+              <div className="flex lg:flex-row flex-col justify-between mb-8">
                 <div className="flex flex-col flex-1 mt-3 lg:mt-0">
                   <label
                     htmlFor="small"
@@ -782,7 +799,7 @@ export const Form = (props) => {
                 </div>
               </div>
               <div className="flex lg:flex-row flex-col justify-between mb-2">
-                <div className="flex flex-col w-full lg:mr-1 lg:mt-0">
+                <div className="flex flex-col w-full lg:mr-1 lg:mt-0 mb-4">
                   <div className="relative z-0 group border border-gray-300 rounded-md pr-3">
                     <Moment
                       format="DD/MM/YYYY"
@@ -937,7 +954,7 @@ export const Form = (props) => {
                       className="w-full group border border-gray-300 rounded-md p-3"
                       key={index}
                     >
-                      <div className="flex w-full justify-between items-center">
+                      <div className="flex lg:flex-row flex-col w-full lg:justify-between lg:items-center ">
                         <div className="flex items-center space-x-2">
                           <input
                             type="checkbox"
@@ -952,17 +969,36 @@ export const Form = (props) => {
                             <div>
                               Giá:&#160;
                               <span className="font-semibold">
-                                {new Intl.NumberFormat("de-DE").format(
-                                  item.price
+                                {item.isElectricityTariff ? (
+                                  <>
+                                    {new Intl.NumberFormat("de-DE").format(
+                                      item.price
+                                    )}
+                                    đ |
+                                    {new Intl.NumberFormat("de-DE").format(
+                                      item.priceTier2
+                                    )}
+                                    đ |
+                                    {new Intl.NumberFormat("de-DE").format(
+                                      item.priceTier3
+                                    )}{" "}
+                                    đ
+                                  </>
+                                ) : (
+                                  <>
+                                    {new Intl.NumberFormat("de-DE").format(
+                                      item.price
+                                    )}{" "}
+                                    đ
+                                  </>
                                 )}
-                                đ
                               </span>
                               {item.measurement ? "/" + item.measurement : ""}
                             </div>
                           </div>
                         </div>
                         {item.paymentMethod === "Theo đồng hồ" ? (
-                          <div className="flex flex-col space-y-2">
+                          <div className="flex flex-col space-y-2 lg:mt-0 mt-6">
                             <div className="flex items-center">
                               <input
                                 type="text"
@@ -970,7 +1006,7 @@ export const Form = (props) => {
                                 value={isUpdate ? item.oldValue : item.newValue}
                                 disabled
                               />
-                              <span className="bg-gray-200 p-2 rounded-r-lg w-full">
+                              <span className="bg-gray-200 p-2 rounded-r-lg w-28 text-center">
                                 Số cũ
                               </span>
                             </div>
@@ -987,7 +1023,7 @@ export const Form = (props) => {
                                   )
                                 }
                               />
-                              <span className="bg-gray-200 p-2 rounded-r-lg ">
+                              <span className="bg-gray-200 p-2 rounded-r-lg w-28 text-center">
                                 Số mới
                               </span>
                             </div>

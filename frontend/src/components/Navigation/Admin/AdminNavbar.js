@@ -11,7 +11,7 @@ import { navigationAdmin } from "../../../constants/navigation/navigation";
 import Swal from "sweetalert2";
 import { revertAllAction } from "../../../redux/slices/posts/postsSlices";
 import NavItem from "../NavItem";
-
+import Cookies from "js-cookie";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -38,6 +38,7 @@ export const AdminNavbar = ({ isLogin }) => {
         navigate("/login");
         dispatch(logoutAction());
         dispatch(revertAllAction());
+        Cookies.remove('xomtroIDCookie')
       }
     });
   };

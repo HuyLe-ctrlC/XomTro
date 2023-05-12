@@ -14,6 +14,7 @@ import React from "react";
 
 import {
   addDataAction,
+  clearSelectionRenterAction,
   getByIdAction,
   resetDataUpdateAction,
   selectRenter,
@@ -28,7 +29,10 @@ import { selectXomtro } from "../../../redux/slices/xomtros/xomtrosSlices";
 import Cookies from "js-cookie";
 import { clearSelectionAction } from "../../../redux/slices/selectedSlices";
 import { getAllAction } from "../../../redux/slices/renters/rentersSlices";
-import { getByXomtroIdAction } from "../../../redux/slices/rooms/roomsSlices";
+import {
+  clearRoomAction,
+  getByXomtroIdAction,
+} from "../../../redux/slices/rooms/roomsSlices";
 import Slide from "./Slide";
 import { selectRooms } from "../../../redux/slices/rooms/roomsSlices";
 
@@ -91,7 +95,13 @@ export default function Renter() {
     nameAndServicesXomtro,
     dataUpdate: roomUpdate,
   } = getRoom;
-
+  const getRoomByXomtroIdHandler = () => {
+    const newParams = {
+      ...params,
+      xomtroId: Cookies.get("xomtroIDCookie"),
+    };
+    dispatch(getByXomtroIdAction(newParams));
+  };
   //
   useEffect(() => {
     // Check if rooms data is already available in the store
@@ -116,7 +126,7 @@ export default function Renter() {
     }
 
     document.title = title;
-  }, []);
+  }, [Cookies.get("xomtroIDCookie")]);
 
   // search data
   const handleSearch = (keyword) => {
@@ -142,6 +152,7 @@ export default function Renter() {
     // const dataJson = JSON.stringify(data);
 
     const action = await dispatch(addDataAction(data));
+    getRoomByXomtroIdHandler();
     const msg = action.payload;
     // console.log("msg", msg);
     if (addDataAction.fulfilled.match(action)) {
@@ -185,6 +196,7 @@ export default function Renter() {
     };
     // console.log("dataUpdate", dataUpdate);
     const updateAction = await dispatch(updateDataAction(dataUpdate));
+    getRoomByXomtroIdHandler();
     const msg = updateAction.payload;
     // console.log("msg", msg);
 
@@ -230,49 +242,6 @@ export default function Renter() {
     dispatch(getByIdAction(id));
   };
 
-  const handleAddDataInRoom = async (id, dataUpdateRoom, dataInvoice) => {
-    const dataServiceRoom = { services: dataUpdateRoom };
-    const data = {
-      id,
-      data: dataServiceRoom,
-    };
-
-    setFormInvoice(false);
-    const action = await dispatch(addInvoiceAction(dataInvoice));
-    dispatch(updateDataAction(data));
-    dispatch(clearSelectionAction());
-    const msg = action.payload;
-    // console.log("msg", msg);
-    if (addInvoiceAction.fulfilled.match(action)) {
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-        width: 500,
-      });
-
-      Toast.fire({
-        icon: "success",
-        title: msg.message,
-      });
-    } else {
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-        width: 500,
-      });
-
-      Toast.fire({
-        icon: "error",
-        title: msg.message ?? (serverRenterError && "Máy chủ đang bận!"),
-      });
-    }
-  };
   const [slideStatusState, setSlideStatusState] = useState(false);
 
   // close form event
@@ -310,6 +279,7 @@ export default function Renter() {
     dispatch(action);
     setIsUpdate(false);
     setIsAddInvoiceInRoom(false);
+    dispatch(clearSelectionRenterAction());
   };
   // check show form
   const displayForm = () => {
@@ -327,7 +297,6 @@ export default function Renter() {
       );
     }
   };
-
 
   return (
     <>

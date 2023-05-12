@@ -1,7 +1,10 @@
+import { electricityTariffTier } from "./electricityTariff";
+import electricityTariff from "./electricityTariff";
 import image64Default from "./imageLogo";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 export const generatePDF = (data) => {
   const invoiceMonths = data.invoiceMonth;
   const date = new Date(invoiceMonths);
@@ -68,7 +71,15 @@ export const generatePDF = (data) => {
             ],
             ...data.services.map((service) => [
               service.serviceName,
-              `${service.price} đ`,
+              service.serviceName == "Tiền điện"
+                ? electricityTariffTier(
+                    service.newValue,
+                    service.oldValue,
+                    service.price,
+                    service.priceTier2,
+                    service.priceTier3
+                  ) + " đ"
+                : `${service.price} đ`,
               service.oldValue ?? "",
               service.newValue ?? "",
               service.paymentMethod ?? service.measurement,
@@ -80,8 +91,16 @@ export const generatePDF = (data) => {
                     })
                     .replace(/₫/gi, "đ")
                 : Number(
-                    parseInt(service.newValue - service.oldValue) *
-                      service.price
+                    service.serviceName === "Tiền điện"
+                      ? electricityTariff(
+                          service.newValue,
+                          service.oldValue,
+                          service.price,
+                          service.priceTier2,
+                          service.priceTier3
+                        )
+                      : parseInt(service.newValue - service.oldValue) *
+                          service.price
                   )
                     .toLocaleString("vi-VN", {
                       style: "currency",

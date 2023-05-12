@@ -3,6 +3,7 @@ const User = require("../../model/user/User");
 const Xomtro = require("../../model/xomtro/Xomtro");
 const Category = require("../../model/category/Category");
 const Room = require("../../model/room/Room");
+const Renter = require("../../model/renter/Renter");
 const MESSAGE = require("../../utils/constantsMessage");
 const validateMongodbId = require("../../utils/validateMongodbID");
 const blockUser = require("../../utils/blockUser");
@@ -131,175 +132,160 @@ const fetchRoomsByIdXomTroCtrl = expressAsyncHandler(async (req, res) => {
           xomtro: xomtroId,
         },
       });
+      pipeline.push({
+        $match: {
+          $or: [{ roomName: { $regex: keyword, $options: "i" } }],
+        },
+      });
+
+      pipeline.push({
+        $project: {
+          roomName: 1,
+          floor: 1,
+          acreage: 1,
+          price: 1,
+          maxPeople: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          services: 1,
+          internetServices: 1,
+          invoiceDate: 1,
+          paymentDeadline: 1,
+          rentalStatus: 1,
+          paymentStatus: 1,
+          securityDeposit: 1,
+          moveInDate: 1,
+
+          // // extract first element of invoices array
+          // invoice: { $arrayElemAt: ["$invoices", 0] },
+          // extract all elements of invoices array
+          invoices: {
+            $map: {
+              input: "$invoices",
+              as: "invoice",
+              in: {
+                invoicePurpose: "$$invoice.invoicePurpose",
+                invoiceStatus: "$$invoice.invoiceStatus",
+                isOtherInvoice: "$$invoice.isOtherInvoice",
+              },
+            },
+          },
+          renters: {
+            $map: {
+              input: "$renters",
+              as: "renter",
+              in: {
+                renterName: "$$renter.renterName",
+                roomName: "$$renter.roomName",
+              },
+            },
+          },
+        },
+      });
+
+      // Add the $lookup stage to get invoices from rooms
+      pipeline.push({
+        $lookup: {
+          from: "invoices",
+          let: { roomId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$room", "$$roomId"] }],
+                },
+              },
+            },
+            // project invoice fields
+            {
+              $project: {
+                invoicePurpose: 1,
+                invoiceStatus: 1,
+                isOtherInvoice: 1,
+              },
+            },
+          ],
+          as: "invoices",
+        },
+      });
+      // Add the $lookup stage to get invoices from rooms
+      pipeline.push({
+        $lookup: {
+          from: "renters",
+          let: { roomId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$room", "$$roomId"] }],
+                },
+              },
+            },
+            // project invoice fields
+            {
+              $project: {
+                renterName: 1,
+                roomName: 1,
+              },
+            },
+          ],
+          as: "renters",
+        },
+      });
+
+      //@note Get all data (specific field above) when a collection does not contain _id
+      // Add the $lookup stage to get invoices from rooms
+      // pipeline.push({
+      //   $lookup: {
+      //     from: "invoices",
+      //     localField: "_id",
+      //     foreignField: "room",
+      //     as: "invoices",
+      //   },
+      // });
+
+      // Add the $lookup stage to get invoices from rooms
+
+      pipeline.push({ $skip: parseInt(offset) });
+      pipeline.push({ $limit: parseInt(limit) });
+      pipeline.push({
+        $facet: {
+          searchResult: [{ $sort: { createdAt: -1 } }],
+          searchCount: [{ $count: "total" }],
+        },
+      });
+
+      const updatedPipeline = pipeline.filter((element) => {
+        return !("$limit" in element);
+      });
+      const [result] = await Room.aggregate(pipeline);
+      const [resultNoLimit] = await Room.aggregate(updatedPipeline);
+      const { searchResult = [], searchCount = [] } = result;
+
+      const {
+        searchResult: searchResultNoLimit = [],
+        searchCount: searchCountRename = [],
+      } = resultNoLimit;
+      const totalPage = Math.ceil(searchCountRename[0]?.total / limit);
+
+      //get name Xomtro
+      const nameAndServicesXomtro = await Xomtro.findById(xomtroId).select(
+        "nameXomtro services"
+      );
+      res.json({
+        data: searchResult,
+        searchCount: searchCount[0]?.total || 0,
+        totalPage,
+        nameAndServicesXomtro,
+      });
+    } else {
+      res.json({
+        data: [],
+        searchCount: 0,
+        totalPage: 0,
+        nameAndServicesXomtro: null,
+      });
     }
-    pipeline.push({
-      $match: {
-        $or: [{ roomName: { $regex: keyword, $options: "i" } }],
-      },
-    });
-
-    // pipeline.push({
-    //   $lookup: {
-    //     from: "invoices",
-    //     let: { roomId: "$_id" },
-    //     pipeline: [
-    //       {
-    //         $match: {
-    //           $expr: {
-    //             $and: [{ $eq: ["$room", "$$roomId"] }],
-    //           },
-    //         },
-    //       },
-    //       // project invoice fields
-    //       {
-    //         $project: {
-    //           invoiceStatus: 1,
-    //           paymentPurpose: 1,
-    //         },
-    //       },
-    //     ],
-    //     as: "invoices",
-    //   },
-    // });
-
-    pipeline.push({
-      $project: {
-        roomName: 1,
-        floor: 1,
-        acreage: 1,
-        price: 1,
-        maxPeople: 1,
-        createdAt: 1,
-        updatedAt: 1,
-        services: 1,
-        internetServices: 1,
-        invoiceDate: 1,
-        paymentDeadline: 1,
-        rentalStatus: 1,
-        paymentStatus: 1,
-        securityDeposit: 1,
-        moveInDate: 1,
-
-        // // extract first element of invoices array
-        // invoice: { $arrayElemAt: ["$invoices", 0] },
-        // extract all elements of invoices array
-        invoices: {
-          $map: {
-            input: "$invoices",
-            as: "invoice",
-            in: {
-              invoicePurpose: "$$invoice.invoicePurpose",
-              invoiceStatus: "$$invoice.invoiceStatus",
-            },
-          },
-        },
-        renters: {
-          $map: {
-            input: "$renters",
-            as: "renter",
-            in: {
-              renterName: "$$renter.renterName",
-              roomName: "$$renter.roomName",
-            },
-          },
-        },
-      },
-    });
-
-    // Add the $lookup stage to get invoices from rooms
-    pipeline.push({
-      $lookup: {
-        from: "invoices",
-        let: { roomId: "$_id" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [{ $eq: ["$room", "$$roomId"] }],
-              },
-            },
-          },
-          // project invoice fields
-          {
-            $project: {
-              invoicePurpose: 1,
-              invoiceStatus: 1,
-            },
-          },
-        ],
-        as: "invoices",
-      },
-    });
-    // Add the $lookup stage to get invoices from rooms
-    pipeline.push({
-      $lookup: {
-        from: "renters",
-        let: { roomId: "$_id" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [{ $eq: ["$room", "$$roomId"] }],
-              },
-            },
-          },
-          // project invoice fields
-          {
-            $project: {
-              renterName: 1,
-              roomName: 1,
-            },
-          },
-        ],
-        as: "renters",
-      },
-    });
-
-    //@note Get all data (specific field above) when a collection does not contain _id
-    // Add the $lookup stage to get invoices from rooms
-    // pipeline.push({
-    //   $lookup: {
-    //     from: "invoices",
-    //     localField: "_id",
-    //     foreignField: "room",
-    //     as: "invoices",
-    //   },
-    // });
-
-    // Add the $lookup stage to get invoices from rooms
-
-    pipeline.push({ $skip: parseInt(offset) });
-    pipeline.push({ $limit: parseInt(limit) });
-    pipeline.push({
-      $facet: {
-        searchResult: [{ $sort: { createdAt: -1 } }],
-        searchCount: [{ $count: "total" }],
-      },
-    });
-
-    const updatedPipeline = pipeline.filter((element) => {
-      return !("$limit" in element);
-    });
-    const [result] = await Room.aggregate(pipeline);
-    const [resultNoLimit] = await Room.aggregate(updatedPipeline);
-    const { searchResult = [], searchCount = [] } = result;
-
-    const {
-      searchResult: searchResultNoLimit = [],
-      searchCount: searchCountRename = [],
-    } = resultNoLimit;
-    const totalPage = Math.ceil(searchCountRename[0]?.total / limit);
-
-    //get name Xomtro
-    const nameAndServicesXomtro = await Xomtro.findById(xomtroId).select(
-      "nameXomtro services"
-    );
-    res.json({
-      data: searchResult,
-      searchCount: searchCount[0]?.total || 0,
-      totalPage,
-      nameAndServicesXomtro,
-    });
   } catch (err) {
     res.json(err);
   }
@@ -452,6 +438,12 @@ const updateUtilityCtrl = expressAsyncHandler(async (req, res) => {
     if (dataUpdated.price !== undefined) {
       service.price = dataUpdated.price;
     }
+    if (dataUpdated.priceTier2 !== undefined) {
+      service.priceTier2 = dataUpdated.priceTier2;
+    }
+    if (dataUpdated.priceTier3 !== undefined) {
+      service.priceTier3 = dataUpdated.priceTier3;
+    }
     if (dataUpdated.paymentMethod !== undefined) {
       service.paymentMethod = dataUpdated.paymentMethod;
     }
@@ -531,6 +523,37 @@ const deleteUtilityCtrl = expressAsyncHandler(async (req, res) => {
     res.json(error);
   }
 });
+const checkOutOfTheRoomCtrl = expressAsyncHandler(async (req, res) => {
+  //1. Get the user
+  const user = req.user;
+  //check user isBlocked
+  blockUser(user);
+  const { id } = req.params;
+
+  validateMongodbId(id);
+  try {
+    const roomUpdated = await Room.findByIdAndUpdate(
+      id,
+      { $set: { renters: [] } },
+      { new: true, runValidators: true }
+    );
+    await Renter.deleteMany({ room: id });
+    if (roomUpdated) {
+      res.json({
+        result: true,
+        newData: roomUpdated,
+        message: MESSAGE.CHECK_OUT_SUCCESS,
+      });
+    } else {
+      res.json({
+        result: false,
+        message: MESSAGE.CHECK_OUT_FAILED,
+      });
+    }
+  } catch (error) {
+    res.json(error);
+  }
+});
 
 /*-------------------
 //TODO: Get utility HUYPRO
@@ -579,4 +602,5 @@ module.exports = {
   fetchRoomsByIdXomTroCtrl,
   fetchRoomCtrl,
   getUtilityByIdCtrl,
+  checkOutOfTheRoomCtrl,
 };

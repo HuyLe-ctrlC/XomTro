@@ -3,6 +3,8 @@ const User = require("../../model/user/User");
 const Xomtro = require("../../model/xomtro/Xomtro");
 const Category = require("../../model/category/Category");
 const Room = require("../../model/room/Room");
+const Invoice = require("../../model/invoice/Invoice");
+const Renter = require("../../model/renter/Renter");
 const MESSAGE = require("../../utils/constantsMessage");
 const { removeVietnameseTones } = require("../../utils/slug");
 const validateMongodbId = require("../../utils/validateMongodbID");
@@ -339,6 +341,8 @@ const deleteXomtroCtrl = expressAsyncHandler(async (req, res) => {
   try {
     const deleteXomtro = await Xomtro.findByIdAndDelete(id);
     await Room.deleteMany({ xomtro: id });
+    await Invoice.deleteMany({ xomtro: id });
+    await Renter.deleteMany({ xomtro: id });
     if (deleteXomtro) {
       res.json({
         result: true,

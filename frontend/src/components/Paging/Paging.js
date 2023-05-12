@@ -94,7 +94,7 @@ export const Paging = ({
         onClick={handlePrevClick}
         disabled={currentPage === 1}
       >
-        Previous
+        Trang trước
       </button>
       <div className="flex items-center space-x-2 mx-4">
         {startPage > 1 && (
@@ -144,7 +144,7 @@ export const Paging = ({
         onClick={handleNextClick}
         disabled={currentPage === totalPage}
       >
-        Next
+        Trang sau
       </button>
     </div>
   );

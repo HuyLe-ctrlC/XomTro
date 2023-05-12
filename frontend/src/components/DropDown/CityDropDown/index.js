@@ -49,7 +49,6 @@ export default function CityDropdown(props) {
   }, [props.isUpdating]);
 
   const handleChange = (value) => {
-    // console.log("🚀 ~ file: index.js:52 ~ handleChange ~ value:", value);
     props.onChange("city", value);
     setCityValue(value);
     dispatch(getDistrict(value.value));
@@ -75,7 +74,7 @@ export default function CityDropdown(props) {
         // value={props?.value?.label}
       />
       {/* Display */}
-      {props?.error && (
+      {props?.error && props.touched && (
         // <div style={{ color: "red", marginTop: ".3rem" }}>{props?.error}</div>
         <div className="text-red-400 ">{props?.error}</div>
       )}

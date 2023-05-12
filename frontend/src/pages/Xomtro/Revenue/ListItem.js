@@ -16,13 +16,16 @@ import { generatePDF } from "../../../utils/generatePDF";
 import { clearRoomAction } from "../../../redux/slices/rooms/roomsSlices";
 import Chart from "./Chart";
 export const ListItem = ({
+  revenue,
   data,
   maxService,
   openFormUpdate,
   openFormAddInvoice,
+  dataRoom,
 }) => {
   const dispatch = useDispatch();
-
+  const dataPaid = data?.filter((item) => item.invoiceStatus === "Đã thu tiền");
+  const revenueData = revenue?.filter((item) => item.invoiceStatus === "Đã thu tiền");
   const handleOpenFormUpdate = (roomId, invoiceId) => {
     openFormUpdate(roomId, invoiceId);
   };
@@ -121,7 +124,7 @@ export const ListItem = ({
 
   return (
     <>
-      <Chart data={data} />
+      <Chart revenueData={revenueData} dataRoom={dataRoom} />
       <table className="border border-slate-500 border-collapse min-w-full divide-y divide-gray-200 table-auto">
         <thead>
           <tr>
@@ -149,22 +152,15 @@ export const ListItem = ({
             >
               Ngày thu/chi
             </th>
-            <th rowSpan="2" className="border border-slate-600">
+            {/* <th rowSpan="2" className="border border-slate-600">
               Hành động
-            </th>
+            </th> */}
           </tr>
-
         </thead>
         <tbody>
-          {data?.map((item) => (
+          {dataPaid?.map((item) => (
             <React.Fragment key={item._id}>
-              <tr
-                className={`${
-                  item.invoiceStatus == "Chưa thu tiền"
-                    ? "bg-red-100"
-                    : "bg-green-100"
-                }`}
-              >
+              <tr className={`${item.isTakeProfit ? "" : "text-red-500"} `}>
                 <td className="border border-slate-700 px-4 py-4 whitespace-nowrap">
                   <div className="flex flex-col">
                     <span>
@@ -180,10 +176,10 @@ export const ListItem = ({
                   {new Intl.NumberFormat("de-DE").format(item.total)}
                 </td>
                 <td className="border border-slate-700 px-4 py-4 whitespace-nowrap">
-                  <DateConverter date={item.createdAt}/>
+                  <DateConverter date={item.createdAt} />
                 </td>
-                
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+
+                {/* <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                   <div className="flex items-center text-gray-800">
                     <Menu as="div" className="ml-3 relative">
                       {({ open }) => (
@@ -268,7 +264,7 @@ export const ListItem = ({
                       )}
                     </Menu>
                   </div>
-                </td>
+                </td> */}
               </tr>
             </React.Fragment>
           ))}

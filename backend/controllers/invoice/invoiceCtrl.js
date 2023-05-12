@@ -10,7 +10,7 @@ const blockUser = require("../../utils/blockUser");
 const mongoose = require("mongoose");
 const idMaxInRoom = require("../../utils/idMaxInRoom");
 const maxLengthElement = require("../../utils/maxLengthElement");
-
+const moment = require("moment");
 const createInvoiceRoomCtrl = expressAsyncHandler(async (req, res) => {
   //get the user
   const user = req.user;
@@ -27,8 +27,7 @@ const createInvoiceRoomCtrl = expressAsyncHandler(async (req, res) => {
       { new: true }
     ).populate({
       path: "invoice",
-      select:
-        "invoiceStatus",
+      select: "invoiceStatus",
     });
     res.json({
       result: true,
@@ -100,17 +99,46 @@ const createInvoiceMultiRoomCtrl = expressAsyncHandler(async (req, res) => {
 
 const fetchInvoicesCtrl = expressAsyncHandler(async (req, res) => {
   try {
-    const { keyword = "", offset = 0, limit = 10 } = req.query;
+    const { keyword = "", offset = 0, limit = 10, isTakeProfit } = req.query;
+
     const xomtroId = req.query.xomtroId
       ? mongoose.Types.ObjectId(req.query.xomtroId)
       : null;
 
+    const monthYear = req.query.month;
+
+    // match invoices within the specified month
+    // const firstDayOfMonth = new Date(monthYear + "-01T00:00:00Z");
+
+    // const lastDayOfMonth = new Date(
+    //   new Date(firstDayOfMonth).setMonth(firstDayOfMonth.getMonth() + 1) - 1
+    // );
+    const firstDayOfMonth = moment(req.query.month).startOf("month").toDate();
+    const lastDayOfMonth = moment(req.query.month).endOf("month").toDate();
+
     let pipeline = [];
+    //check filter profit or loss
+    if (isTakeProfit === "true") {
+      pipeline.push({ $match: { isTakeProfit: true } });
+    } else if (isTakeProfit === "false") {
+      pipeline.push({ $match: { isTakeProfit: false } });
+    }
 
     if (xomtroId) {
       pipeline.push({
         $match: {
           xomtro: xomtroId,
+        },
+      });
+    }
+
+    if (monthYear) {
+      pipeline.push({
+        $match: {
+          createdAt: {
+            $gte: firstDayOfMonth,
+            $lte: lastDayOfMonth,
+          },
         },
       });
     }
@@ -150,6 +178,7 @@ const fetchInvoicesCtrl = expressAsyncHandler(async (req, res) => {
         total: 1,
         isTakeProfit: 1,
         invoiceStatus: 1,
+        isOtherInvoice: 1,
         createdAt: 1,
         updatedAt: 1,
         room: {
@@ -178,8 +207,9 @@ const fetchInvoicesCtrl = expressAsyncHandler(async (req, res) => {
     });
 
     const updatedPipeline = pipeline.filter((element) => {
-      return !("$limit" in element);
+      return !("$limit" in element) && !("$skip" in element);
     });
+
     const [result] = await Invoice.aggregate(pipeline);
     const [resultNoLimit] = await Invoice.aggregate(updatedPipeline);
     const { searchResult = [], searchCount = [] } = result;
@@ -194,12 +224,19 @@ const fetchInvoicesCtrl = expressAsyncHandler(async (req, res) => {
       "services"
     );
     const maxService = maxLengthElement(roomServices);
-
+    const revenue = await Invoice.find({
+      xomtro: xomtroId,
+      createdAt: {
+        $gte: firstDayOfMonth,
+        $lte: lastDayOfMonth,
+      },
+    });
     res.json({
       data: searchResult,
       searchCount: searchCount[0]?.total || 0,
       maxService,
       totalPage,
+      revenue,
     });
   } catch (err) {
     res.json(err);

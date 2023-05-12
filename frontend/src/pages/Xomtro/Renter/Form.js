@@ -46,7 +46,7 @@ const formSchema = Yup.object().shape({
     .matches(phoneRegExp, "Số zalo không hợp lệ!")
     .required("*Dữ liệu bắt buộc!"),
   files: Yup.array()
-    .min(1, "*Dữ liệu bắt buộc!")
+    .min(2, "*Phải có hai hình ảnh mặ trước và mặt sau!")
     .max(2, "*Tối đa hình ảnh là 2")
     .test("fileSize", "*Một trong các hình ảnh lớn hơn 2MB", (values) => {
       // Check if any file size is greater than 2MB
@@ -172,7 +172,7 @@ export const Form = (props) => {
     let filterRoomWithNameAndId = roomStatus?.filter(
       (item) => item.rentalStatus === "Đang ở"
     );
-    let transformedRooms = filterRoomWithNameAndId?.map((item) => ({
+    let transformedRooms = roomStatus?.map((item) => ({
       _id: item._id,
       roomName: item.roomName,
       maxPeople: item.maxPeople,
@@ -416,7 +416,7 @@ export const Form = (props) => {
     dispatch(clearSelectionRenterAction());
   };
 
-  console.log("formik", formik.values);
+  // console.log("formik", formik.values);
 
   return (
     <>
@@ -484,7 +484,7 @@ export const Form = (props) => {
                 </label>
               </div>
               <div className="text-red-400 mb-2">
-                {formik.errors.phoneNumber}
+                {formik.touched.phoneNumber && formik.errors.phoneNumber}
               </div>
             </div>
           </div>
@@ -510,7 +510,7 @@ export const Form = (props) => {
                 </label>
               </div>
               <div className="text-red-400 mb-2">
-                {formik.errors.zaloPhone}
+                {formik.touched.zaloPhone && formik.errors.zaloPhone}
               </div>
             </div>
             <div className="flex flex-col w-full lg:ml-1 mt-6 lg:mt-0">
@@ -533,7 +533,7 @@ export const Form = (props) => {
                 </label>
               </div>
               <div className="text-red-400 mb-2">
-                {formik.errors.career}
+                {formik.touched.career && formik.errors.career}
               </div>
             </div>
           </div>
@@ -582,7 +582,7 @@ export const Form = (props) => {
                 ))}
               </select>
               <div className="text-red-400 mb-2">
-                {formik.errors.gender}
+                {formik.touched.gender && formik.errors.gender}
               </div>
             </div>
           </div>
@@ -614,7 +614,7 @@ export const Form = (props) => {
                 </label>
               </div>
               <div className="text-red-400 mb-2">
-                {formik.errors.nationalID}
+                {formik.touched.nationalID && formik.errors.nationalID}
               </div>
             </div>
             <div className="flex flex-col w-full lg:ml-1 mt-6 lg:mt-0">
@@ -637,11 +637,11 @@ export const Form = (props) => {
                 </label>
               </div>
               <div className="text-red-400 mb-2">
-                {formik.errors.addressDetail}
+                {formik.touched.addressDetail && formik.errors.addressDetail}
               </div>
             </div>
           </div>
-          <div className="flex lg:flex-row flex-col justify-between mb-0">
+          <div className="flex lg:flex-row flex-col justify-between mb-6">
             <div className="flex flex-col flex-1 lg:mr-1 lg:mt-0">
               <label
                 htmlFor="small"
@@ -658,7 +658,7 @@ export const Form = (props) => {
                 isUpdating={city}
               />
             </div>
-            <div className="flex flex-col flex-1 lg:ml-1 lg:mt-0">
+            <div className="flex flex-col flex-1 lg:ml-1 mt-6 lg:mt-0">
               <label
                 htmlFor="small"
                 className="block mb-2 text-sm font-sm text-gray-500 dark:text-gray-500"
@@ -676,8 +676,8 @@ export const Form = (props) => {
               />
             </div>
           </div>
-          <div className="flex lg:flex-row flex-col justify-between mb-6 space-y-2 lg:space-y-0">
-            <div className="flex flex-col flex-1 lg:mr-1 lg:mt-0">
+          <div className="flex lg:flex-row flex-col justify-between mb-0 lg:mb-6 space-y-2 lg:space-y-0">
+            <div className="flex flex-col flex-1 lg:mr-1 lg:mt-0 mb-4 lg:mb-0">
               <label
                 htmlFor="small"
                 className="block mb-2 text-sm font-sm text-gray-500 dark:text-gray-500"
@@ -693,7 +693,7 @@ export const Form = (props) => {
                 isUpdating={ward}
               />
             </div>
-            <div className="flex flex-col flex-1 lg:ml-1 lg:mt-0">
+            <div className="flex flex-col flex-1 lg:ml-1 mt-8 lg:mt-0">
               <label
                 htmlFor="small"
                 className="block mb-2 text-sm font-sm text-gray-500 dark:text-gray-500"
@@ -711,7 +711,7 @@ export const Form = (props) => {
               />
             </div>
           </div>
-          <div className="flex flex-col w-full lg:ml-1 mt-10 mb-6 lg:mt-0">
+          <div className="flex flex-col w-full mt-8 mb-6 lg:mt-0">
             <div className="relative z-0 group border border-gray-300 rounded-md">
               <input
                 type="text"

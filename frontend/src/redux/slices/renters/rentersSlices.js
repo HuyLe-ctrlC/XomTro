@@ -7,7 +7,7 @@ export const addDataAction = createAsyncThunk(
     //http call
     try {
       const response = await renterApi.add(data);
-      console.log("response", response);
+      // console.log("response", response);
       const results = {
         data: response?.data?.data,
         message: response?.data?.message,
@@ -99,7 +99,6 @@ export const getByIdAction = createAsyncThunk(
     try {
       // call Api
       const response = await renterApi.getById(id);
-      console.log("🚀 ~ file: rentersSlices.js:102 ~ response:", response);
       if (response.result) {
         const result = {
           dataUpdate: response.dataUpdate,
