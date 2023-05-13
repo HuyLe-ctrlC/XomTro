@@ -371,11 +371,11 @@ export default function Room() {
 
           {/* Grid */}
           <div className="mt-6">
-            <div className="flex flex-col overflow-hidden items-center">
+            <div className="flex flex-col overflow-hidden">
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                   <div className="shadow overflow-hidden border border-gray-200 sm:rounded-lg ">
-                    <div className="grid grid-cols-[150px_150px_150px_150px_150px_200px_150px_150px_150px] ">
+                    <div className="grid grid-cols-[150px_150px_150px_150px_150px_200px_180px_180px_150px] ">
                       <div className="col-span-2 flex items-center justify-center px-6 py-6 text-left text-xs font-bold text-gray-800  uppercase tracking-wider border border-slate-500">
                         Tên phòng
                       </div>

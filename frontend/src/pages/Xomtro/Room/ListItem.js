@@ -144,7 +144,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
         <Disclosure key={index}>
           {({ open }) => (
             <>
-              <Disclosure.Button className="flex w-[1400px] justify-between bg-blue-100 border border-slate-500 px-4 py-4 text-left text-sm font-medium text-green-900 hover:bg-blue-300 focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75">
+              <Disclosure.Button className="flex w-[1460px] justify-between bg-blue-100 border border-slate-500 px-4 py-4 text-left text-sm font-medium text-green-900 hover:bg-blue-300 focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75">
                 <div>
                   <span className="text-gray-800">{item.floor}&#160;</span>
                   <span className="text-red-600">
@@ -158,7 +158,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                 />
               </Disclosure.Button>
               <Disclosure.Panel className="text-sm text-gray-800">
-                <div className="grid grid-cols-[150px_150px_150px_150px_150px_200px_150px_150px_150px] ">
+                <div className="grid grid-cols-[150px_150px_150px_150px_150px_200px_180px_180px_150px] ">
                   {item.rooms?.map((item) => (
                     <React.Fragment key={item._id}>
                       <div className="p-4 border border-slate-400 whitespace-nowrap col-span-2">

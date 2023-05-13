@@ -17,16 +17,31 @@
   }
 } */
 
-@keyframes bottomToTop {
-  from {
-    top: 0px;
+@media screen and (min-width: 1024px) {
+  @keyframes bottomToTop {
+    from {
+      top: 0px;
+    }
+    to {
+      top: 50%;
+    }
   }
-  to {
-    top: 50%;
+  .animated-image-slide {
+    animation-name: bottomToTop;
+    animation-duration: 2s;
   }
 }
-
-.animated-image-slide {
-  animation-name: bottomToTop;
-  animation-duration: 2s;
+@media screen and (max-width: 1023px) {
+  @keyframes bottomToTop {
+    from {
+      top: 0px;
+    }
+    to {
+      top: 25%;
+    }
+  }
+  .animated-image-slide {
+    animation-name: bottomToTop;
+    animation-duration: 2s;
+  }
 }

@@ -362,13 +362,13 @@ export default function CreatePost() {
                       <tbody>
                         {loading ? (
                           <tr>
-                            <td colSpan={4} className="text-center">
+                            <td colSpan={9} className="text-center">
                               Đang tải dữ liệu...
                             </td>
                           </tr>
                         ) : (data && data?.length <= 0) || data == null ? (
                           <tr>
-                            <td colSpan={4} className="text-center">
+                            <td colSpan={9} className="text-center">
                               Không tìm thấy dữ liệu
                             </td>
                           </tr>

@@ -14,21 +14,24 @@ export default function Chart({ dataInvoice }) {
           service.serviceName === "Tiền điện" ||
           service.serviceName === "Tiền nước"
       );
-    const { totalElectricity, totalWater } = data?.reduce(
-      (accumulator, current) => {
-        const { newValue, oldValue, serviceName } = current;
-        if (serviceName === "Tiền điện") {
-          accumulator.totalElectricity +=
-            parseInt(newValue) - parseInt(oldValue);
-        } else {
-          accumulator.totalWater += parseInt(newValue) - parseInt(oldValue);
-        }
-        return accumulator;
-      },
-      { totalElectricity: 0, totalWater: 0 }
-    );
-    setElectricity(totalElectricity);
-    setWater(totalWater);
+
+    if (dataInvoice !== undefined && data !== undefined) {
+      const { totalElectricity, totalWater } = data?.reduce(
+        (accumulator, current) => {
+          const { newValue, oldValue, serviceName } = current;
+          if (serviceName === "Tiền điện") {
+            accumulator.totalElectricity +=
+              parseInt(newValue) - parseInt(oldValue);
+          } else {
+            accumulator.totalWater += parseInt(newValue) - parseInt(oldValue);
+          }
+          return accumulator;
+        },
+        { totalElectricity: 0, totalWater: 0 }
+      );
+      setElectricity(totalElectricity);
+      setWater(totalWater);
+    }
   }, [dataInvoice]);
   return (
     <>
