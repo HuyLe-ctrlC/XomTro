@@ -12,6 +12,9 @@ import {
   selectLocation,
 } from "../../redux/slices/location/locationSlices";
 import CategoryDropDown from "../Categories/CategoryDropDown";
+import CityDropdown from "../../components/DropDown/CityDropDown";
+import DistrictDropdown from "../../components/DropDown/DistrictDropDown";
+import WardDropdown from "../../components/DropDown/WardDropDown";
 import Swal from "sweetalert2";
 import { removeVietnameseTones } from "../../utils/VietnameseHelper";
 import { phoneRegExp } from "../../constants/regex/numberPhone";
@@ -23,9 +26,12 @@ const formSchema = Yup.object().shape({
   waterPrice: Yup.string().required("*Dữ liệu bắt buộc!"),
   electricityPrice: Yup.string().required("*Dữ liệu bắt buộc!"),
   price: Yup.string().required("*Dữ liệu bắt buộc!"),
-  city: Yup.string().required("*Dữ liệu bắt buộc!"),
-  district: Yup.string().required("*Dữ liệu bắt buộc!"),
-  ward: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // city: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // district: Yup.string().required("*Dữ liệu bắt buộc!"),
+  // ward: Yup.string().required("*Dữ liệu bắt buộc!"),
+  city: Yup.object().required("*Dữ liệu bắt buộc!"),
+  district: Yup.object().required("*Dữ liệu bắt buộc!"),
+  ward: Yup.object().required("*Dữ liệu bắt buộc!"),
   addressDetail: Yup.string().required("*Dữ liệu bắt buộc!"),
   houseLessor: Yup.string().required("*Dữ liệu bắt buộc!"),
   phoneNumber: Yup.string()
@@ -42,12 +48,6 @@ const formSchema = Yup.object().shape({
       );
     }),
 });
-
-const FLOWER_CLASS = {
-  0: "Chung cư",
-  1: "Ký túc xá",
-  2: "Nhà trọ",
-};
 
 export const Form = (props) => {
   const dispatch = useDispatch();
@@ -70,7 +70,7 @@ export const Form = (props) => {
   const [predictionFile, setPredictionFile] = useState(false);
 
   // get props to index components
-  const { closeForm, isUpdate, addData, updateData, dataCity, model } = props;
+  const { closeForm, isUpdate, addData, updateData, dataCategories } = props;
   const locations = useSelector(selectLocation);
   const { dataDistrict, dataWard } = locations;
   // get data update to redux
@@ -109,6 +109,37 @@ export const Form = (props) => {
         }
         if (dataUpdate.image !== undefined) {
           setFiles(dataUpdate.image);
+        }
+        if (dataUpdate.city !== undefined) {
+          const cityUpdate = {
+            value: dataUpdate.city?.id,
+            label: dataUpdate.city?.name,
+          };
+          setCity(cityUpdate);
+        }
+        if (dataUpdate.district !== undefined) {
+          const districtUpdate = {
+            value: dataUpdate.district?.id,
+            label: dataUpdate.district?.name,
+          };
+          setDistrict(districtUpdate);
+        }
+        if (dataUpdate.ward !== undefined) {
+          const wardUpdate = {
+            value: dataUpdate.ward?.id,
+            label: dataUpdate.ward?.name,
+            prefix: dataUpdate.ward?.prefix,
+          };
+          setWard(wardUpdate);
+        }
+        if (dataUpdate.category !== undefined) {
+          const foundElement = dataCategories?.find(
+            (el) => el.title === dataUpdate.category
+          );
+          const newElement = foundElement
+            ? { value: foundElement._id, label: foundElement.title }
+            : {};
+          setCategory(newElement);
         }
       }
     }
@@ -161,15 +192,13 @@ export const Form = (props) => {
     formData.append("addressDetail", formik.values.addressDetail.trim());
     formData.append("houseLessor", formik.values.houseLessor.trim());
     formData.append("phoneNumber", formik.values.phoneNumber.trim());
-    formData.append("city[id]", JSON.parse(formik?.values?.city)?.id);
-    formData.append("city[name]", JSON.parse(formik?.values?.city)?.name);
-    formData.append("district[id]", JSON.parse(formik?.values?.district)?.id);
-    formData.append(
-      "district[name]",
-      JSON.parse(formik?.values?.district)?.name
-    );
-    formData.append("ward[id]", JSON.parse(formik?.values?.ward)?.id);
-    formData.append("ward[name]", JSON.parse(formik?.values?.ward)?.name);
+    formData.append("city[id]", formik?.values?.city?.value);
+    formData.append("city[name]", formik?.values?.city?.label);
+    formData.append("district[id]", formik?.values?.district?.value);
+    formData.append("district[name]", formik?.values?.district?.label);
+    formData.append("ward[id]", formik?.values?.ward?.value);
+    formData.append("ward[name]", formik?.values?.ward?.label);
+    formData.append("ward[prefix]", formik?.values?.ward?.prefix);
 
     for (const file of files) {
       if (file.preview.startsWith("/")) {
@@ -221,16 +250,13 @@ export const Form = (props) => {
     formData.append("addressDetail", formik.values.addressDetail.trim());
     formData.append("houseLessor", formik.values.houseLessor.trim());
     formData.append("phoneNumber", formik.values.phoneNumber.trim());
-    formData.append("city[id]", JSON.parse(formik?.values?.city)?.id);
-    formData.append("city[name]", JSON.parse(formik?.values?.city)?.name);
-    formData.append("district[id]", JSON.parse(formik?.values?.district)?.id);
-    formData.append(
-      "district[name]",
-      JSON.parse(formik?.values?.district)?.name
-    );
-    formData.append("ward[id]", JSON.parse(formik?.values?.ward)?.id);
-    formData.append("ward[name]", JSON.parse(formik?.values?.ward)?.name);
-    formData.append("ward[prefix]", JSON.parse(formik?.values?.ward)?.prefix);
+    formData.append("city[id]", formik?.values?.city?.value);
+    formData.append("city[name]", formik?.values?.city?.label);
+    formData.append("district[id]", formik?.values?.district?.value);
+    formData.append("district[name]", formik?.values?.district?.label);
+    formData.append("ward[id]", formik?.values?.ward?.value);
+    formData.append("ward[name]", formik?.values?.ward?.label);
+    formData.append("ward[prefix]", formik?.values?.ward?.prefix);
     for (let i = 0; i < files.length; i++) {
       formData.append("image", files[i]);
     }
@@ -392,53 +418,6 @@ export const Form = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //get District
-  const getDataDistrict = (event, cityID) => {
-    event.preventDefault();
-    if (cityID) {
-      dispatch(getDistrict(cityID));
-    } else {
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-        width: 500,
-      });
-
-      Toast.fire({
-        icon: "error",
-        title: "Đã có lỗi xảy ra!",
-      });
-    }
-  };
-  //get ward
-  const getDataWard = (event, districtID, cityID) => {
-    event.preventDefault();
-    if (cityID && districtID) {
-      const params = {
-        cityId: cityID,
-        districtId: districtID,
-      };
-      // console.log("params", params);
-      dispatch(getWard(params));
-    } else {
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-        width: 500,
-      });
-
-      Toast.fire({
-        icon: "error",
-        title: "Đã có lỗi xảy ra!",
-      });
-    }
-  };
   // console.log("files", formik.values);
   // console.log("prediction", predictionFile);
   // console.log("Error", formik.errors);
@@ -509,16 +488,6 @@ export const Form = (props) => {
             </div>
             <div className="flex flex-col w-full ml-1">
               <div className="relative z-0 group border border-gray-300 rounded-md">
-                {/* <input
-                  type="acreage"
-                  name="floating_acreage"
-                  id="floating_acreage"
-                  className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                  placeholder=" "
-                  value={formik.values.acreage}
-                  onChange={formik.handleChange("acreage")}
-                  onBlur={formik.handleBlur("acreage")}
-                /> */}
                 <NumericFormat
                   thousandsGroupStyle="thousand"
                   thousandSeparator=","
@@ -547,17 +516,6 @@ export const Form = (props) => {
           <div className="flex flex-row justify-between mb-2">
             <div className="flex flex-col w-full mr-1">
               <div className="relative z-0 group border border-gray-300 rounded-md ">
-                {/* <input
-                  type="electricityPrice"
-                  name="floating_electricityPrice"
-                  id="floating_electricityPrice"
-                  className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                  placeholder=" "
-                  value={formik.values.electricityPrice}
-                  onChange={formik.handleChange("electricityPrice")}
-                  onBlur={formik.handleBlur("electricityPrice")}
-                /> */}
-
                 <NumericFormat
                   thousandsGroupStyle="thousand"
                   thousandSeparator=","
@@ -584,17 +542,6 @@ export const Form = (props) => {
             </div>
             <div className="flex flex-col w-full ml-1">
               <div className="relative z-0 group border border-gray-300 rounded-md">
-                {/* <input
-                  type="waterPrice"
-                  name="floating_waterPrice"
-                  id="floating_waterPrice"
-                  className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                  placeholder=" "
-                  value={formik.values.waterPrice}
-                  onChange={formik.handleChange("waterPrice")}
-                  onBlur={formik.handleBlur("waterPrice")}
-                /> */}
-
                 <NumericFormat
                   thousandsGroupStyle="thousand"
                   thousandSeparator=","
@@ -628,27 +575,14 @@ export const Form = (props) => {
               >
                 Chọn tỉnh thành
               </label>
-              <select
-                id="city"
-                className="bg-white block w-full p-2 text-sm text-gray-500 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                value={JSON.stringify(formik.values.city.name)}
-                onChange={(event) => {
-                  event.preventDefault();
-                  formik.handleChange("city")(event);
-                  getDataDistrict(event, JSON.parse(event.target.value)?.id);
-                }}
-                onBlur={formik.handleBlur("city")}
-              >
-                <option value="">-- Chọn --</option>
-                {dataCity?.map((item, index) => (
-                  <option value={JSON.stringify(item)} key={item.id}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-              <div className="text-red-400 mb-6">
-                {formik.touched.city && formik.errors.city}
-              </div>
+              <CityDropdown
+                value={formik.values.city?.label}
+                onChange={formik.setFieldValue}
+                onBlur={formik.setFieldTouched}
+                error={formik.errors.city}
+                touched={formik.touched.city}
+                isUpdating={city}
+              />
             </div>
             <div className="flex flex-col flex-1 ml-1">
               <label
@@ -657,33 +591,15 @@ export const Form = (props) => {
               >
                 Chọn quận huyện
               </label>
-              <select
-                id="district"
-                className="bg-white block w-full p-2 text-sm text-gray-500 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                value={JSON.stringify(formik.values.district.name)}
-                onChange={(event) => {
-                  event.preventDefault();
-                  formik.handleChange("district")(event);
-                  getDataWard(
-                    event,
-                    JSON.parse(event.target.value)?.id,
-                    JSON.parse(formik?.values?.city).id
-                  );
-                }}
-                onBlur={formik.handleBlur("district")}
-              >
-                <option value="">
-                  {loading ? `Đang tải ...` : `-- Chọn --`}
-                </option>
-                {dataDistrict?.map((item, index) => (
-                  <option value={JSON.stringify(item)} key={item.id}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-              <div className="text-red-400 mb-6">
-                {formik.touched.district && formik.errors.district}
-              </div>
+              <DistrictDropdown
+                value={formik.values.district?.label}
+                onChange={formik.setFieldValue}
+                onBlur={formik.setFieldTouched}
+                error={formik.errors.district}
+                touched={formik.touched.district}
+                isUpdating={district}
+                valueCity={formik.values.city}
+              />
             </div>
           </div>
           <div className="flex flex-row justify-between mb-6">
@@ -694,28 +610,14 @@ export const Form = (props) => {
               >
                 Chọn phường/xã
               </label>
-              <select
-                id="ward"
-                className="bg-white block w-full p-2 text-sm text-gray-500 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                value={JSON.stringify(formik.values.ward.name)}
-                onChange={(event) => {
-                  event.preventDefault();
-                  formik.handleChange("ward")(event);
-                }}
-                onBlur={formik.handleBlur("ward")}
-              >
-                <option value="">
-                  {loading ? `Đang tải ...` : `-- Chọn --`}
-                </option>
-                {dataWard?.map((item, index) => (
-                  <option value={JSON.stringify(item)} key={item.id}>
-                    {item.prefix} {item.name}
-                  </option>
-                ))}
-              </select>
-              <div className="text-red-400 mb-2">
-                {formik.touched.ward && formik.errors.ward}
-              </div>
+              <WardDropdown
+                value={formik.values.ward?.label}
+                onChange={formik.setFieldValue}
+                onBlur={formik.setFieldTouched}
+                error={formik.errors.ward}
+                touched={formik.touched.ward}
+                isUpdating={ward}
+              />
             </div>
             <div className="flex flex-col flex-1 ml-1">
               <label
@@ -730,6 +632,7 @@ export const Form = (props) => {
                 onBlur={formik.setFieldTouched}
                 error={formik.errors.category}
                 touched={formik.touched.category}
+                isUpdating={category}
               />
             </div>
           </div>

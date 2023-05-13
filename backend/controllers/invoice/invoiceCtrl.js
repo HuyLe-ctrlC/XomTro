@@ -11,6 +11,8 @@ const mongoose = require("mongoose");
 const idMaxInRoom = require("../../utils/idMaxInRoom");
 const maxLengthElement = require("../../utils/maxLengthElement");
 const moment = require("moment");
+const STATUS_ROOM = require("../../utils/statusRoom");
+
 const createInvoiceRoomCtrl = expressAsyncHandler(async (req, res) => {
   //get the user
   const user = req.user;
@@ -98,8 +100,17 @@ const createInvoiceMultiRoomCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 const fetchInvoicesCtrl = expressAsyncHandler(async (req, res) => {
+  //get the user
+  const user = req.user;
+  blockUser(user);
   try {
-    const { keyword = "", offset = 0, limit = 10, isTakeProfit } = req.query;
+    const {
+      keyword = "",
+      offset = 0,
+      limit = 10,
+      isTakeProfit,
+      isNotPaid,
+    } = req.query;
 
     const xomtroId = req.query.xomtroId
       ? mongoose.Types.ObjectId(req.query.xomtroId)
@@ -122,6 +133,11 @@ const fetchInvoicesCtrl = expressAsyncHandler(async (req, res) => {
       pipeline.push({ $match: { isTakeProfit: true } });
     } else if (isTakeProfit === "false") {
       pipeline.push({ $match: { isTakeProfit: false } });
+    }
+    if (isNotPaid === "true") {
+      pipeline.push({ $match: { invoiceStatus: STATUS_ROOM.NOT_YET_PAID } });
+    } else if (isNotPaid === "false") {
+      pipeline.push({ $match: { invoiceStatus: STATUS_ROOM.PAID } });
     }
 
     if (xomtroId) {
@@ -244,6 +260,9 @@ const fetchInvoicesCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 const fetchInvoiceById = expressAsyncHandler(async (req, res) => {
+  //get the user
+  const user = req.user;
+  blockUser(user);
   const { id } = req.params;
   validateMongodbId(id);
   try {

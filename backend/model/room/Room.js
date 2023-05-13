@@ -79,6 +79,12 @@ const roomSchema = new mongoose.Schema(
       type: Number,
       default: 7,
     },
+    renterIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Renter",
+      },
+    ],
     rentalStatus: {
       type: String,
       default: STATUS_ROOM.EMPTY,
@@ -109,6 +115,15 @@ roomSchema.pre("save", function (next) {
   }
   if (this.moveOutDate && typeof this.moveOutDate === "string") {
     this.moveOutDate = moment(this.moveOutDate, "DD-MM-YYYY").toDate();
+  }
+  next();
+});
+
+roomSchema.pre('save', function(next) {
+  if (this.renterIds && this.renterIds.length > 0) {
+    this.rentalStatus = STATUS_ROOM.OCCUPIED;
+  } else {
+    this.rentalStatus = STATUS_ROOM.EMPTY;
   }
   next();
 });

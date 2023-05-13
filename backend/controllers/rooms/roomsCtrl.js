@@ -9,6 +9,8 @@ const validateMongodbId = require("../../utils/validateMongodbID");
 const blockUser = require("../../utils/blockUser");
 const mongoose = require("mongoose");
 const idMaxInRoom = require("../../utils/idMaxInRoom");
+const STATUS_ROOM = require("../../utils/statusRoom");
+
 const createRoomCtrl = expressAsyncHandler(async (req, res) => {
   //1. Get the user
   const user = req.user;
@@ -57,6 +59,8 @@ const createRoomCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 const fetchRoomsCtrl = expressAsyncHandler(async (req, res) => {
+  //Display message if user is blocked
+  blockUser(req.user);
   try {
     const { keyword = "", offset = 0, limit = 10 } = req.query;
 
@@ -119,8 +123,10 @@ const fetchRoomsCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 const fetchRoomsByIdXomTroCtrl = expressAsyncHandler(async (req, res) => {
+  //Display message if user is blocked
+  blockUser(req.user);
   try {
-    const { keyword = "", offset = 0, limit = 10 } = req.query;
+    const { keyword = "", offset = 0, limit = 10, isEmpty } = req.query;
     const xomtroId = req.query.xomtroId
       ? mongoose.Types.ObjectId(req.query.xomtroId)
       : null;
@@ -137,6 +143,12 @@ const fetchRoomsByIdXomTroCtrl = expressAsyncHandler(async (req, res) => {
           $or: [{ roomName: { $regex: keyword, $options: "i" } }],
         },
       });
+
+      if (isEmpty === "true") {
+        pipeline.push({ $match: { rentalStatus: STATUS_ROOM.EMPTY } });
+      } else if (isEmpty === "false") {
+        pipeline.push({ $match: { rentalStatus: STATUS_ROOM.OCCUPIED } });
+      }
 
       pipeline.push({
         $project: {
@@ -292,6 +304,8 @@ const fetchRoomsByIdXomTroCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 const fetchRoomCtrl = expressAsyncHandler(async (req, res) => {
+  //Display message if user is blocked
+  blockUser(req.user);
   const { id } = req.params;
   validateMongodbId(id);
   try {
@@ -374,6 +388,8 @@ const deleteRoomCtrl = expressAsyncHandler(async (req, res) => {
 
 //add multi for all room or some room
 const addUtilityCtrl = expressAsyncHandler(async (req, res) => {
+  //Display message if user is blocked
+  blockUser(req.user);
   try {
     const { xomtroId, listRoomId, dataAdded } = req.body;
 
@@ -559,6 +575,8 @@ const checkOutOfTheRoomCtrl = expressAsyncHandler(async (req, res) => {
 //TODO: Get utility HUYPRO
 //-------------------*/
 const getUtilityByIdCtrl = expressAsyncHandler(async (req, res) => {
+  //Display message if user is blocked
+  blockUser(req.user);
   const { xomtroId, serviceId } = req.query;
   validateMongodbId(xomtroId);
   try {

@@ -148,7 +148,7 @@ export const Form = (props) => {
           type="submit"
           onClick={handleUpdateData}
           className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-300 disabled:hover:bg-blue-300"
-          disabled={!formik.isValid}
+          disabled={!formik.isValid || selected.length === 0}
         >
           Cập nhật
         </button>
@@ -159,7 +159,7 @@ export const Form = (props) => {
           type="submit"
           onClick={handleAddData}
           className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 disabled:bg-green-300 disabled:hover:bg-green-300"
-          disabled={!formik.isValid}
+          disabled={!formik.isValid || selected.length === 0}
         >
           Lưu
         </button>
@@ -323,6 +323,11 @@ export const Form = (props) => {
               Chọn tất cả
             </button>
           </div>
+          {selected.length === 0 ? (
+            <div className="text-red-400 mb-2">
+              Vui lòng chọn phòng để tạo hóa đơn
+            </div>
+          ) : null}
           <ul className="flex flex-wrap my-6 items-center justify-center space-x-3 space-y-3">
             {roomApplied?.map((item) => (
               <li

@@ -143,7 +143,7 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
             </div>
           </td>
           <td className="px-4 py-4 whitespace text-sm text-gray-800 overflow-hidden max-w-[220px] border border-slate-500">
-            {item?.addressDetail},&#160;{item?.ward?.prefix},&#160;
+            {item?.addressDetail},&#160;{item?.ward?.prefix}&#160;
             {item.ward?.name},&#160;
             {item.district?.name},&#160;{item?.city?.name}
           </td>

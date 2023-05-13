@@ -337,14 +337,14 @@ export default function Revenue() {
               </p>
             </div>
             {/* Add button */}
-            {dataRoom && (
+            {/* {dataRoom && (
               <div className="flex items-center grow justify-end flex-shrink-0">
                 <HiOutlinePlusSm
                   onClick={() => handleOpenFormAdd()}
                   className="text-4xl bg-green-600 rounded-full text-white hover:bg-green-500 cursor-pointer "
                 />
               </div>
-            )}
+            )} */}
           </div>
           <Search handleSearch={handleSearch} />
 

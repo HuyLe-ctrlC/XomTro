@@ -678,7 +678,7 @@ export const Form = (props) => {
             rFontSize="xl"
             heightOfLine="h-14"
           />
-          <div className="flex lg:flex-row flex-col justify-between mb-2 lg:mb-8 mt-4">
+          <div className="flex lg:flex-row flex-col justify-between mb-2 lg:mb-8 mt-8">
             <div className="flex flex-col w-full lg:mr-1 lg:mt-0">
               <div className="relative z-0 group border border-gray-300 rounded-md ">
                 <NumericFormat

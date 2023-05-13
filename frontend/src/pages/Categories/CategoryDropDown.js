@@ -68,7 +68,7 @@ export default function CategoryDropDown(props) {
         // value={props?.value?.label}
       />
       {/* Display */}
-      {props?.error && (
+      {props?.error && props.touched && (
         // <div style={{ color: "red", marginTop: ".3rem" }}>{props?.error}</div>
         <div className="text-red-400 ">{props?.error}</div>
       )}

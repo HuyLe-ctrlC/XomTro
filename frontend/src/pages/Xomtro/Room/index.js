@@ -115,13 +115,15 @@ export default function Room() {
   }, [Cookies.get("xomtroIDCookie")]);
 
   // search data
-  const handleSearch = (keyword) => {
+  const handleSearch = (isEmpty, keyword) => {
     const newParams = {
       ...params,
       keyword: keyword,
+      isEmpty: isEmpty,
       offset: 0,
       xomtroId: nameAndServicesXomtro?.id,
     };
+
     getData(newParams);
   };
 

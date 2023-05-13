@@ -61,6 +61,7 @@ const fetchAllCommentsCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 
 const fetchCommentCtrl = expressAsyncHandler(async (req, res) => {
+  blockUser(req.user);
   const { id } = req.params;
 
   validateMongodbId(id);
@@ -89,6 +90,7 @@ const fetchCommentCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 
 const fetchCommentDetail = expressAsyncHandler(async (req, res) => {
+  blockUser(req.user);
   const { id } = req.params;
   validateMongodbId(id);
   try {
@@ -109,6 +111,7 @@ const fetchCommentDetail = expressAsyncHandler(async (req, res) => {
 //TODO: Update a comment
 //-------------------*/
 const updateCommentCtrl = expressAsyncHandler(async (req, res) => {
+  blockUser(req.user);
   const { id } = req.params;
   validateMongodbId(id);
 
@@ -145,6 +148,7 @@ const updateCommentCtrl = expressAsyncHandler(async (req, res) => {
 //TODO: Delete a comment
 //-------------------*/
 const deleteCommentCtrl = expressAsyncHandler(async (req, res) => {
+  blockUser(req.user);
   const { id } = req.params;
   validateMongodbId(id);
   try {

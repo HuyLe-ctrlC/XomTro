@@ -12,6 +12,7 @@ const idMaxInRoom = require("../../utils/idMaxInRoom");
 const maxLengthElement = require("../../utils/maxLengthElement");
 const Renter = require("../../model/renter/Renter");
 const fs = require("fs");
+const STATUS_ROOM = require("../../utils/statusRoom");
 /*-------------------
 //TODO: Create a Renter
 //-------------------*/
@@ -36,15 +37,28 @@ const createRenterCtrl = expressAsyncHandler(async (req, res) => {
   }
   // console.log("imgUploaded", imgUploaded);
   try {
-    const post = await Renter.create({
+    const renter = await Renter.create({
       ...req.body,
       user: req?.user,
       IDCardPhoto: imgUploaded,
     });
 
+    const room = await Room.findById(req.body.room);
+    // Add the new renter to the room's renter array
+    room.renterIds.push(renter._id);
+    if (room.renterIds.length > 0) {
+      // If there are renters, set the rentalStatus to "occupied"
+      room.rentalStatus = STATUS_ROOM.OCCUPIED;
+    } else {
+      // If there are no renters, set the rentalStatus to "empty"
+      room.rentalStatus = STATUS_ROOM.EMPTY;
+    }
+
+    // Save the updated room object
+    await room.save();
     res.json({
       result: true,
-      data: post,
+      data: renter,
       message: MESSAGE.MESSAGE_SUCCESS,
     });
   } catch (error) {
@@ -53,6 +67,9 @@ const createRenterCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 const fetchRentersCtrl = expressAsyncHandler(async (req, res) => {
+  //get the user
+  const user = req.user;
+  blockUser(user);
   try {
     const { keyword = "", offset = 0, limit = 10 } = req.query;
     const xomtroId = req.query.xomtroId
@@ -157,6 +174,8 @@ const fetchRentersCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 
 const fetchRenterByIdCtrl = expressAsyncHandler(async (req, res) => {
+  //Display message if user is blocked
+  blockUser(req.user);
   const { id } = req.params;
   validateMongodbId(id);
   try {
@@ -184,6 +203,8 @@ const fetchRenterByIdCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 
 const updateRenterCtrl = expressAsyncHandler(async (req, res) => {
+  //Display message if user is blocked
+  blockUser(req.user);
   const { id } = req.params;
   validateMongodbId(id);
 
@@ -222,6 +243,19 @@ const updateRenterCtrl = expressAsyncHandler(async (req, res) => {
     }
   });
 
+  const roomBefore = await Room.findOne({ renterIds: id });
+
+  // Remove the old renter from the room's renter array
+  roomBefore.renterIds.pull(id);
+
+  // Update the rentalStatus of the old and new room based on the number of renters
+  if (roomBefore.renterIds.length > 0) {
+    roomBefore.rentalStatus = STATUS_ROOM.OCCUPIED;
+  } else {
+    roomBefore.rentalStatus = STATUS_ROOM.EMPTY;
+  }
+  await roomBefore.save();
+
   const renterUpdate = await Renter.findByIdAndUpdate(
     id,
     {
@@ -232,6 +266,17 @@ const updateRenterCtrl = expressAsyncHandler(async (req, res) => {
     { new: true }
   ).populate("user", "email lastName firstName profilePhoto");
 
+  const roomAfter = await Room.findById(req.body?.room);
+
+  // Add the updated renter to the new room's renter array
+  roomAfter.renterIds.addToSet(renterUpdate._id);
+
+  if (roomAfter.renterIds.length > 0) {
+    roomAfter.rentalStatus = STATUS_ROOM.OCCUPIED;
+  } else {
+    roomAfter.rentalStatus = STATUS_ROOM.EMPTY;
+  }
+  await roomAfter.save();
   res.json({
     result: true,
     message: MESSAGE.UPDATE_SUCCESS,
@@ -243,11 +288,27 @@ const updateRenterCtrl = expressAsyncHandler(async (req, res) => {
 //TODO: Delete a Renter
 //-------------------*/
 const deleteRenterCtrl = expressAsyncHandler(async (req, res) => {
+  //1. Get the user
+  const user = req.user;
+  //check user isBlocked
+  blockUser(user);
   const { id } = req.params;
   validateMongodbId(id);
   try {
-    const renter = await Renter.findOneAndDelete(id);
+    const renter = await Renter.findByIdAndDelete(id);
+    const room = await Room.findById(renter?.room);
+    // Add the new renter to the room's renter array
+    room.renterIds.pull(renter._id);
+    if (room.renterIds.length > 0) {
+      // If there are renters, set the rentalStatus to "occupied"
+      room.rentalStatus = STATUS_ROOM.OCCUPIED;
+    } else {
+      // If there are no renters, set the rentalStatus to "empty"
+      room.rentalStatus = STATUS_ROOM.EMPTY;
+    }
 
+    // Save the updated room object
+    await room.save();
     if (renter) {
       res.json({
         result: true,

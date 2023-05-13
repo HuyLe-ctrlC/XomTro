@@ -74,6 +74,8 @@ export default function XomtroManagement({
             title: message?.message,
             showConfirmButton: false,
             timer: 1500,
+          }).then(() => {
+            window.location.reload();
           });
         } else {
           const Toast = Swal.mixin({

@@ -278,7 +278,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                               >
                                 <Menu.Items
                                   static
-                                  className="origin-top-right group cursor-pointer absolute z-10 right-0 bottom-8 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                  className="origin-top-right group cursor-pointer absolute z-10 right-8 -bottom-5 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
                                 >
                                   <Menu.Item>
                                     {({ activeEdit, activeDelete }) => (

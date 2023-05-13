@@ -25,7 +25,7 @@ import {
   getCity,
   selectLocation,
 } from "../../redux/slices/location/locationSlices";
-import { getAllAction as getCategories } from "../../redux/slices/category/categorySlice";
+import { getAllAction as getCategories, selectCategory } from "../../redux/slices/category/categorySlice";
 
 export default function CreatePost() {
   //redux
@@ -54,6 +54,8 @@ export default function CreatePost() {
   const user = useSelector(selectUser);
   const { userAuth } = user;
 
+  const getCategory = useSelector(selectCategory);
+  const { data: dataCategories } = getCategory;
   const getData = () => {
     document.title = title;
     // console.log("keyword", params.keyword);
@@ -225,7 +227,7 @@ export default function CreatePost() {
           addData={handleAddData}
           updateData={handleUpdateData}
           dataCity={dataCity}
-          // model={model}
+          dataCategories={dataCategories}
         />
       );
     }

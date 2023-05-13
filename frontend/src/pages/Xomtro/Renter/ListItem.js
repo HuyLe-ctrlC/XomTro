@@ -68,6 +68,7 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
   };
 
   const [groupByFloor, setGroupByFloor] = useState(undefined);
+  console.log("🚀 ~ file: ListItem.js:71 ~ ListItem ~ groupByFloor:", groupByFloor)
 
   useEffect(() => {
     const grouped = data.reduce((result, item) => {

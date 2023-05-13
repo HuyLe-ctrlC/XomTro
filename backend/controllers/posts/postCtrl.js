@@ -254,6 +254,7 @@ const fetchPostCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 
 const fetchPostByUserCtrl = expressAsyncHandler(async (req, res) => {
+  blockUser(req.user);
   const { _id } = req.user;
 
   const { keyword = "", offset = 0, limit = 10, publish } = req.query;
@@ -377,6 +378,7 @@ const fetchPostByUserCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 
 const updatePostCtrl = expressAsyncHandler(async (req, res) => {
+  blockUser(req.user);
   const { id } = req.params;
   validateMongodbId(id);
 
@@ -507,11 +509,12 @@ const updatePostCtrl = expressAsyncHandler(async (req, res) => {
 //TODO: Delete a Post
 //-------------------*/
 const deletePostCtrl = expressAsyncHandler(async (req, res) => {
+  blockUser(req.user);
   const { id } = req.params;
   validateMongodbId(id);
   try {
     //!change this code
-    const posts = await Post.findOneAndDelete(id);
+    const posts = await Post.findByIdAndDelete(id);
     // await posts.remove();
     // Delete all comments that belong to the post
     await Comment.deleteMany({ post: id });

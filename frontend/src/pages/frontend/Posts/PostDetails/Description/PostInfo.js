@@ -12,7 +12,6 @@ export default function PostInfo() {
   const posts = useSelector(selectPosts);
 
   const { dataUpdate } = posts;
-
   return (
     <>
       <div className="flex-initial lg:w-3/4 w-full rounded-md mr-2">

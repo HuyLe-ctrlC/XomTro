@@ -284,7 +284,7 @@ export default function PostsList() {
                                 )}
                               </div>
                               <div className="pl-2 text-gray-600">
-                                triệu/tháng
+                                /tháng
                               </div>
                             </div>
                             {/* Acreage */}
@@ -304,7 +304,7 @@ export default function PostsList() {
                                 )}
                               </div>
                               <div className="pl-2 text-gray-600">
-                                ngàn/Khối
+                                /Khối
                               </div>
                             </div>
                             {/* Electricity Price */}
@@ -314,7 +314,7 @@ export default function PostsList() {
                                   post?.electricityPrice
                                 )}
                               </div>
-                              <div className="pl-2 text-gray-600">ngàn/Kw</div>
+                              <div className="pl-2 text-gray-600">/Kwh</div>
                             </div>
                           </div>
                           <div className="mt-6 md:mt-2 flex items-center">

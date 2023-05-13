@@ -67,10 +67,13 @@ const createXomtroCtrl = expressAsyncHandler(async (req, res) => {
         new: true,
       }
     );
+    const xomtroCountByUser = await Xomtro.countDocuments({ user: _id });
+
     res.json({
       result: true,
       data: { xomtro, rooms },
       message: MESSAGE.MESSAGE_SUCCESS,
+      searchCount: xomtroCountByUser,
     });
   } catch (error) {
     res.json(error);
@@ -78,6 +81,7 @@ const createXomtroCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 const fetchXomtrosCtrl = expressAsyncHandler(async (req, res) => {
+  blockUser(req.user);
   try {
     const { keyword = "", offset = 0, limit = 10 } = req.query;
     let pipeline = [];
@@ -197,6 +201,7 @@ const fetchXomtrosCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 
 const fetchXomtroByUserCtrl = expressAsyncHandler(async (req, res) => {
+  blockUser(req.user);
   const { _id } = req.user;
 
   const { keyword = "", offset = 0, limit = 10 } = req.query;
@@ -312,6 +317,7 @@ const fetchXomtroByUserCtrl = expressAsyncHandler(async (req, res) => {
 //-------------------*/
 
 const fetchXomtroCtrl = expressAsyncHandler(async (req, res) => {
+  blockUser(req.user);
   const { id } = req.params;
   validateMongodbId(id);
   try {
@@ -444,6 +450,7 @@ const addUtilityXomtroCtrl = expressAsyncHandler(async (req, res) => {
 //TODO: Get utility applied HUYPRO
 //-------------------*/
 const getUtilityAppliedByIdCtrl = expressAsyncHandler(async (req, res) => {
+  blockUser(req.user);
   const { xomtroId, serviceId } = req.query;
   validateMongodbId(xomtroId);
   try {
@@ -473,7 +480,6 @@ const getUtilityAppliedByIdCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
-
 module.exports = {
   createXomtroCtrl,
   fetchXomtrosCtrl,
@@ -482,5 +488,5 @@ module.exports = {
   addUtilityXomtroCtrl,
   fetchXomtroCtrl,
   fetchXomtroByUserCtrl,
-  getUtilityAppliedByIdCtrl
+  getUtilityAppliedByIdCtrl,
 };

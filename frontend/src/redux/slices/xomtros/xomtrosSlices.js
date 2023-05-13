@@ -14,6 +14,7 @@ export const addDataAction = createAsyncThunk(
       const results = {
         data: response.data.xomtro,
         message: response.message,
+        searchCount: response.searchCount,
       };
       return results;
     } catch (error) {
@@ -127,7 +128,6 @@ export const getByUserAction = createAsyncThunk(
   }
 );
 
-
 //delete data by id
 export const deleteAction = createAsyncThunk(
   "xomtro/delete",
@@ -195,6 +195,7 @@ const xomtroSlices = createSlice({
         const { data } = action?.payload;
         state.data = state.data?.length > 0 ? state.data : [];
         state.data = [data, ...state.data];
+        state.searchCount = action?.payload?.searchCount;
         // state.data = action?.payload;
         state.appError = undefined;
         state.serverError = undefined;

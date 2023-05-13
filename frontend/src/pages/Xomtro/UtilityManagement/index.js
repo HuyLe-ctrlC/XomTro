@@ -1,75 +1,45 @@
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  selectRooms,
-  updateDataAction,
-} from "../../../redux/slices/rooms/roomsSlices";
 import Utility from "./Utility";
 import TenantMonthlyUtilities from "./TenantMonthlyUtilities";
-import { clearSelectionAction, selectAllAction, toggleItemAction } from "../../../redux/slices/selectedSlices";
-
-const myItems = [
-  {
-    id: "614d1a5226b10f2b481f6d84",
-    roomName: "Phòng 1",
-    fields: {
-      acreage: 50,
-      price: 2000000,
-    },
-  },
-  {
-    id: "614d1a5226b10f2b481f6d69",
-    roomName: "Phòng 2",
-    fields: {
-      acreage: 50,
-      price: 2000000,
-    },
-  },
-];
-
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import Cookies from "js-cookie";
+import { getInvoiceByXomtroIdAction } from "../../../redux/slices/invoices/invoicesSlices";
 export default function UtilityManagement() {
+  const title = "Quản lý dịch vụ";
   const dispatch = useDispatch();
-  const roomData = useSelector(selectRooms);
-  const { selected } = roomData;
-  const handleSelection = (itemSelected) => {
-    dispatch(toggleItemAction({ itemSelected }));
+  const getCurrentMonthAndYear = () => {
+    const currentDate = new Date();
+    const yearMonthString = currentDate.toISOString().slice(0, 7);
+    return yearMonthString;
+  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const [active, setActive] = useState("");
+  const [limit, setLimit] = useState(20);
+  const [keyword, setKeyword] = useState("");
+  const [xomtroId, setXomtroId] = useState("");
+  //set offset
+  let offset = currentPage - 1;
+  //set params
+  const params = {
+    keyword: keyword,
+    offset: offset,
+    limit: limit,
+    xomtroId: xomtroId,
+    month: getCurrentMonthAndYear(),
   };
 
-  const handleClearSelection = () => {
-    dispatch(clearSelectionAction());
-  };
+  useEffect(() => {
+    let xomtroId = Cookies.get("xomtroIDCookie");
+    const newParams = {
+      ...params,
+      xomtroId,
+    };
+    dispatch(getInvoiceByXomtroIdAction(newParams));
 
-  const handleSend = () => {
-    console.log("selected", selected);
-    // dispatch(updateDataAction());
-  };
-
-  const handleSelectAll = () => {
-    dispatch(selectAllAction(myItems));
-  };
+    document.title = title;
+  }, [Cookies.get("xomtroIDCookie")]);
   return (
     <>
-      {/* <button onClick={handleClearSelection}>Clear selection</button>
-      <button onClick={handleSelectAll}>Select All</button>
-      <ul>
-        {myItems.map((item) => (
-          <li key={item.id}>
-            <input
-              type="checkbox"
-              checked={selected?.map((item) => item.id).includes(item.id)}
-              onChange={() => handleSelection(item)}
-            />
-            <span>{item.roomName}</span>
-          </li>
-        ))}
-        {selected?.length === 0 && (
-          <li>
-            <input type="checkbox" checked={false} readOnly />
-            <span>No items selected</span>
-          </li>
-        )}
-      </ul>
-      <button onClick={handleSend}>SEND</button> */}
       <div className="flex flex-col md:flex-row space-x-2 bg-slate-50 mx-2 rounded-xl p-4 drop-shadow-sm">
         <div className="flex-initial w-full md:w-2/5 ">
           <Utility />

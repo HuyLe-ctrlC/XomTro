@@ -22,20 +22,19 @@ export default function Promotion() {
   const post = useSelector(selectPosts);
   const { dataUpdate } = post;
 
-  // const addressMap =
-  //   dataUpdate.ward?.prefix +
-  //   " " +
-  //   dataUpdate.ward?.name +
-  //   " " +
-  //   dataUpdate.district?.name +
-  //   " " +
-  //   dataUpdate.city?.name;
-  // console.log(
-  //   "🚀 ~ file: Promotion.js:26 ~ Promotion ~ addressMap:",
-  //   addressMap
-  // );
+  const addressMap =
+    dataUpdate.ward?.prefix +
+    " " +
+    dataUpdate.ward?.name +
+    " " +
+    dataUpdate.district?.name +
+    " " +
+    dataUpdate.city?.name;
+  console.log(
+    "🚀 ~ file: Promotion.js:26 ~ Promotion ~ addressMap:",
+    addressMap
+  );
 
-  const addressMap = "91 Lê Văn Tách, Bình Đường 1, An Bình, Dĩ An, Bình Dương";
   // useEffect(() => {
   //   Geocode.fromAddress(addressMap).then(
   //     (response) => {

@@ -35,7 +35,11 @@ import { clearSelectionAction } from "../../../redux/slices/selectedSlices";
 export default function Invoice() {
   //redux
   const dispatch = useDispatch();
-
+  const getCurrentMonthAndYear = () => {
+    const currentDate = new Date();
+    const yearMonthString = currentDate.toISOString().slice(0, 7);
+    return yearMonthString;
+  };
   const [formStatusState, setFormStatusState] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [formInvoice, setFormInvoice] = useState(false);
@@ -54,6 +58,7 @@ export default function Invoice() {
     offset: offset,
     limit: limit,
     xomtroId: xomtroId,
+    month: getCurrentMonthAndYear(),
   };
 
   //get data from redux
@@ -105,10 +110,12 @@ export default function Invoice() {
   }, [Cookies.get("xomtroIDCookie")]);
 
   // search data
-  const handleSearch = (keyword) => {
+  const handleSearch = (isNotPaid, keyword, month) => {
     const newParams = {
       ...params,
       keyword: keyword,
+      isNotPaid: isNotPaid,
+      month: month,
       offset: 0,
       xomtroId: nameAndServicesXomtro?.id,
     };

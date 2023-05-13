@@ -46,7 +46,7 @@ const formSchema = Yup.object().shape({
     .matches(phoneRegExp, "Số zalo không hợp lệ!")
     .required("*Dữ liệu bắt buộc!"),
   files: Yup.array()
-    .min(2, "*Phải có hai hình ảnh mặ trước và mặt sau!")
+    .min(2, "*Phải có hai hình ảnh mặt trước và mặt sau!")
     .max(2, "*Tối đa hình ảnh là 2")
     .test("fileSize", "*Một trong các hình ảnh lớn hơn 2MB", (values) => {
       // Check if any file size is greater than 2MB
