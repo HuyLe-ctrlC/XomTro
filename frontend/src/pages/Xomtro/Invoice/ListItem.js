@@ -56,7 +56,7 @@ export const ListItem = ({
         } else {
           const Toast = Swal.mixin({
             toast: true,
-            position: "bottom-end",
+            position: "top-end",
             showConfirmButton: false,
             timer: 1500,
             timerProgressBar: true,
@@ -77,7 +77,7 @@ export const ListItem = ({
   const handleStatus = (id, services, roomId) => {
     const dataServiceRoom = { services: services };
     let data = {
-      invoiceStatus: "Đã thu tiền",
+      invoiceStatus: "Chờ chu kỳ tới",
     };
     const dataUpdate = {
       id: id,
@@ -110,7 +110,7 @@ export const ListItem = ({
         } else {
           const Toast = Swal.mixin({
             toast: true,
-            position: "bottom-end",
+            position: "top-end",
             showConfirmButton: false,
             timer: 1500,
             timerProgressBar: true,

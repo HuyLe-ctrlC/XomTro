@@ -27,7 +27,7 @@ export const navigationAdmin = [
     current: false,
   },
   {
-    title: "Quản trị Xomtro",
+    title: "Quản lý Xomtro",
     href: ROUTES.XOMTRO,
     current: false,
   },

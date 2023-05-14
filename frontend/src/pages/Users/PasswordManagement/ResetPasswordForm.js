@@ -41,7 +41,7 @@ export const ResetPasswordForm = () => {
     if (forgetPasswordTokenAction.fulfilled.match(action)) {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 5000,
         timerProgressBar: true,
@@ -55,7 +55,7 @@ export const ResetPasswordForm = () => {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,

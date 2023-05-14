@@ -50,7 +50,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
         } else {
           const Toast = Swal.mixin({
             toast: true,
-            position: "bottom-end",
+            position: "top-end",
             showConfirmButton: false,
             timer: 1500,
             timerProgressBar: true,
@@ -90,7 +90,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
         } else {
           const Toast = Swal.mixin({
             toast: true,
-            position: "bottom-end",
+            position: "top-end",
             showConfirmButton: false,
             timer: 1500,
             timerProgressBar: true,
@@ -136,7 +136,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
   const isNotPaidAndIsOtherInvoice = (currentValue) =>
     currentValue.invoiceStatus === "Chưa thu tiền" &&
     currentValue.isOtherInvoice === false;
-  const isPaid = (currentValue) => currentValue.invoiceStatus === "Đã thu tiền";
+  const isPaid = (currentValue) => currentValue.invoiceStatus === "Chờ chu kỳ tới";
 
   return (
     <>
@@ -219,7 +219,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                               ? "bg-red-500 min-w-full"
                               : item.renters?.length > 0
                               ? "bg-green-500 min-w-full"
-                              : "bg-orange-500 min-w-full"
+                              : "bg-green-500 min-w-full"
                           }`}
                           // className={`p-2 rounded-lg text-center ${
                           //   item.rentalStatus === "Đang trống"

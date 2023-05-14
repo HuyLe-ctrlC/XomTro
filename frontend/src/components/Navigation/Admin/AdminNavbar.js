@@ -49,9 +49,9 @@ export const AdminNavbar = ({ isLogin }) => {
           <div className="max-w-7xl mx-auto px-4 ">
             <div className="flex h-16 justify-between">
               <div className="flex">
-                <div className="-ml-2 mr-2 md:hidden flex items-center">
+                <div className="-ml-2 mr-2 lg:hidden flex items-center">
                   {/* Mobile menu button */}
-                  <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                  <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                     <span className="sr-only">Open main menu</span>
                     {open ? (
                       <AiOutlineClose className="block h-6 w-6 " />
@@ -64,11 +64,11 @@ export const AdminNavbar = ({ isLogin }) => {
                   {/* Logo */}
                   <img
                     src={logoXomTro}
-                    className="hidden md:block md:w-16 md:h-16 md:py-2 md:rounded-xl"
+                    className="hidden lg:block lg:w-16 lg:h-16 lg:py-2 lg:rounded-xl"
                     alt="logo"
                   />
                 </div>
-                <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
+                <div className="hidden lg:ml-6 lg:flex lg:items-center lg:space-x-4">
                   <NavItem navigationArr={navigationAdmin}/>
                 </div>
               </div>
@@ -100,7 +100,7 @@ export const AdminNavbar = ({ isLogin }) => {
                     <span>Đăng xuất</span>
                   </button>
                 </div>
-                <div className="hidden md:ml-4 md:flex-shrink-0 md:flex md:items-center">
+                <div className="hidden lg:ml-4 lg:flex-shrink-0 lg:flex lg:items-center">
                   {/* Profile dropdown */}
                   <Menu as="div" className="ml-3 relative z-10">
                     {({ open }) => (
@@ -153,7 +153,7 @@ export const AdminNavbar = ({ isLogin }) => {
               </div>
             </div>
           </div>
-          <Disclosure.Panel className="md:hidden">
+          <Disclosure.Panel className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navigationAdmin.map((item, index) => (
                 <Link

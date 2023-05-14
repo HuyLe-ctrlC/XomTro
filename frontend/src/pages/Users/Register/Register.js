@@ -95,7 +95,7 @@ const Register = () => {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,

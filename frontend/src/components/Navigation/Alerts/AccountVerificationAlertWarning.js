@@ -14,7 +14,7 @@ export default function AccountVerificationAlertWarning() {
     if (verifyAction.fulfilled.match(updateAction)) {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 2500,
         timerProgressBar: true,
@@ -28,7 +28,7 @@ export default function AccountVerificationAlertWarning() {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,

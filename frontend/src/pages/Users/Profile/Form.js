@@ -235,7 +235,7 @@ export const Form = (props) => {
         {isUpdate ? (
           <form>
             <div className="mb-8">
-              <div className="flex flex-col w-full">
+              <div className="flex lg:flex-row flex-col mb-6 w-full">
                 <div className="relative z-0 w-full group border border-gray-300 rounded-md ">
                   <input
                     type="email"
@@ -260,7 +260,7 @@ export const Form = (props) => {
                 </div>
               </div>
             </div>
-            <div className="flex flex-row justify-between mb-8">
+            <div className="flex lg:flex-row flex-col justify-between mb-6">
               <div className="flex flex-col w-full mr-1">
                 <div className="relative z-0 group border border-gray-300 rounded-md ">
                   <input
@@ -284,7 +284,7 @@ export const Form = (props) => {
                   {formik.touched.firstName && formik.errors.firstName}
                 </div>
               </div>
-              <div className="flex flex-col w-full ml-1">
+              <div className="flex flex-col w-full ml-1 mt-6 lg:mt-0">
                 <div className="relative z-0 group border border-gray-300 rounded-md">
                   <input
                     type="lastName"

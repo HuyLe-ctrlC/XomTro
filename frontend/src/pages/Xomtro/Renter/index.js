@@ -95,6 +95,7 @@ export default function Renter() {
     nameAndServicesXomtro,
     dataUpdate: roomUpdate,
   } = getRoom;
+
   const getRoomByXomtroIdHandler = () => {
     const newParams = {
       ...params,
@@ -104,26 +105,21 @@ export default function Renter() {
   };
   //
   useEffect(() => {
-    // Check if rooms data is already available in the store
-    // if (!dataRoom?.length && getXomtro.searchCount === 1) {
-    //   dispatch(getByXomtroIdAction(params));
-    // } else if (!dataRoom?.length) {
+    //check if in the store have date then not call api
+    // if (!dataRenter?.length) {
     //   const newParams = {
     //     ...params,
     //     xomtroId: Cookies.get("xomtroIDCookie"),
     //   };
+    //   dispatch(getAllAction(newParams));
     //   dispatch(getByXomtroIdAction(newParams));
     // }
-
-    //check if in the store have date then not call api
-    if (!dataRenter?.length) {
-      const newParams = {
-        ...params,
-        xomtroId: Cookies.get("xomtroIDCookie"),
-      };
-      dispatch(getAllAction(newParams));
-      dispatch(getByXomtroIdAction(newParams));
-    }
+    const newParams = {
+      ...params,
+      xomtroId: Cookies.get("xomtroIDCookie"),
+    };
+    dispatch(getAllAction(newParams));
+    dispatch(getByXomtroIdAction(newParams));
 
     document.title = title;
   }, [Cookies.get("xomtroIDCookie")]);
@@ -158,7 +154,7 @@ export default function Renter() {
     if (addDataAction.fulfilled.match(action)) {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -172,7 +168,7 @@ export default function Renter() {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -203,7 +199,7 @@ export default function Renter() {
     if (updateDataAction.fulfilled.match(updateAction)) {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -217,7 +213,7 @@ export default function Renter() {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,

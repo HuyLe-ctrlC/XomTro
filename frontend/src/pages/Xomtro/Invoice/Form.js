@@ -728,8 +728,8 @@ export const Form = (props) => {
                           type="checkbox"
                           className="accent-green-500 w-5 h-5 "
                           checked={selected
-                            ?.map((item) => item._id)
-                            .includes(item._id)}
+                            ?.map((item) => item?._id)
+                            .includes(item?._id)}
                           onChange={() => handleSelection(item)}
                         />
                         <span>{item.roomName}</span>
@@ -960,8 +960,8 @@ export const Form = (props) => {
                             type="checkbox"
                             className="accent-green-500 w-5 h-5 "
                             checked={selected
-                              ?.map((item) => item._id)
-                              .includes(item._id)}
+                              ?.map((item) => item?._id)
+                              .includes(item?._id)}
                             onChange={() => handleSelection(item)}
                           />
                           <div className="flex flex-col space-y-1 ">

@@ -12,7 +12,7 @@ export const POSTS_DETAIL = "/posts/:postId";
 export const CREATE_POST = "/create-post";
 //users management
 export const USERS = "/users";
-export const USERS_MANAGEMENT = "/users/management";
+export const USERS_MANAGEMENT = "/users-management";
 export const PROFILE = "/profile/:id";
 //categories management
 export const ADD_CATEGORY = "/add-category";

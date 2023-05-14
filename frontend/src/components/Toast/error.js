@@ -4,7 +4,7 @@ export default function Error(message, serverError) {
   // console.log("🚀 ~ file: error.js:4 ~ Error ~ message:", message);
   const Toast = Swal.mixin({
     toast: true,
-    position: "bottom-end",
+    position: "top-end",
     showConfirmButton: false,
     timer: 1500,
     timerProgressBar: true,

@@ -737,7 +737,7 @@ export const Form = (props) => {
           </div>
           <>
             <LabelXomTro
-              label="Giấy tờ tùy thân"
+              label="Hình ảnh chứng thực"
               subLabel="CCCD/CMND"
               fontSize="lg"
               rFontSize="xl"
@@ -869,8 +869,8 @@ export const Form = (props) => {
                         type="checkbox"
                         className="accent-green-500 w-5 h-5 disabled:cursor-not-allowed"
                         checked={selected
-                          ?.map((item) => item._id)
-                          .includes(item._id)}
+                          ?.map((item) => item?._id)
+                          .includes(item?._id)}
                         onChange={() => handleSelection(item)}
                         disabled={item.currentRenterNumber >= item.maxPeople}
                       />

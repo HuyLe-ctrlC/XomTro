@@ -3,6 +3,7 @@ const User = require("../../model/user/User");
 const Xomtro = require("../../model/xomtro/Xomtro");
 const Category = require("../../model/category/Category");
 const Room = require("../../model/room/Room");
+const Invoice = require("../../model/invoice/Invoice");
 const Renter = require("../../model/renter/Renter");
 const MESSAGE = require("../../utils/constantsMessage");
 const validateMongodbId = require("../../utils/validateMongodbID");
@@ -340,7 +341,8 @@ const updateRoomCtrl = expressAsyncHandler(async (req, res) => {
         ...req?.body,
       },
       { new: true, runValidators: true }
-    ).populate({ path: "invoice", select: "invoiceStatus paymentPurpose" });
+    );
+
     if (updateRoom) {
       res.json({
         result: true,
@@ -367,7 +369,8 @@ const deleteRoomCtrl = expressAsyncHandler(async (req, res) => {
   validateMongodbId(id);
   try {
     const deleteRoom = await Room.findByIdAndDelete(id);
-
+    await Invoice.deleteMany({ room: id });
+    await Renter.deleteMany({ room: id });
     // res.json(deleteRoom);
     if (deleteRoom) {
       res.json({

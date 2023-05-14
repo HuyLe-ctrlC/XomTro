@@ -158,7 +158,11 @@ export const Form = (props) => {
   return (
     <>
       <div className="bg-black opacity-50 fixed w-full h-full top-0 z-40"></div>
-      <div className="w-1/2 h-[500px] lg:lg:h-full mb-2 p-4 bg-white fixed overflow-y-scroll lg:top-1/2 top-1/4 left-1/2 -translate-y-1/2 -translate-x-1/2 animated-image-slide z-50 border-2 border-state-500">
+      <div
+        className={`${
+          isUpdate ? "lg:lg:h-[500px]" : "lg:lg:h-full"
+        } w-1/2 h-[500px] mb-2 p-4 bg-white fixed overflow-y-scroll lg:top-1/2 top-1/4 left-1/2 -translate-y-1/2 -translate-x-1/2 animated-image-slide z-50 border-2 border-state-500`}
+      >
         <p className="font-sans text-2xl md:text-3xl">
           {isUpdate ? "Cập nhật phòng trọ" : "Thêm mới phòng trọ"}
         </p>
@@ -228,29 +232,32 @@ export const Form = (props) => {
           </div>
 
           <div className="flex lg:flex-row flex-col justify-between mb-2">
-            <div className="flex flex-col w-full lg:mr-1 lg:mt-0">
-              <div className="relative z-0 group border border-gray-300 rounded-md ">
-                <input
-                  type="roomName"
-                  name="floating_roomName"
-                  id="floating_roomName"
-                  className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                  placeholder=" "
-                  value={formik.values.roomName}
-                  onChange={formik.handleChange("roomName")}
-                  onBlur={formik.handleBlur("roomName")}
-                />
-                <label
-                  htmlFor="floating_roomName"
-                  className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
-                >
-                  Tên phòng <span className="text-red-500">*</span>
-                </label>
+            {!isUpdate && (
+              <div className="flex flex-col w-full lg:mr-1 lg:mt-0">
+                <div className="relative z-0 group border border-gray-300 rounded-md ">
+                  <input
+                    type="roomName"
+                    name="floating_roomName"
+                    id="floating_roomName"
+                    className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=" "
+                    value={formik.values.roomName}
+                    onChange={formik.handleChange("roomName")}
+                    onBlur={formik.handleBlur("roomName")}
+                  />
+                  <label
+                    htmlFor="floating_roomName"
+                    className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
+                  >
+                    Tên phòng <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                <div className="text-red-400 mb-2">
+                  {formik.touched.roomName && formik.errors.roomName}
+                </div>
               </div>
-              <div className="text-red-400 mb-2">
-                {formik.touched.roomName && formik.errors.roomName}
-              </div>
-            </div>
+            )}
+
             <div className="flex flex-col w-full lg:ml-1 mt-6 lg:mt-0">
               <div className="relative z-0 group border border-gray-300 rounded-md">
                 <input

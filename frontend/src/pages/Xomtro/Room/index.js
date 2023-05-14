@@ -90,17 +90,6 @@ export default function Room() {
 
   //
   useEffect(() => {
-    // Check if rooms data is already available in the store
-    // if (!dataRoom?.length && getXomtro.searchCount === 1) {
-    //   dispatch(getByXomtroIdAction(params));
-    // } else if (!dataRoom?.length) {
-    //   const newParams = {
-    //     ...params,
-    //     xomtroId: Cookies.get("xomtroIDCookie"),
-    //   };
-    //   dispatch(getByXomtroIdAction(newParams));
-    // }
-
     //check if in the store have date then not call api
     // if (!dataRoom?.length) {
     //   const newParams = {
@@ -145,7 +134,7 @@ export default function Room() {
     if (addDataAction.fulfilled.match(action)) {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -159,7 +148,7 @@ export default function Room() {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -183,13 +172,14 @@ export default function Room() {
     };
     // console.log("dataUpdate", dataUpdate);
     const updateAction = await dispatch(updateDataAction(dataUpdate));
+    getRoomByXomtroIdHandler();
     const msg = updateAction.payload;
     // console.log("msg", msg);
 
     if (updateDataAction.fulfilled.match(updateAction)) {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -203,7 +193,7 @@ export default function Room() {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -255,7 +245,7 @@ export default function Room() {
     if (addInvoiceAction.fulfilled.match(action)) {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -269,7 +259,7 @@ export default function Room() {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,

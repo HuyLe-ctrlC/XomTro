@@ -228,7 +228,7 @@ const renterSlices = createSlice({
       const { itemSelected } = action.payload;
       //check exist
       const index = state.selected
-        .map((item) => item._id?.toString())
+        .map((item) => item?._id?.toString())
         .indexOf(itemSelected._id?.toString());
       if (index === -1 && state.selected.length === 0) {
         state.selected.push(itemSelected);

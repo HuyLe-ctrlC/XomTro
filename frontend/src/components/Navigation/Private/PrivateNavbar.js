@@ -50,9 +50,9 @@ export const PrivateNavbar = ({ isLogin }) => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 justify-between">
               <div className="flex">
-                <div className="-ml-2 mr-2 flex items-center md:hidden">
+                <div className="-ml-2 mr-2 flex items-center lg:hidden">
                   {/* Mobile menu button */}
-                  <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                  <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                     <span className="sr-only">Open main menu</span>
                     {open ? (
                       <AiOutlineClose
@@ -71,7 +71,7 @@ export const PrivateNavbar = ({ isLogin }) => {
                   {/* Logo */}
                   <BsBook className="h-10 w-10 text-yellow-200" />
                 </div>
-                <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
+                <div className="hidden lg:ml-6 lg:flex lg:items-center lg:space-x-4">
                   <NavItem navigationArr={navigationPrivate} />
                 </div>
               </div>
@@ -100,7 +100,7 @@ export const PrivateNavbar = ({ isLogin }) => {
                     <span>Đăng xuất</span>
                   </button>
                 </div>
-                <div className="hidden md:ml-4 md:flex-shrink-0 md:flex md:items-center">
+                <div className="hidden lg:ml-4 lg:flex-shrink-0 lg:flex lg:items-center">
                   {/* Profile dropdown */}
                   <Menu as="div" className="ml-3 relative z-10">
                     {({ open }) => (
@@ -163,12 +163,12 @@ export const PrivateNavbar = ({ isLogin }) => {
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 -translate-y-5"
           >
-            <Disclosure.Panel className="md:hidden">
+            <Disclosure.Panel className="lg:hidden">
               <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 {navigationPrivate.map((item, index) => (
-                  <a
+                  <Link
                     key={index}
-                    href={item.href}
+                    to={item.href}
                     className={classNames(
                       item.current
                         ? "bg-gray-900 text-white"
@@ -178,7 +178,7 @@ export const PrivateNavbar = ({ isLogin }) => {
                     aria-current={item.current ? "page" : undefined}
                   >
                     {item.title}
-                  </a>
+                  </Link>
                 ))}
               </div>
               {/* Mobile */}

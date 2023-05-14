@@ -65,9 +65,7 @@ export const Form = (props) => {
   const [houseLessor, setHouseLessor] = useState("");
   const [addressDetail, setAddressDetail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [timeRule, setTimeRule] = useState("");
   const [files, setFiles] = useState([]);
-  const [predictionFile, setPredictionFile] = useState(false);
 
   // get props to index components
   const { closeForm, isUpdate, addData, updateData, dataCategories } = props;
@@ -321,7 +319,6 @@ export const Form = (props) => {
       addressDetail,
       houseLessor,
       phoneNumber,
-      timeRule,
     },
     validationSchema: formSchema,
   });
@@ -347,7 +344,6 @@ export const Form = (props) => {
     setAddressDetail(formik.values.addressDetail);
     setCategory(formik.values.category);
     setPhoneNumber(formik.values.phoneNumber);
-    setTimeRule(formik.values.timeRule);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -381,7 +377,7 @@ export const Form = (props) => {
   };
   const thumbs = files.flat().map((file, i) => (
     <div
-      className="inline-flex rounded-sm border border-solid mb-6 mr-2 w-5/12 h-60 p-1 box-border"
+      className="inline-flex  mb-6 mr-2 lg:w-5/12 w-full h-60 p-1"
       key={i}
     >
       <div className="flex min-w-0 overflow-hidden">
@@ -392,7 +388,7 @@ export const Form = (props) => {
               ? `data:image/jpeg;base64,${file.preview}`
               : `${file.preview}`
           }
-          className="block w-auto h-full"
+          className="block w-full h-full rounded-md"
           // Revoke data uri after image is loaded
           onLoad={() => {
             unFocus();
@@ -434,7 +430,7 @@ export const Form = (props) => {
           <AiOutlineClose className="text-3xl" />
         </button>
         <form>
-          <div className="mb-8">
+          <div className="mb-6">
             <div className="flex flex-col w-full">
               <div className="relative z-0 w-full group border border-gray-300 rounded-md ">
                 <input
@@ -460,8 +456,8 @@ export const Form = (props) => {
               </div>
             </div>
           </div>
-          <div className="flex flex-row justify-between mb-8">
-            <div className="flex flex-col w-full mr-1">
+          <div className="flex lg:flex-row flex-col justify-between mb-8">
+            <div className="flex flex-col w-full lg:mr-1 mr-0">
               <div className="relative z-0 group border border-gray-300 rounded-md ">
                 <NumericFormat
                   thousandsGroupStyle="thousand"
@@ -486,7 +482,7 @@ export const Form = (props) => {
                 {formik.touched.price && formik.errors.price}
               </div>
             </div>
-            <div className="flex flex-col w-full ml-1">
+            <div className="flex flex-col w-full lg:ml-1 ml-0 mt-6 lg:mt-0 lg:mt-0">
               <div className="relative z-0 group border border-gray-300 rounded-md">
                 <NumericFormat
                   thousandsGroupStyle="thousand"
@@ -513,8 +509,8 @@ export const Form = (props) => {
             </div>
           </div>
 
-          <div className="flex flex-row justify-between mb-2">
-            <div className="flex flex-col w-full mr-1">
+          <div className="flex lg:flex-row flex-col justify-between mb-2">
+            <div className="flex flex-col w-full lg:mr-1 mr-0">
               <div className="relative z-0 group border border-gray-300 rounded-md ">
                 <NumericFormat
                   thousandsGroupStyle="thousand"
@@ -540,7 +536,7 @@ export const Form = (props) => {
                   formik.errors.electricityPrice}
               </div>
             </div>
-            <div className="flex flex-col w-full ml-1">
+            <div className="flex flex-col w-full lg:ml-1 ml-0 mt-6 lg:mt-0">
               <div className="relative z-0 group border border-gray-300 rounded-md">
                 <NumericFormat
                   thousandsGroupStyle="thousand"
@@ -567,8 +563,8 @@ export const Form = (props) => {
             </div>
           </div>
 
-          <div className="flex flex-row justify-between mb-0">
-            <div className="flex flex-col flex-1 mr-1">
+          <div className="flex lg:flex-row flex-col justify-between mb-0">
+            <div className="flex flex-col flex-1 lg:mr-1 mr-0">
               <label
                 htmlFor="small"
                 className="block mb-2 text-sm font-sm text-gray-500 dark:text-gray-500"
@@ -584,7 +580,7 @@ export const Form = (props) => {
                 isUpdating={city}
               />
             </div>
-            <div className="flex flex-col flex-1 ml-1">
+            <div className="flex flex-col flex-1 lg:ml-1 ml-0 mt-6 lg:mt-0">
               <label
                 htmlFor="small"
                 className="block mb-2 text-sm font-sm text-gray-500 dark:text-gray-500"
@@ -602,8 +598,8 @@ export const Form = (props) => {
               />
             </div>
           </div>
-          <div className="flex flex-row justify-between mb-6">
-            <div className="flex flex-col flex-1 mr-1">
+          <div className="flex lg:flex-row flex-col justify-between mb-8 mt-6">
+            <div className="flex flex-col flex-1 lg:mr-1 mr-0">
               <label
                 htmlFor="small"
                 className="block mb-2 text-sm font-sm text-gray-500 dark:text-gray-500"
@@ -619,7 +615,7 @@ export const Form = (props) => {
                 isUpdating={ward}
               />
             </div>
-            <div className="flex flex-col flex-1 ml-1">
+            <div className="flex flex-col flex-1 lg:ml-1 ml-0 mt-6 lg:mt-0">
               <label
                 htmlFor="small"
                 className="block mb-2 text-sm font-sm text-gray-500 dark:text-gray-500"
@@ -636,8 +632,8 @@ export const Form = (props) => {
               />
             </div>
           </div>
-          <div className="flex flex-row justify-between mb-4">
-            <div className="flex flex-col w-full mr-1">
+          <div className="flex lg:flex-row flex-col justify-between mb-6">
+            <div className="flex flex-col w-full lg:mr-1 mr-0">
               <div className="relative z-0 group border border-gray-300 rounded-md ">
                 <input
                   type="addressDetail"
@@ -660,7 +656,7 @@ export const Form = (props) => {
                 {formik.touched.addressDetail && formik.errors.addressDetail}
               </div>
             </div>
-            <div className="flex flex-col w-full ml-1">
+            <div className="flex flex-col w-full lg:ml-1 ml-0 mt-6 lg:mt-0">
               <div className="relative z-0 group border border-gray-300 rounded-md">
                 <input
                   type="houseLessor"
@@ -684,8 +680,8 @@ export const Form = (props) => {
               </div>
             </div>
           </div>
-          <div className="flex flex-row justify-between mb-4">
-            <div className="flex flex-col w-full mr-1">
+          <div className="flex lg:flex-row flex-col justify-between mb-6">
+            <div className="flex flex-col w-full lg:mr-1 mr-0">
               <div className="relative z-0 group border border-gray-300 rounded-md ">
                 <input
                   type="phoneNumber"
@@ -708,7 +704,7 @@ export const Form = (props) => {
                 {formik.touched.phoneNumber && formik.errors.phoneNumber}
               </div>
             </div>
-            <div className="flex flex-col w-full ml-1">
+            {/* <div className="flex flex-col w-full lg:ml-1 ml-0 mt-6 lg:mt-0">
               <div className="relative z-0 group border border-gray-300 rounded-md">
                 <input
                   type="timeRule"
@@ -730,7 +726,7 @@ export const Form = (props) => {
               <div className="text-red-400 mb-2">
                 {formik.touched.timeRule && formik.errors.timeRule}
               </div>
-            </div>
+            </div> */}
           </div>
           <div>
             <section className="container">

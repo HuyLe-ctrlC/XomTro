@@ -88,7 +88,7 @@ export default function Profile() {
     if (updateDataAction.fulfilled.match(updateAction)) {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -102,7 +102,7 @@ export default function Profile() {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -143,7 +143,7 @@ export default function Profile() {
     if (sendEmailAction.fulfilled.match(action)) {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -157,7 +157,7 @@ export default function Profile() {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -205,7 +205,7 @@ export default function Profile() {
     if (followAction.fulfilled.match(updateAction)) {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -219,7 +219,7 @@ export default function Profile() {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -245,7 +245,7 @@ export default function Profile() {
     if (unFollowAction.fulfilled.match(updateAction)) {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -259,7 +259,7 @@ export default function Profile() {
     } else {
       const Toast = Swal.mixin({
         toast: true,
-        position: "bottom-end",
+        position: "top-end",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
@@ -326,9 +326,9 @@ export default function Profile() {
                                 <div className=" flex flex-col 2xl:block mt-10 min-w-0 flex-1">
                                   <h1 className="text-2xl font-bold text-gray-900 ">
                                     {profile?.firstName} {profile?.lastName}
-                                    <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                    {/* <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                                       {profile?.accountType}
-                                    </span>
+                                    </span> */}
                                     {/* Display if verified or not */}
                                     {profile?.isAccountVerified ? (
                                       <span className="inline-flex ml-2 items-center px-3 py-0.5  rounded-lg text-sm font-medium bg-green-600 text-white">
@@ -479,9 +479,9 @@ export default function Profile() {
                                           <h3>
                                             {user?.firstName} {user?.lastName}
                                           </h3>
-                                          <p className="text-indigo-600">
+                                          {/* <p className="text-indigo-600">
                                             {user?.accountType}
-                                          </p>
+                                          </p> */}
                                         </div>
                                       </div>
                                     </Link>

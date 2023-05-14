@@ -30,8 +30,8 @@ export default function Chart({ revenueData, dataRoom }) {
   }, [revenueData]);
 
   useEffect(() => {
-    const stayed = dataRoom?.filter((item) => item.renters.length > 0);
-    const empty = dataRoom?.filter((item) => item.renters.length <= 0);
+    const stayed = dataRoom?.filter((item) => item.renters?.length > 0);
+    const empty = dataRoom?.filter((item) => item.renters?.length <= 0);
     setNumberRoom(dataRoom?.length);
     setNumberRoomEmpty(empty?.length);
     setNumberRoomRenting(stayed?.length);
