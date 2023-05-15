@@ -160,7 +160,7 @@ export const Form = (props) => {
       <div className="bg-black opacity-50 fixed w-full h-full top-0 z-40"></div>
       <div
         className={`${
-          isUpdate ? "lg:lg:h-[500px]" : "lg:lg:h-full"
+          isUpdate ? "lg:h-[500px]" : "lg:h-full"
         } w-1/2 h-[500px] mb-2 p-4 bg-white fixed overflow-y-scroll lg:top-1/2 top-1/4 left-1/2 -translate-y-1/2 -translate-x-1/2 animated-image-slide z-50 border-2 border-state-500`}
       >
         <p className="font-sans text-2xl md:text-3xl">

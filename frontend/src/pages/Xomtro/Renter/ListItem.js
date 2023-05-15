@@ -1,19 +1,16 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { HiPencilAlt } from "react-icons/hi";
-import { FaDollarSign, FaUser } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { MdPlace } from "react-icons/md";
 import {
   BsBriefcaseFill,
   BsChevronUp,
-  BsPeopleFill,
   BsThreeDotsVertical,
   BsTrash,
 } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import { deleteAction } from "../../../redux/slices/renters/rentersSlices";
-import { DateConverter } from "../../../utils/DateFormatter";
-import houseStatus from "../../../img/house-status.png";
 
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import Moment from "react-moment";
@@ -68,7 +65,6 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
   };
 
   const [groupByFloor, setGroupByFloor] = useState(undefined);
-  console.log("🚀 ~ file: ListItem.js:71 ~ ListItem ~ groupByFloor:", groupByFloor)
 
   useEffect(() => {
     const grouped = data.reduce((result, item) => {
@@ -90,7 +86,7 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
   // console.log("groupByFloor", groupByFloor);
   const isNotPaid = (currentValue) =>
     currentValue.invoiceStatus === "Chưa thu tiền";
-  const isPaid = (currentValue) => currentValue.invoiceStatus === "Đã thu tiền";
+  const isPaid = (currentValue) => currentValue.invoiceStatus === "Chờ chu kỳ mới";
 
   return (
     <>

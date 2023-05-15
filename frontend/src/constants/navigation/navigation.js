@@ -10,6 +10,15 @@ export const navigationPrivate = [
   },
 ];
 
+export const navigationPrivateNotVerified = [
+  { title: "Home", href: ROUTES.HOME, current: true },
+  {
+    title: "Bài viết",
+    href: ROUTES.POSTS,
+    current: false,
+  },
+];
+
 export const navigationAdmin = [
   {
     title: "Home",

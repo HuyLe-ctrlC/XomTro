@@ -49,7 +49,7 @@ export default function Revenue() {
   const title = "Quản lý thu chi";
   const [currentPage, setCurrentPage] = useState(1);
   const [active, setActive] = useState("");
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
   const [keyword, setKeyword] = useState("");
   const [xomtroId, setXomtroId] = useState("");
   //set offset

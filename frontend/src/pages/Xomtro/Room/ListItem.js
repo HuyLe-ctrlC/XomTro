@@ -103,7 +103,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
           });
         }
       } else if (result.isDenied) {
-        Swal.fire("Bạn vẫn chưa xóa!", "", "info");
+        Swal.fire("Bạn vẫn chưa thanh lý phòng!", "", "info");
       }
     });
   };

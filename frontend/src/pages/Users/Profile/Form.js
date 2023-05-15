@@ -224,8 +224,14 @@ export const Form = (props) => {
   return (
     <>
       <div className="bg-black opacity-50 fixed w-full h-full top-0 z-40"></div>
-      <div className="w-1/2 h-[500px] lg:h-full mb-2 p-4 bg-white fixed overflow-y-scroll lg:top-1/2 top-1/4 left-1/2 -translate-y-1/2 -translate-x-1/2 animated-image-slide z-50 border-2 border-state-500">
-        <p className="font-sans text-2xl md:text-3xl">Cập nhật dữ liệu</p>
+      <div
+        className={`${
+          isUpdate ? "lg:h-full" : "lg:h-[500px]"
+        } w-1/2 h-[500px] mb-2 p-4 bg-white fixed overflow-y-scroll lg:top-1/2 top-1/4 left-1/2 -translate-y-1/2 -translate-x-1/2 animated-image-slide z-50 border-2 border-state-500`}
+      >
+        <p className="font-sans text-2xl md:text-3xl">
+          {isUpdate ? "Cập nhật dữ liệu" : "Gửi tin nhắn"}
+        </p>
         <button
           className="w-full inline-flex justify-end"
           onClick={() => handleCloseForm()}
@@ -317,7 +323,7 @@ export const Form = (props) => {
                     accept="image/png, image/jpeg, image/jpg"
                   />
                   <p className="border-2 border-dashed p-2 italic text-sm text-gray-500">
-                    Chọn hình ảnh để đăng tin tại đây
+                    Chọn hình ảnh để đăng tin tại đây (tối đa 1)
                   </p>
                 </div>
                 <aside className="flex flex-row flex-wrap mt-4 justify-evenly">

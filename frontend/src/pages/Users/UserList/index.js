@@ -21,7 +21,7 @@ export const UserList = () => {
   const dispatch = useDispatch();
 
   const [formStatusState, setFormStatusState] = useState(false);
-  const title = "Quản lý thể loại";
+  const title = "Quản lý tài khoản";
   const [isUpdate, setIsUpdate] = useState(false);
   const [isSentEmail, setIsSendEmail] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -279,7 +279,7 @@ export const UserList = () => {
             <div className="flex-none flex-shrink-0">
               <p className="font-sans font-semibold text-3xl">{title}</p>
               <p className="font-sans text-sm italic">
-                Tất cả {title} Nhà trọ XomTro
+                {title} XomTro
               </p>
             </div>
             {/* Add button */}

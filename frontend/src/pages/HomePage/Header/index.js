@@ -1,7 +1,8 @@
 import React from "react";
 import poster from "../../../img/poster2.png";
-import * as ROUTES from '../../../constants/routes/routes'
+import * as ROUTES from "../../../constants/routes/routes";
 import { Link } from "react-router-dom";
+
 export default function Header() {
   return (
     <div className="max-w-7xl mx-auto px-4 pt-10">
@@ -11,10 +12,12 @@ export default function Header() {
             Tạo nhà trọ để quản lý
           </span>
           <h2 className="max-w-2xl mt-12 mb-12 text-5xl 2xl:text-7xl text-gray-800 font-bold font-heading leading-tight">
-            Quản lý nhà trọ miễn phí với <p className="text-yellow-500">XomTro</p>
+            Quản lý nhà trọ miễn phí với{" "}
+            <p className="text-yellow-500">XomTro</p>
           </h2>
           <p className="mb-12 lg:mb-16 2xl:mb-24 text-xl text-gray-800 max-w-xl">
-            Vui lòng cung cấp đúng thông tin về nhà trọ để quản lý một cách tốt nhất
+            Vui lòng cung cấp đúng thông tin về nhà trọ để quản lý một cách tốt
+            nhất
           </p>
           <Link
             to={ROUTES.XOMTRO}

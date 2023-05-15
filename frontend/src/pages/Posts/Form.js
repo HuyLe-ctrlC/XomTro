@@ -528,7 +528,7 @@ export const Form = (props) => {
                   htmlFor="floating_electricityPrice"
                   className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
                 >
-                  Giá điện (Kw) <span className="text-red-500">*</span>
+                  Giá điện (kWh) <span className="text-red-500">*</span>
                 </label>
               </div>
               <div className="text-red-400 mb-2">
@@ -736,7 +736,7 @@ export const Form = (props) => {
                   accept="image/png, image/jpeg, image/jpg"
                 />
                 <p className="border-2 border-dashed p-2 italic text-sm text-gray-500">
-                  Chọn hình ảnh để đăng tin tại đây
+                  Chọn hình ảnh để đăng tin tại đây (tối đa 4)
                 </p>
               </div>
               <aside className="flex flex-row flex-wrap mt-4 justify-evenly">

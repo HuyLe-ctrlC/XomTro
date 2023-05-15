@@ -775,7 +775,7 @@ export const Form = (props) => {
                       htmlFor="floating_electricityPrice"
                       className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
                     >
-                      Giá điện (Kw) <span className="text-red-500">*</span>
+                      Giá điện (kWh) <span className="text-red-500">*</span>
                     </label>
                   </div>
                   <div className="text-red-400 mb-2">
@@ -902,7 +902,7 @@ export const Form = (props) => {
             }`}
           >
             {!isUpdate && (
-              <div className="flex flex-col w-full lg:ml-1 lg:mt-0">
+              <div className="flex flex-col w-full lg:mr-1 lg:mt-0">
                 <div className="relative z-0 group border border-gray-300 rounded-md">
                   <NumericFormat
                     thousandsGroupStyle="thousand"
@@ -929,7 +929,7 @@ export const Form = (props) => {
               </div>
             )}
             <div
-              className={`flex flex-col w-full lg:mr-1  ${
+              className={`flex flex-col w-full lg:ml-1  ${
                 !isUpdate ? "mt-6 lg:mt-0" : "lg:mt-0"
               }`}
             >

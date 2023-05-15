@@ -28,6 +28,7 @@ export default function PostInfo() {
           <div className="mt-4">
             <span className="text-lg tracking-wide">
               Địa chỉ:{" "}
+              {dataUpdate?.addressDetail},&#160;
               {dataUpdate.ward?.prefix ? dataUpdate.ward?.prefix + " " : ""}
               {dataUpdate.ward?.name},&#160;
               {dataUpdate.district?.name},&#160;{dataUpdate.city?.name}

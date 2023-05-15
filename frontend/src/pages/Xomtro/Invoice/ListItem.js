@@ -74,8 +74,12 @@ export const ListItem = ({
     });
   };
   // update invoice status
-  const handleStatus = (id, services, roomId) => {
+  const handleStatus = (id, services, roomId, isOtherInvoice) => {
     const dataServiceRoom = { services: services };
+    const dataRoomUpdate = {
+      id: roomId,
+      data: dataServiceRoom,
+    };
     let data = {
       invoiceStatus: "Chờ chu kỳ tới",
     };
@@ -83,10 +87,7 @@ export const ListItem = ({
       id: id,
       data,
     };
-    const dataRoomUpdate = {
-      id: roomId,
-      data: dataServiceRoom,
-    };
+
     Swal.fire({
       title: "Bạn đã thu tiền dịch vụ này rồi phải không?",
       showDenyButton: true,
@@ -95,7 +96,9 @@ export const ListItem = ({
     }).then(async (result) => {
       if (result.isConfirmed) {
         const action = await dispatch(updateDataAction(dataUpdate));
-        await dispatch(updateRoomAction(dataRoomUpdate));
+        if (isOtherInvoice === false) {
+          await dispatch(updateRoomAction(dataRoomUpdate));
+        }
         await dispatch(clearRoomAction());
         const message = action.payload;
         // console.log("msg", message);
@@ -222,7 +225,7 @@ export const ListItem = ({
             <React.Fragment key={item._id}>
               <tr
                 className={`${
-                  item.invoiceStatus == "Chưa thu tiền"
+                  item?.invoiceStatus === "Chưa thu tiền"
                     ? "bg-red-100"
                     : "bg-green-100"
                 }`}
@@ -232,7 +235,7 @@ export const ListItem = ({
                     <span>{item.room.roomName}</span>
                     <span
                       className={`${
-                        item.invoiceStatus == "Chưa thu tiền"
+                        item?.invoiceStatus === "Chưa thu tiền"
                           ? " text-xs text-red-500 italic"
                           : "text-xs text-green-500 italic"
                       }`}
@@ -260,14 +263,18 @@ export const ListItem = ({
                       item.services[index]?.serviceName === "Tiền nước" ? (
                         <>
                           <td className="border border-slate-600 px-4 py-4 whitespace-nowrap">
-                            {new Intl.NumberFormat("de-DE").format(
-                              item.services[index]?.oldValue
-                            )}
+                            {!item.services[index]?.isSelected
+                              ? "0"
+                              : new Intl.NumberFormat("de-DE").format(
+                                  item.services[index]?.oldValue
+                                )}
                           </td>
                           <td className="border border-slate-600 px-4 py-4 whitespace-nowrap">
-                            {new Intl.NumberFormat("de-DE").format(
-                              item.services[index]?.newValue
-                            )}
+                            {!item.services[index]?.isSelected
+                              ? "0"
+                              : new Intl.NumberFormat("de-DE").format(
+                                  item.services[index]?.newValue
+                                )}
                           </td>
                         </>
                       ) : (
@@ -350,7 +357,8 @@ export const ListItem = ({
                                             handleStatus(
                                               item._id,
                                               item.services,
-                                              item.room?._id
+                                              item.room?._id,
+                                              item.isOtherInvoice
                                             )
                                           }
                                           className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"

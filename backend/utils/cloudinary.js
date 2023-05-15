@@ -183,7 +183,7 @@ const cloudinaryUpdateImg = async (publicId, newPath) => {
       ];
     }
   } catch (err) {
-    console.log("Error:", err);
+    // console.log("Error:", err);
     throw new Error("Update failed!");
   }
 };
@@ -191,9 +191,9 @@ const cloudinaryUpdateImg = async (publicId, newPath) => {
 const cloudinaryDeleteImg = async (publicId) => {
   cloudinary.uploader.destroy(publicId, function (error, result) {
     if (error) {
-      console.log("Error:", error);
+      // console.log("Error:", error);
     } else {
-      console.log("Result:", result);
+      // console.log("Result:", result);
     }
   });
 };

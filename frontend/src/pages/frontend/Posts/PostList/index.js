@@ -64,7 +64,7 @@ export default function PostsList() {
   useEffect(() => {
     getData(params);
     handleGetAllCate();
-  }, []); 
+  }, []);
 
   // useEffect(() => {
   //   dispatch(getAllAction(params));
@@ -218,7 +218,7 @@ export default function PostsList() {
                             </h5>
                           </Link>
                           <p className="mb-3 font-normal text-gray-700 ">
-                            Địa chỉ:{" "}
+                            Địa chỉ:&#160;{post?.addressDetail},&#160;
                             {post.ward?.prefix ? post.ward?.prefix + " " : ""}
                             {post.ward?.name},&#160;
                             {post.district?.name},&#160;
@@ -283,9 +283,7 @@ export default function PostsList() {
                                   post?.price
                                 )}
                               </div>
-                              <div className="pl-2 text-gray-600">
-                                /tháng
-                              </div>
+                              <div className="pl-2 text-gray-600">/tháng</div>
                             </div>
                             {/* Acreage */}
                             <div className="flex flex-row  justify-center items-center ml-4 mr-4 pb-2 pt-1">
@@ -303,9 +301,7 @@ export default function PostsList() {
                                   post?.waterPrice
                                 )}
                               </div>
-                              <div className="pl-2 text-gray-600">
-                                /Khối
-                              </div>
+                              <div className="pl-2 text-gray-600">/Khối</div>
                             </div>
                             {/* Electricity Price */}
                             <div className="flex flex-row justify-center items-center ml-4 md:ml-0 mr-4 pb-2 pt-1">

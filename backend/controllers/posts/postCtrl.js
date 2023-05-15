@@ -509,6 +509,8 @@ const updatePostCtrl = expressAsyncHandler(async (req, res) => {
 //TODO: Delete a Post
 //-------------------*/
 const deletePostCtrl = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  //Display message if user is blocked
   blockUser(req.user);
   const { id } = req.params;
   validateMongodbId(id);
@@ -519,6 +521,15 @@ const deletePostCtrl = expressAsyncHandler(async (req, res) => {
     // Delete all comments that belong to the post
     await Comment.deleteMany({ post: id });
     if (posts) {
+      await User.findByIdAndUpdate(
+        _id,
+        {
+          $inc: { postCount: -1 },
+        },
+        {
+          new: true,
+        }
+      );
       res.json({
         result: true,
         _id: posts._id,

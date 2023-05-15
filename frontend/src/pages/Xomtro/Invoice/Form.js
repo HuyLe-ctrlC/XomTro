@@ -158,11 +158,11 @@ export const Form = (props) => {
   //filter room applied
   useEffect(() => {
     let filterRoomWithNameAndId = roomStatus?.filter(
-      (item) => item.renters.length > 0
+      (item) => item.renters?.length > 0
     );
     let transformedRooms = filterRoomWithNameAndId?.map((item) => ({
-      _id: item._id,
-      roomName: item.roomName,
+      _id: item?._id,
+      roomName: item?.roomName,
     }));
     setRoomApplied(transformedRooms);
   }, [roomStatus]);
@@ -382,7 +382,7 @@ export const Form = (props) => {
           type="submit"
           onClick={addDataInRoomHandler}
           className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 disabled:bg-green-300 disabled:hover:bg-green-300"
-          disabled={!formik.isValid}
+          disabled={!formik.isValid || newValueError || newValueErrorWater}
         >
           Lập hóa đơn
         </button>
@@ -395,7 +395,7 @@ export const Form = (props) => {
           className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-300 disabled:hover:bg-blue-300"
           disabled={!formik.isValid}
         >
-          Cập nhật
+          Cập nhật hóa đơn
         </button>
       );
     } else {
@@ -406,7 +406,7 @@ export const Form = (props) => {
           className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 disabled:bg-green-300 disabled:hover:bg-green-300"
           disabled={!formikAddForm.isValid || selected.length === 0}
         >
-          Lưu
+          Lưu hóa đơn khác
         </button>
       );
     }
@@ -418,6 +418,8 @@ export const Form = (props) => {
 
   // console.log("formik", formik.values);
   // console.log("formSchema", formSchema);
+  const [newValueError, setNewValueError] = useState(false);
+  const [newValueErrorWater, setNewValueErrorWater] = useState(false);
 
   //!HUYPRO
   const handleChange = (index, field, value) => {
@@ -425,6 +427,7 @@ export const Form = (props) => {
     newValues[index] = { ...newValues[index], [field]: value };
     setValuesServices(newValues);
   };
+
   const getSelects = useSelector(selectSelects);
   const { selected } = getSelects;
   const handleSelection = (itemSelected) => {
@@ -439,52 +442,122 @@ export const Form = (props) => {
     dispatch(selectAllAction(roomApplied));
   };
   useEffect(() => {
+    // if (selected.length === 0) {
+    //   setNewValueError(false);
+    //   setNewValueErrorWater(false)
+    // }
+    if (
+      selected.length === 0 ||
+      selected.find((item) => item.serviceName !== "Tiền điện")
+    ) {
+      setNewValueError(false);
+    }
+    if (
+      selected.length === 0 ||
+      selected.find((item) => item.serviceName !== "Tiền nước")
+    ) {
+      setNewValueErrorWater(false);
+    }
+
     const totalPriceServices = selected?.map((service, index) => {
       if (service.serviceName === "Tiền điện") {
         if (isUpdate) {
-          return {
-            priceService: electricityTariff(
-              parseInt(valuesServices[0]?.newValue),
-              parseInt(service.oldValue),
-              service.price,
-              service.priceTier2,
-              service.priceTier3
-            ),
-            // priceService:
-            //   (parseInt(valuesServices[0]?.newValue) -
-            //     parseInt(service.oldValue)) *
-            //   service.price,
-          };
+          if (service.isElectricityTariff) {
+            if (
+              parseInt(service.oldValue) > parseInt(valuesServices[0]?.newValue)
+            ) {
+              setNewValueError(true);
+            } else {
+              setNewValueError(false);
+              return {
+                priceService: electricityTariff(
+                  parseInt(valuesServices[0]?.newValue),
+                  parseInt(service.oldValue),
+                  service.price,
+                  service.priceTier2,
+                  service.priceTier3
+                ),
+              };
+            }
+          } else {
+            if (
+              parseInt(service.oldValue) > parseInt(valuesServices[0]?.newValue)
+            ) {
+              setNewValueError(true);
+            } else {
+              setNewValueError(false);
+              return {
+                priceService:
+                  (parseInt(valuesServices[0]?.newValue) -
+                    parseInt(service.oldValue)) *
+                  service.price,
+              };
+            }
+          }
+        } else {
+          if (service.isElectricityTariff) {
+            if (
+              parseInt(service.newValue) > parseInt(valuesServices[0]?.newValue)
+            ) {
+              setNewValueError(true);
+            } else {
+              setNewValueError(false);
+              return {
+                priceService: electricityTariff(
+                  parseInt(valuesServices[0]?.newValue),
+                  parseInt(service.newValue),
+                  service.price,
+                  service.priceTier2,
+                  service.priceTier3
+                ),
+              };
+            }
+          } else {
+            if (
+              parseInt(service.newValue) > parseInt(valuesServices[0]?.newValue)
+            ) {
+              setNewValueError(true);
+            } else {
+              setNewValueError(false);
+              return {
+                priceService:
+                  (parseInt(valuesServices[0]?.newValue) -
+                    parseInt(service.newValue)) *
+                  service.price,
+              };
+            }
+          }
         }
-        return {
-          priceService: electricityTariff(
-            parseInt(valuesServices[0]?.newValue),
-            parseInt(service.oldValue),
-            service.price,
-            service.priceTier2,
-            service.priceTier3
-          ),
-          // priceService:
-          //   (parseInt(valuesServices[0]?.newValue) -
-          //     parseInt(service.newValue)) *
-          //   service.price,
-        };
       }
       if (service.serviceName === "Tiền nước") {
         if (isUpdate) {
+          if (
+            parseInt(service.oldValue) > parseInt(valuesServices[1]?.newValue)
+          ) {
+            setNewValueErrorWater(true);
+          } else {
+            setNewValueErrorWater(false);
+            return {
+              priceService:
+                (parseInt(valuesServices[1]?.newValue) -
+                  parseInt(service.oldValue)) *
+                service.price,
+            };
+          }
+        }
+        if (
+          parseInt(service.newValue) > parseInt(valuesServices[1]?.newValue)
+        ) {
+          setNewValueErrorWater(true);
+        } else {
+          setNewValueErrorWater(false);
           return {
             priceService:
               (parseInt(valuesServices[1]?.newValue) -
-                parseInt(service.oldValue)) *
+                parseInt(service.newValue)) *
               service.price,
           };
         }
-        return {
-          priceService:
-            (parseInt(valuesServices[1]?.newValue) -
-              parseInt(service.newValue)) *
-            service.price,
-        };
       } else {
         return { priceService: service.price };
       }
@@ -497,6 +570,7 @@ export const Form = (props) => {
 
     setTotalServices(sumTotalPriceServices);
   }, [selected, valuesServices]);
+
   return (
     <>
       <div className="bg-black opacity-50 fixed w-full h-full top-0 z-40"></div>
@@ -782,6 +856,7 @@ export const Form = (props) => {
                     value={formik.values.paymentPurpose}
                     onChange={formik.handleChange("paymentPurpose")}
                     onBlur={formik.handleBlur("paymentPurpose")}
+                    ref={inputRef}
                   >
                     <option value="">
                       {loading ? `Đang tải ...` : `-- Chọn --`}
@@ -945,7 +1020,16 @@ export const Form = (props) => {
                 rFontSize="xl"
                 heightOfLine="h-14"
               />
-
+              <div className="flex justify-around">
+                <span className="text-red-400 mb-2">
+                  {newValueError ? "Số điện mới phải lớn hơn số điện cũ" : null}
+                </span>
+                <span className="text-red-400 mb-2">
+                  {newValueErrorWater
+                    ? "Số nước mới phải lớn hơn số nước cũ"
+                    : null}
+                </span>
+              </div>
               <div className="flex flex-col justify-between my-8 space-y-6">
                 {arrayService?.map((item, index) => {
                   const itemValues = valuesServices[index] || {};
@@ -1001,9 +1085,13 @@ export const Form = (props) => {
                           <div className="flex flex-col space-y-2 lg:mt-0 mt-6">
                             <div className="flex items-center">
                               <input
-                                type="text"
+                                type="number"
                                 className="border-2 w-32 h-10 rounded-l-lg text-center"
-                                value={isUpdate ? item.oldValue : item.newValue}
+                                value={
+                                  isUpdate
+                                    ? parseInt(item.oldValue)
+                                    : parseInt(item.newValue)
+                                }
                                 disabled
                               />
                               <span className="bg-gray-200 p-2 rounded-r-lg w-28 text-center">
@@ -1012,9 +1100,14 @@ export const Form = (props) => {
                             </div>
                             <div className="flex items-center">
                               <input
-                                type="text"
+                                type="number"
                                 className="border-2 w-32 h-10 rounded-l-lg text-center"
-                                value={itemValues.newValue || ""}
+                                value={
+                                  parseInt(itemValues.newValue) ||
+                                  (isUpdate
+                                    ? parseInt(item.oldValue)
+                                    : parseInt(item.newValue))
+                                }
                                 onChange={(e) =>
                                   handleChange(
                                     index,

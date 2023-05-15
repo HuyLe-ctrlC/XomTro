@@ -176,7 +176,7 @@ export const Form = (props) => {
       _id: item._id,
       roomName: item.roomName,
       maxPeople: item.maxPeople,
-      currentRenterNumber: item.renters.length,
+      currentRenterNumber: item.renters?.length,
       price: item.price,
     }));
 
@@ -752,7 +752,7 @@ export const Form = (props) => {
                     accept="image/png, image/jpeg, image/jpg"
                   />
                   <p className="border-2 border-dashed p-2 italic text-sm text-gray-500">
-                    Chọn hình ảnh để đăng tin tại đây
+                    Chọn hình ảnh để đăng tin tại đây (tối đa 2)
                   </p>
                 </div>
                 <aside className="flex flex-col lg:flex-row flex-wrap mt-4 justify-evenly">

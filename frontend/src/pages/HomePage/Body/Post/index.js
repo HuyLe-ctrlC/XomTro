@@ -1,7 +1,8 @@
 import React from "react";
 import poster from "../../../../img/rented.png";
 import { Link } from "react-router-dom";
-import * as ROUTES from '../../../../constants/routes/routes'
+import * as ROUTES from "../../../../constants/routes/routes";
+
 export default function Post() {
   return (
     <div className="bg-post bg-left-bottom">

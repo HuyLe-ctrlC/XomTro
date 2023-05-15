@@ -137,7 +137,7 @@ const fetchInvoicesCtrl = expressAsyncHandler(async (req, res) => {
     if (isNotPaid === "true") {
       pipeline.push({ $match: { invoiceStatus: STATUS_ROOM.NOT_YET_PAID } });
     } else if (isNotPaid === "false") {
-      pipeline.push({ $match: { invoiceStatus: STATUS_ROOM.PAID } });
+      pipeline.push({ $match: { invoiceStatus: STATUS_ROOM.UPCOMING_CYCLE } });
     }
 
     if (xomtroId) {

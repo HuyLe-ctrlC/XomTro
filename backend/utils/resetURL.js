@@ -152,7 +152,7 @@ const resetURL = (verificationToken, behavior, slug) => {
                         <br />
                         <div>
                           <p style="padding: 0 0 10px 0">
-                          Hãy click vào link ở trên để ${behavior} tài khoản của bạn. Vui lòng liên
+                          Hãy click vào link ở trên để ${behavior} tài khoản của bạn trong 10 phút. Vui lòng liên
                            hệ quản trị viên nếu có bất kỳ lỗi nào trong quá trình ${behavior}. Xin cảm ơn!
                           </p>
                         </div>

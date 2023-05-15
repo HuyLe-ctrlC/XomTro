@@ -15,6 +15,8 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { generatePDF } from "../../../utils/generatePDF";
 import { clearRoomAction } from "../../../redux/slices/rooms/roomsSlices";
 import Chart from "./Chart";
+import STATUS_ROOM from "../../../constants/xomtro/statusRoom";
+
 export const ListItem = ({
   revenue,
   data,
@@ -24,8 +26,12 @@ export const ListItem = ({
   dataRoom,
 }) => {
   const dispatch = useDispatch();
-  const dataPaid = data?.filter((item) => item.invoiceStatus === "Đã thu tiền");
-  const revenueData = revenue?.filter((item) => item.invoiceStatus === "Đã thu tiền");
+  const dataPaid = data?.filter(
+    (item) => item.invoiceStatus === STATUS_ROOM.UPCOMING_CYCLE
+  );
+  const revenueData = revenue?.filter(
+    (item) => item.invoiceStatus === STATUS_ROOM.UPCOMING_CYCLE
+  );
   const handleOpenFormUpdate = (roomId, invoiceId) => {
     openFormUpdate(roomId, invoiceId);
   };

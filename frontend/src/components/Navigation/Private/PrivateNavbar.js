@@ -7,7 +7,10 @@ import { HiOutlineLogout } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logoutAction } from "./../../../redux/slices/users/usersSlice";
-import { navigationPrivate } from "../../../constants/navigation/navigation";
+import {
+  navigationPrivate,
+  navigationPrivateNotVerified,
+} from "../../../constants/navigation/navigation";
 import Swal from "sweetalert2";
 import { revertAllAction } from "../../../redux/slices/posts/postsSlices";
 import NavItem from "../NavItem";
@@ -72,21 +75,15 @@ export const PrivateNavbar = ({ isLogin }) => {
                   <BsBook className="h-10 w-10 text-yellow-200" />
                 </div>
                 <div className="hidden lg:ml-6 lg:flex lg:items-center lg:space-x-4">
-                  <NavItem navigationArr={navigationPrivate} />
+                  {isLogin?.isAccountVerified ? (
+                    <NavItem navigationArr={navigationPrivate} />
+                  ) : (
+                    <NavItem navigationArr={navigationPrivateNotVerified} />
+                  )}
                 </div>
               </div>
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <Link
-                    to={ROUTES.XOMTRO}
-                    className="pr-3 relative inline-flex items-center mr-2 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500"
-                  >
-                    <AiOutlinePlus
-                      className="-ml-1 mr-2 h-5 w-5"
-                      aria-hidden="true"
-                    />
-                    <span>Quản lý trọ</span>
-                  </Link>
                   <button
                     onClick={handleLogout}
                     // onClick={() => dispatch(logoutAction())}
@@ -164,23 +161,43 @@ export const PrivateNavbar = ({ isLogin }) => {
             leaveTo="opacity-0 -translate-y-5"
           >
             <Disclosure.Panel className="lg:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                {navigationPrivate.map((item, index) => (
-                  <Link
-                    key={index}
-                    to={item.href}
-                    className={classNames(
-                      item.current
-                        ? "bg-gray-900 text-white"
-                        : "text-white hover:bg-gray-700 hover:text-white",
-                      "block px-3 py-2 rounded-md text-base font-medium"
-                    )}
-                    aria-current={item.current ? "page" : undefined}
-                  >
-                    {item.title}
-                  </Link>
-                ))}
-              </div>
+              {isLogin?.isAccountVerified ? (
+                <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                  {navigationPrivate.map((item, index) => (
+                    <Link
+                      key={index}
+                      to={item.href}
+                      className={classNames(
+                        item.current
+                          ? "bg-gray-900 text-white"
+                          : "text-white hover:bg-gray-700 hover:text-white",
+                        "block px-3 py-2 rounded-md text-base font-medium"
+                      )}
+                      aria-current={item.current ? "page" : undefined}
+                    >
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                  {navigationPrivateNotVerified.map((item, index) => (
+                    <Link
+                      key={index}
+                      to={item.href}
+                      className={classNames(
+                        item.current
+                          ? "bg-gray-900 text-white"
+                          : "text-white hover:bg-gray-700 hover:text-white",
+                        "block px-3 py-2 rounded-md text-base font-medium"
+                      )}
+                      aria-current={item.current ? "page" : undefined}
+                    >
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
+              )}
               {/* Mobile */}
               <div className="pt-4 pb-3 border-t border-gray-700">
                 <div className="flex items-center px-5 sm:px-6">

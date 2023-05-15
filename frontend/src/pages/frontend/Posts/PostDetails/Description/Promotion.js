@@ -1,42 +1,60 @@
 import React, { useEffect, useState } from "react";
-import Geocode from "react-geocode";
+import axios from "axios";
+// import Geocode from "react-geocode";
 import GoogleMapIcon from "../../../../../img/google-maps.png";
-import {
-  GoogleMap,
-  InfoBox,
-  LoadScript,
-  Marker,
-  Polyline,
-} from "@react-google-maps/api";
+// import {
+//   GoogleMap,
+//   InfoBox,
+//   LoadScript,
+//   Marker,
+//   Polyline,
+// } from "@react-google-maps/api";
 import LabelXomTro from "../../../../../components/LabelXomTro";
 import { useSelector } from "react-redux";
 import { selectPosts } from "../../../../../redux/slices/posts/postsSlices";
-const API_KEY = process.env.API_GOOGLE_MAP_KEY;
-const GEOCODE_API_KEY = process.env.API_GEOCODE_MAP_KEY;
+// const API_KEY = process.env.API_GOOGLE_MAP_KEY;
+// const GEOCODE_API_KEY = process.env.REACT_APP_API_MAP_QUEST;
+const MAP_QUEST_API_KEY = process.env.REACT_APP_API_MAP_QUEST_KEY;
+
 // Geocode.setApiKey(GEOCODE_API_KEY);
 export default function Promotion() {
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
-  const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
+  const [address, setAddress] = useState("");
+  // const [currentPosition, setCurrentPosition] = useState({ lat: 0, lng: 0 });
   //select post details from store
   const post = useSelector(selectPosts);
   const { dataUpdate } = post;
 
-  const addressMap =
-    dataUpdate.ward?.prefix +
-    " " +
-    dataUpdate.ward?.name +
-    " " +
-    dataUpdate.district?.name +
-    " " +
-    dataUpdate.city?.name;
-  console.log(
-    "🚀 ~ file: Promotion.js:26 ~ Promotion ~ addressMap:",
-    addressMap
-  );
+  useEffect(() => {
+    if (dataUpdate !== undefined) {
+      const addressMap =
+        dataUpdate?.addressDetail +
+        " " +
+        dataUpdate?.ward?.prefix +
+        " " +
+        dataUpdate?.ward?.name +
+        " " +
+        dataUpdate?.district?.name +
+        " " +
+        dataUpdate?.city?.name;
+      axios
+        .get(
+          `https://www.mapquestapi.com/geocoding/v1/address?key=${MAP_QUEST_API_KEY}&location=${addressMap}`
+        )
+        .then((response) => {
+          const { lat, lng } = response.data.results[0].locations[0].latLng;
+          setLat(lat);
+          setLng(lng);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [dataUpdate]);
 
   // useEffect(() => {
-  //   Geocode.fromAddress(addressMap).then(
+  //   Geocode.fromAddress(address).then(
   //     (response) => {
   //       const { lat, lng } = response.results[0].geometry.location;
   //       setLat(lat);
@@ -46,7 +64,8 @@ export default function Promotion() {
   //       console.error(error);
   //     }
   //   );
-  // }, [addressMap]);
+
+  // }, [address]);
 
   // useEffect(() => {
   //   navigator.geolocation.getCurrentPosition(
@@ -62,21 +81,21 @@ export default function Promotion() {
   //   );
   // }, []);
 
-  const containerStyle = {
-    width: "100%",
-    height: "400px",
-  };
-  const center = {
-    lat: lat,
-    lng: lng,
-  };
+  // const containerStyle = {
+  //   width: "100%",
+  //   height: "400px",
+  // };
+  // const center = {
+  //   lat: lat,
+  //   lng: lng,
+  // };
 
-  const position = {
-    lat: lat,
-    lng: lng,
-  };
+  // const position = {
+  //   lat: lat,
+  //   lng: lng,
+  // };
 
-  const options = { closeBoxURL: "", enableEventPropagation: true };
+  // const options = { closeBoxURL: "", enableEventPropagation: true };
   // console.log("lat", lat);
   // console.log("lng", lng);
   return (

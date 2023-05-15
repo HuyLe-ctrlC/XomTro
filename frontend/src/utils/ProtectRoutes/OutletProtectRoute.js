@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 
 export default function OutletProtectRoute({ userAuth }) {
   const navigate = useNavigate();
-  if (!userAuth) {
+  if (!userAuth || !userAuth?.isAccountVerified) {
     Swal.fire({
       title: "Bạn cần đăng nhập để thực hiện thao tác này",
       showDenyButton: true,
