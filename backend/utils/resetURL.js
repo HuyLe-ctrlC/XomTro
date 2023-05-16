@@ -110,7 +110,7 @@ const resetURL = (verificationToken, behavior, slug) => {
                         </h3>
                         <a
                           class="m_-977246017001525659formEmailButton"
-                          href="http://localhost:3000/${slug}/${verificationToken}"
+                          href="https://xomtro.site/${slug}/${verificationToken}"
                           style="
                             color: #ffffff !important;
                             display: inline-block;
