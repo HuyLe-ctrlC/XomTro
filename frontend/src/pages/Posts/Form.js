@@ -1,21 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import * as tf from "@tensorflow/tfjs";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectPosts } from "../../redux/slices/posts/postsSlices";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AiOutlineClose } from "react-icons/ai";
 import { useDropzone } from "react-dropzone";
-import {
-  getDistrict,
-  getWard,
-  selectLocation,
-} from "../../redux/slices/location/locationSlices";
+
 import CategoryDropDown from "../Categories/CategoryDropDown";
 import CityDropdown from "../../components/DropDown/CityDropDown";
 import DistrictDropdown from "../../components/DropDown/DistrictDropDown";
 import WardDropdown from "../../components/DropDown/WardDropDown";
-import Swal from "sweetalert2";
+
 import { removeVietnameseTones } from "../../utils/VietnameseHelper";
 import { phoneRegExp } from "../../constants/regex/numberPhone";
 import { NumericFormat } from "react-number-format";
@@ -50,7 +45,7 @@ const formSchema = Yup.object().shape({
 });
 
 export const Form = (props) => {
-  const dispatch = useDispatch();
+
 
   //declare value in fields
   const [title, setTitle] = useState("");
@@ -69,11 +64,9 @@ export const Form = (props) => {
 
   // get props to index components
   const { closeForm, isUpdate, addData, updateData, dataCategories } = props;
-  const locations = useSelector(selectLocation);
-  const { dataDistrict, dataWard } = locations;
   // get data update to redux
   const postData = useSelector(selectPosts);
-  const { dataUpdate, loading } = postData;
+  const { dataUpdate } = postData;
   //useRef
   const inputRef = useRef();
   //get dataUpdate
@@ -482,7 +475,7 @@ export const Form = (props) => {
                 {formik.touched.price && formik.errors.price}
               </div>
             </div>
-            <div className="flex flex-col w-full lg:ml-1 ml-0 mt-6 lg:mt-0 lg:mt-0">
+            <div className="flex flex-col w-full lg:ml-1 ml-0 mt-6 lg:mt-0">
               <div className="relative z-0 group border border-gray-300 rounded-md">
                 <NumericFormat
                   thousandsGroupStyle="thousand"
