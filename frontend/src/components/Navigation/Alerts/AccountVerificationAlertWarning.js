@@ -53,7 +53,7 @@ export default function AccountVerificationAlertWarning() {
         </div>
         <div className="ml-3">
           <p className="text-sm text-yellow-200">
-            Tài khoản của bạn chưa được xác thực.{" "}
+            Tài khoản của bạn chưa được xác thực. Chức năng quản lý trọ và đăng tin sẽ tạm ẩn.&#160;
             <button
               onClick={handleVerify}
               className="font-medium underline text-green-200 hover:text-yellow-600"

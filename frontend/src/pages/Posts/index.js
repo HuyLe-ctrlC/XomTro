@@ -25,7 +25,10 @@ import {
   getCity,
   selectLocation,
 } from "../../redux/slices/location/locationSlices";
-import { getAllAction as getCategories, selectCategory } from "../../redux/slices/category/categorySlice";
+import {
+  getAllAction as getCategories,
+  selectCategory,
+} from "../../redux/slices/category/categorySlice";
 
 export default function CreatePost() {
   //redux
@@ -70,7 +73,6 @@ export default function CreatePost() {
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   const locations = useSelector(selectLocation);
   const { dataCity } = locations;
@@ -285,12 +287,14 @@ export default function CreatePost() {
               </p>
             </div>
             {/* Add button */}
-            <div className="flex items-center grow justify-end flex-shrink-0">
-              <HiOutlinePlusSm
-                onClick={() => handleOpenFormAdd()}
-                className="text-4xl bg-green-600 rounded-full text-white hover:bg-green-500 cursor-pointer "
-              />
-            </div>
+            {userAuth?.isAccountVerified ? (
+              <div className="flex items-center grow justify-end flex-shrink-0">
+                <HiOutlinePlusSm
+                  onClick={() => handleOpenFormAdd()}
+                  className="text-4xl bg-green-600 rounded-full text-white hover:bg-green-500 cursor-pointer "
+                />
+              </div>
+            ) : null}
           </div>
           <Search handleSearch={handleSearch} />
 
