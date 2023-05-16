@@ -697,7 +697,7 @@ export const Form = (props) => {
                 </div>
                 {selected.length === 0 ? (
                   <div className="text-red-400 mb-2">
-                    Vui lòng chọn phòng để tạo hóa đơn
+                    Vui lòng chọn phòng để tạo hồ sơ khách thuê
                   </div>
                 ) : null}
                 <ul className="flex flex-wrap my-6 items-center justify-center space-x-3 space-y-3">

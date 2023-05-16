@@ -334,12 +334,15 @@ export const Form = (props) => {
                         <div>{item.serviceName}</div>
                         <div>
                           Giá:{" "}
-                          <span className="font-semibold">{item.price} đ</span>
+                          <span className="font-semibold">
+                            {new Intl.NumberFormat("de-DE").format(item.price)}{" "}
+                            đ
+                          </span>
                           {item.measurement ? "/" + item.measurement : ""}
                         </div>
                       </div>
                       <div className="bg-gray-200 p-2 rounded-lg">
-                        Tính theo tháng
+                        {item.paymentMethod ?? item.measurement}
                       </div>
                     </div>
                   </div>

@@ -37,7 +37,12 @@ const formSchema = Yup.object().shape({
   nationalID: Yup.string().required("*Dữ liệu bắt buộc!"),
   gender: Yup.string().required("*Dữ liệu bắt buộc!"),
   career: Yup.string().required("*Dữ liệu bắt buộc!"),
-  nationalIdDate: Yup.string().required("*Dữ liệu bắt buộc!"),
+  nationalIdDate: Yup.string()
+    .nullable()
+    .required("*Dữ liệu bắt buộc!")
+    .test("not-null", "*Dữ liệu bắt buộc!", function (value) {
+      return value !== "Invalid date";
+    }),
   nationalIdIssuer: Yup.string().required("*Dữ liệu bắt buộc!"),
   phoneNumber: Yup.string()
     .matches(phoneRegExp, "Số điện thoại không hợp lệ!")

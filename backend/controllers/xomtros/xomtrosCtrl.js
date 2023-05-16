@@ -471,9 +471,9 @@ const getUtilityAppliedByIdCtrl = expressAsyncHandler(async (req, res) => {
       (element) => element._id == serviceId
     );
     let appliedBy = found.appliedBy;
-    if (appliedBy.length === 0) {
-      appliedBy = await Room.find({ xomtro: xomtroId }).select("roomName");
-    }
+    // if (appliedBy.length === 0) {
+    //   appliedBy = await Room.find({ xomtro: xomtroId }).select("roomName");
+    // }
     res.json({ result: true, data: appliedBy });
   } catch (error) {
     res.json(error);

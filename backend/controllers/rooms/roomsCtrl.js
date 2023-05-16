@@ -394,7 +394,11 @@ const addUtilityCtrl = expressAsyncHandler(async (req, res) => {
   //Display message if user is blocked
   blockUser(req.user);
   try {
-    const { xomtroId, listRoomId, dataAdded } = req.body;
+    const { xomtroId, listRoomId, dataAdded, allRoomId } = req.body;
+
+    const filteredArray = allRoomId.filter(
+      (item) => !listRoomId.includes(item._id)
+    );
 
     const room = await Room.find({ xomtro: xomtroId }).select("services");
     let maxIdServiceInRoom = idMaxInRoom(room);
@@ -411,6 +415,7 @@ const addUtilityCtrl = expressAsyncHandler(async (req, res) => {
       dataAdded["_id"] = maxIdServiceInRoom + 1;
     }
 
+    dataAdded["isApplied"] = true;
     for (const roomId of listRoomId) {
       await Room.findByIdAndUpdate(
         roomId,
@@ -423,6 +428,22 @@ const addUtilityCtrl = expressAsyncHandler(async (req, res) => {
         }
       );
     }
+
+    dataAdded["isApplied"] = false;
+    await Promise.all(
+      filteredArray.map(async (roomId) => {
+        await Room.findByIdAndUpdate(
+          roomId?._id,
+          {
+            $push: { services: dataAdded },
+          },
+          {
+            new: true,
+            runValidators: true,
+          }
+        );
+      })
+    );
 
     dataAdded["appliedBy"] = listRoomId;
 
@@ -448,7 +469,10 @@ const addUtilityCtrl = expressAsyncHandler(async (req, res) => {
 });
 //update multi for all room or some room
 const updateUtilityCtrl = expressAsyncHandler(async (req, res) => {
-  const { xomtroId, listRoomId, dataUpdated } = req.body;
+  const { xomtroId, listRoomId, dataUpdated, selectedOld } = req.body;
+  const filteredArray = selectedOld.filter(
+    (item) => !listRoomId.includes(item._id)
+  );
 
   const updateService = async (service) => {
     if (dataUpdated.serviceName !== undefined) {
@@ -475,10 +499,52 @@ const updateUtilityCtrl = expressAsyncHandler(async (req, res) => {
     if (dataUpdated.measurement !== undefined) {
       service.measurement = dataUpdated.measurement;
     }
+    service.isApplied = true;
+    await service.parent().save();
+  };
+
+  const updateServiceNotApplied = async (service) => {
+    if (dataUpdated.serviceName !== undefined) {
+      service.serviceName = dataUpdated.serviceName;
+    }
+    if (dataUpdated.price !== undefined) {
+      service.price = dataUpdated.price;
+    }
+    if (dataUpdated.priceTier2 !== undefined) {
+      service.priceTier2 = dataUpdated.priceTier2;
+    }
+    if (dataUpdated.priceTier3 !== undefined) {
+      service.priceTier3 = dataUpdated.priceTier3;
+    }
+    if (dataUpdated.paymentMethod !== undefined) {
+      service.paymentMethod = dataUpdated.paymentMethod;
+    }
+    if (dataUpdated.oldValue !== undefined) {
+      service.oldValue = dataUpdated.oldValue;
+    }
+    if (dataUpdated.newValue !== undefined) {
+      service.newValue = dataUpdated.newValue;
+    }
+    if (dataUpdated.measurement !== undefined) {
+      service.measurement = dataUpdated.measurement;
+    }
+    service.isApplied = false;
     await service.parent().save();
   };
 
   try {
+    if (filteredArray.length !== 0) {
+      await Promise.all(
+        filteredArray.map(async (roomId) => {
+          const roomTargetedFilter = await Room.findById(roomId?._id);
+          const serviceFilter = roomTargetedFilter.services.id(dataUpdated._id);
+          if (serviceFilter) {
+            await updateServiceNotApplied(serviceFilter);
+          }
+        })
+      );
+    }
+
     await Promise.all(
       listRoomId.map(async (roomId) => {
         const roomTargeted = await Room.findById(roomId);

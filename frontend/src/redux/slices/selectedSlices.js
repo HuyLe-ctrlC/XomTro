@@ -37,7 +37,7 @@ export const clearSelectionAction = createAction("select/clear-selection");
 //this is change a little bit in dataRoom
 const selectSlices = createSlice({
   name: "selects",
-  initialState: { selected: [] },
+  initialState: { selected: [], selectedOld: [] },
   extraReducers: (builder, state) => {
     builder.addCase(toggleItemAction, (state, action) => {
       const { itemSelected } = action.payload;
@@ -77,7 +77,8 @@ const selectSlices = createSlice({
       })
       .addCase(getUtilityAppliedAction.fulfilled, (state, action) => {
         state.loading = false;
-        state.selected = action?.payload.data;
+        state.selected = action?.payload?.data;
+        state.selectedOld = action?.payload?.data;
         state.appError = undefined;
         state.serverError = undefined;
       })

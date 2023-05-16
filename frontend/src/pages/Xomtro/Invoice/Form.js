@@ -1033,104 +1033,109 @@ export const Form = (props) => {
               <div className="flex flex-col justify-between my-8 space-y-6">
                 {arrayService?.map((item, index) => {
                   const itemValues = valuesServices[index] || {};
-                  return (
-                    <div
-                      className="w-full group border border-gray-300 rounded-md p-3"
-                      key={index}
-                    >
-                      <div className="flex lg:flex-row flex-col w-full lg:justify-between lg:items-center ">
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            className="accent-green-500 w-5 h-5 "
-                            checked={selected
-                              ?.map((item) => item?._id)
-                              .includes(item?._id)}
-                            onChange={() => handleSelection(item)}
-                          />
-                          <div className="flex flex-col space-y-1 ">
-                            <div>{item.serviceName}</div>
-                            <div>
-                              Giá:&#160;
-                              <span className="font-semibold">
-                                {item.isElectricityTariff ? (
-                                  <>
-                                    {new Intl.NumberFormat("de-DE").format(
-                                      item.price
-                                    )}
-                                    đ |
-                                    {new Intl.NumberFormat("de-DE").format(
-                                      item.priceTier2
-                                    )}
-                                    đ |
-                                    {new Intl.NumberFormat("de-DE").format(
-                                      item.priceTier3
-                                    )}{" "}
-                                    đ
-                                  </>
-                                ) : (
-                                  <>
-                                    {new Intl.NumberFormat("de-DE").format(
-                                      item.price
-                                    )}{" "}
-                                    đ
-                                  </>
-                                )}
-                              </span>
-                              {item.measurement ? "/" + item.measurement : ""}
+
+                  if (item?.isApplied) {
+                    return (
+                      <div
+                        className="w-full group border border-gray-300 rounded-md p-3"
+                        key={index}
+                      >
+                        <div className="flex lg:flex-row flex-col w-full lg:justify-between lg:items-center ">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              className="accent-green-500 w-5 h-5 "
+                              checked={selected
+                                ?.map((item) => item?._id)
+                                .includes(item?._id)}
+                              onChange={() => handleSelection(item)}
+                            />
+                            <div className="flex flex-col space-y-1 ">
+                              <div>{item.serviceName}</div>
+                              <div>
+                                Giá:&#160;
+                                <span className="font-semibold">
+                                  {item.isElectricityTariff ? (
+                                    <>
+                                      {new Intl.NumberFormat("de-DE").format(
+                                        item.price
+                                      )}
+                                      đ |
+                                      {new Intl.NumberFormat("de-DE").format(
+                                        item.priceTier2
+                                      )}
+                                      đ |
+                                      {new Intl.NumberFormat("de-DE").format(
+                                        item.priceTier3
+                                      )}{" "}
+                                      đ
+                                    </>
+                                  ) : (
+                                    <>
+                                      {new Intl.NumberFormat("de-DE").format(
+                                        item.price
+                                      )}{" "}
+                                      đ
+                                    </>
+                                  )}
+                                </span>
+                                {item.measurement ? "/" + item.measurement : ""}
+                              </div>
                             </div>
                           </div>
+                          {item.paymentMethod === "Theo đồng hồ" ? (
+                            <div className="flex flex-col space-y-2 lg:mt-0 mt-6">
+                              <div className="flex items-center">
+                                <input
+                                  type="number"
+                                  className="border-2 w-32 h-10 rounded-l-lg text-center"
+                                  value={
+                                    isUpdate
+                                      ? parseInt(item.oldValue)
+                                      : parseInt(item.newValue)
+                                  }
+                                  disabled
+                                />
+                                <span className="bg-gray-200 p-2 rounded-r-lg w-28 text-center">
+                                  Số cũ
+                                </span>
+                              </div>
+                              <div className="flex items-center">
+                                <input
+                                  type="number"
+                                  className="border-2 w-32 h-10 rounded-l-lg text-center"
+                                  value={
+                                    parseInt(itemValues.newValue) ||
+                                    (isUpdate
+                                      ? parseInt(item.oldValue)
+                                      : parseInt(item.newValue))
+                                  }
+                                  onChange={(e) =>
+                                    handleChange(
+                                      index,
+                                      "newValue",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                                <span className="bg-gray-200 p-2 rounded-r-lg w-28 text-center">
+                                  Số mới
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="bg-gray-200 p-2 rounded-lg">
+                              <span>
+                                {item.paymentMethod ?? item.measurement}
+                              </span>
+                            </div>
+                          )}
                         </div>
-                        {item.paymentMethod === "Theo đồng hồ" ? (
-                          <div className="flex flex-col space-y-2 lg:mt-0 mt-6">
-                            <div className="flex items-center">
-                              <input
-                                type="number"
-                                className="border-2 w-32 h-10 rounded-l-lg text-center"
-                                value={
-                                  isUpdate
-                                    ? parseInt(item.oldValue)
-                                    : parseInt(item.newValue)
-                                }
-                                disabled
-                              />
-                              <span className="bg-gray-200 p-2 rounded-r-lg w-28 text-center">
-                                Số cũ
-                              </span>
-                            </div>
-                            <div className="flex items-center">
-                              <input
-                                type="number"
-                                className="border-2 w-32 h-10 rounded-l-lg text-center"
-                                value={
-                                  parseInt(itemValues.newValue) ||
-                                  (isUpdate
-                                    ? parseInt(item.oldValue)
-                                    : parseInt(item.newValue))
-                                }
-                                onChange={(e) =>
-                                  handleChange(
-                                    index,
-                                    "newValue",
-                                    e.target.value
-                                  )
-                                }
-                              />
-                              <span className="bg-gray-200 p-2 rounded-r-lg w-28 text-center">
-                                Số mới
-                              </span>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="bg-gray-200 p-2 rounded-lg">
-                            <span>
-                              {item.paymentMethod ?? item.measurement}
-                            </span>
-                          </div>
-                        )}
                       </div>
-                    </div>
-                  );
+                    );
+                  } else {
+                    return null;
+                  }
                 })}
               </div>
               <div className="flex justify-between border-2 border-l-4 border-l-lime-500 bg-lime-100 rounded-lg p-2 mb-4">

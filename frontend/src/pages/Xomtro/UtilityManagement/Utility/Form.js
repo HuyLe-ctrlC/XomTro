@@ -4,41 +4,17 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AiOutlineClose } from "react-icons/ai";
 
-import Swal from "sweetalert2";
-
 import { NumericFormat } from "react-number-format";
-import { selectXomtro } from "../../../../redux/slices/xomtros/xomtrosSlices";
+
 import LabelXomTro from "../../../../components/LabelXomTro";
 import MEASUREMENT from "../../../../constants/xomtro/measurement";
-import {
-  selectRooms,
-  updateDataAction,
-} from "../../../../redux/slices/rooms/roomsSlices";
+
 import {
   clearSelectionAction,
   toggleItemAction,
   selectAllAction,
   selectSelects,
 } from "../../../../redux/slices/selectedSlices";
-
-const myItems = [
-  {
-    id: "614d1a5226b10f2b481f6d84",
-    roomName: "Phòng 1",
-    fields: {
-      acreage: 50,
-      price: 2000000,
-    },
-  },
-  {
-    id: "614d1a5226b10f2b481f6d69",
-    roomName: "Phòng 2",
-    fields: {
-      acreage: 50,
-      price: 2000000,
-    },
-  },
-];
 
 const addSchema = Yup.object().shape({
   price: Yup.string().required("*Dữ liệu bắt buộc!"),
@@ -66,10 +42,25 @@ export const Form = (props) => {
     xomtroId,
   } = props;
 
+  const getSelects = useSelector(selectSelects);
+  const { selected, selectedOld } = getSelects;
+
+  const handleSelection = (itemSelected) => {
+    dispatch(toggleItemAction({ itemSelected }));
+  };
+
+  const handleClearSelection = () => {
+    dispatch(clearSelectionAction());
+  };
+
+  const handleSelectAll = () => {
+    dispatch(selectAllAction(roomApplied));
+  };
+
   useEffect(() => {
     let filterRoomWithNameAndId = dataRoom?.map((item) => {
       return {
-        id: item._id,
+        _id: item._id,
         roomName: item.roomName,
       };
     });
@@ -117,10 +108,10 @@ export const Form = (props) => {
           : formik.values.price,
       _id: dataUpdate._id,
     };
-    data["listRoomId"] = selected?.map((item) => item.id);
+    data["listRoomId"] = selected?.map((item) => item._id);
+    data["selectedOld"] = selectedOld;
     updateData(data);
   };
-
   // create data event
   const handleAddData = (e) => {
     e.preventDefault();
@@ -135,7 +126,8 @@ export const Form = (props) => {
           ? formik.values.price.replace(/,/g, "")
           : formik.values.price,
     };
-    data["listRoomId"] = selected?.map((item) => item.id);
+    data["listRoomId"] = selected?.map((item) => item._id);
+    data["allRoomId"] = roomApplied;
 
     addData(data);
   };
@@ -182,26 +174,12 @@ export const Form = (props) => {
     inputRef.current?.focus();
   };
 
-  const getSelects = useSelector(selectSelects);
-  const { selected } = getSelects;
-  const handleSelection = (itemSelected) => {
-    dispatch(toggleItemAction({ itemSelected }));
-  };
-
-  const handleClearSelection = () => {
-    dispatch(clearSelectionAction());
-  };
-
-  const handleSelectAll = () => {
-    dispatch(selectAllAction(roomApplied));
-  };
-
   // console.log("formik", formik.values);
   // console.log("selected", selected);
   return (
     <>
       <div className="bg-gray-300 opacity-10 fixed w-full h-full top-0 z-40"></div>
-      <div className="w-1/2 max-h-full mb-2 p-4 bg-white fixed overflow-y-scroll top-1/4 left-1/2 -translate-y-1/2 -translate-x-1/2 animated-image-slide z-50 border-2 border-state-500">
+      <div className="w-1/2 max-h-full mb-2 p-4 bg-white fixed overflow-y-scroll top-1/4 left-1/2 -translate-y-1/2 -translate-x-1/2 animated-image-slide-utility z-50 border-2 border-state-500">
         <p className="font-sans text-2xl md:text-3xl">
           {isUpdate ? "Cập nhật dịch vụ" : "Thêm mới dịch vụ"}
         </p>
@@ -325,20 +303,22 @@ export const Form = (props) => {
           </div>
           {selected.length === 0 ? (
             <div className="text-red-400 mb-2">
-              Vui lòng chọn phòng để tạo hóa đơn
+              Vui lòng chọn phòng để tạo tiện ích sử dụng
             </div>
           ) : null}
           <ul className="flex flex-wrap my-6 items-center justify-center space-x-3 space-y-3">
             {roomApplied?.map((item) => (
               <li
-                key={item.id}
+                key={item._id}
                 className="w-2/5 border-2 p-2 first:ml-3 first:mt-3 first:h-[43px]"
               >
                 <div className="space-x-2 flex items-center">
                   <input
                     type="checkbox"
                     className="accent-green-500 w-5 h-5 "
-                    checked={selected?.map((item) => item.id).includes(item.id)}
+                    checked={selected
+                      ?.map((item) => item._id)
+                      .includes(item._id)}
                     onChange={() => handleSelection(item)}
                   />
                   <span>{item.roomName}</span>

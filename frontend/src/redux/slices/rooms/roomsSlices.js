@@ -246,7 +246,7 @@ export const getUtilityAction = createAsyncThunk(
     try {
       // call Api
       const response = await roomApi.getUtility(params);
-      // console.log(response);
+      // console.log("response",response);
       if (response.result) {
         const results = {
           dataUpdate: response.dataUpdate,

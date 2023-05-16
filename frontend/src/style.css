@@ -34,6 +34,19 @@
     animation-name: bottomToTop;
     animation-duration: 2s;
   }
+
+  @keyframes bottomToTopUtility {
+    from {
+      top: 0px;
+    }
+    to {
+      top: 25%;
+    }
+  }
+  .animated-image-slide-utility {
+    animation-name: bottomToTopUtility;
+    animation-duration: 2s;
+  }
 }
 @media screen and (max-width: 1023px) {
   @keyframes bottomToTop {
@@ -48,7 +61,11 @@
     animation-name: bottomToTop;
     animation-duration: 2s;
   }
+
+  
 }
+
+
 
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {

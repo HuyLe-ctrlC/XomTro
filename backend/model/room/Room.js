@@ -25,6 +25,7 @@ const serviceSchema = new mongoose.Schema({
   },
   measurement: { type: String },
   _id: Number,
+  isApplied: { type: Boolean, default: false },
 });
 
 const roomSchema = new mongoose.Schema(
@@ -119,7 +120,7 @@ roomSchema.pre("save", function (next) {
   next();
 });
 
-roomSchema.pre('save', function(next) {
+roomSchema.pre("save", function (next) {
   if (this.renterIds && this.renterIds.length > 0) {
     this.rentalStatus = STATUS_ROOM.OCCUPIED;
   } else {

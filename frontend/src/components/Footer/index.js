@@ -2,7 +2,7 @@ import React from "react";
 import { BsFacebook, BsGithub } from "react-icons/bs";
 import ZaloIcon from "../../utils/ZaloIcon";
 import logoXomTro from "../../img/logoXomTro.png";
-
+import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <div className="w-full min-h-screen flex items-center bg-white mt-4 p-4 drop-shadow-lg">
@@ -25,7 +25,7 @@ const Footer = () => {
           <div className="w-44 pt-6 md:pt-0">
             <a
               className="bg-red-500 justify-center text-center text-white rounded-lg shadow px-10 py-3 flex items-center hover:text-black"
-              href="#"
+              href="https://zalo.me/0778625813"
             >
               Liên hệ ngay
             </a>
@@ -40,26 +40,31 @@ const Footer = () => {
                 alt="logo"
               />
             </div>
-            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase hover:bg-slate-300 p-4 rounded-lg">
+            <span className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase p-4 rounded-lg">
               Về chúng tôi
-            </a>
-            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase hover:bg-slate-300 p-4 rounded-lg">
-              Nhà trọ
-            </a>
-            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase hover:bg-slate-300 p-4 rounded-lg">
-              Ký túc xá
-            </a>
-            <a className="cursor-pointer text-gray-600 hover:text-gray-800 uppercase hover:bg-slate-300 p-4 rounded-lg">
-              Chung cư
-            </a>
+            </span>
+            <span className="cursor-pointer text-gray-600 hover:text-gray-800 p-4 rounded-lg">
+              Địa chỉ: An Bình, Dĩ An, BD
+            </span>
+            <span className="cursor-pointer text-gray-600 hover:text-gray-800  p-4 rounded-lg">
+              Email: dev.minhuy@gmail.com
+            </span>
+            <span className="cursor-pointer text-gray-600 hover:text-gray-800 p-4 rounded-lg">
+              Điện thoại: 077.8625.813
+            </span>
             <div className="flex flex-row space-x-8 items-center lg:justify-between text-gray-800">
-              <a>
-                <ZaloIcon />
-              </a>
-              <a href="https://www.facebook.com/profile.php?id=100091681926923">
+              <a
+                href="https://www.facebook.com/profile.php?id=100091681926923"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <BsFacebook className="text-blue-500 text-2xl" />
               </a>
-              <a href="https://www.youtube.com/channel/UCjtCbnkIaiCJgj13sEZ9iqw">
+              <a
+                href="https://github.com/HuyLe-ctrlC"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <BsGithub className="text-2xl" />
               </a>
             </div>
