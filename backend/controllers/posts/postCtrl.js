@@ -389,7 +389,6 @@ const updatePostCtrl = expressAsyncHandler(async (req, res) => {
 
       {
         ...req.body,
-        user: req?.user,
       },
       { new: true }
     ).populate("user", "email lastName firstName profilePhoto");
@@ -421,7 +420,6 @@ const updatePostCtrl = expressAsyncHandler(async (req, res) => {
     id,
     {
       ...req.body,
-      user: req?.user,
       image: imgUploaded,
     },
     { new: true }
