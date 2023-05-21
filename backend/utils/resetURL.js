@@ -110,7 +110,7 @@ const resetURL = (verificationToken, behavior, slug) => {
                         </h3>
                         <a
                           class="m_-977246017001525659formEmailButton"
-                          href="https://xom-tro.vercel.app/${slug}/${verificationToken}"
+                          href="https://www.xomtro.site/${slug}/${verificationToken}"
                           style="
                             color: #ffffff !important;
                             display: inline-block;

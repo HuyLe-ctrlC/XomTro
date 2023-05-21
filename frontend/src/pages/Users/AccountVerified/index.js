@@ -1,13 +1,17 @@
 import React, { useEffect } from "react";
 import { AiFillCheckCircle } from "react-icons/ai";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   logoutAction,
   selectUser,
   verifyAccountAction,
 } from "../../../redux/slices/users/usersSlice";
+import Swal from "sweetalert2";
+import { revertAllAction } from "../../../redux/slices/posts/postsSlices";
+import Cookies from "js-cookie";
 export default function AccountVerified() {
+  const navigate = useNavigate();
   const { token } = useParams();
   //dispatch
   const dispatch = useDispatch();
@@ -27,6 +31,24 @@ export default function AccountVerified() {
   } = user;
   // console.log(appVerifyError);
   // console.log(verifiedAccountMessage);
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Bạn có chắc là muốn đăng xuất?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "OK",
+      denyButtonText: `Chờ một tí`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        Swal.fire("Đã đăng xuất!", "", "success");
+        navigate("/login");
+        dispatch(logoutAction());
+        dispatch(revertAllAction());
+        Cookies.remove("xomtroIDCookie");
+      }
+    });
+  };
   return (
     <>
       {verified ? (
@@ -56,7 +78,7 @@ export default function AccountVerified() {
             </div>
             <div className="mt-5 sm:mt-6">
               <button
-                onClick={() => dispatch(logoutAction())}
+                onClick={handleLogout}
                 type="button"
                 className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
               >

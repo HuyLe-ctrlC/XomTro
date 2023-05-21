@@ -83,7 +83,10 @@ export const generatePDF = (data) => {
               service.oldValue ?? "",
               service.newValue ?? "",
               service.paymentMethod ?? service.measurement,
-              service.oldValue == undefined || service.newValue == undefined
+              service.isSelected === false
+                ? 0
+                : service.serviceName !== "Tiền điện" &&
+                  service.serviceName !== "Tiền nước"
                 ? Number(service.price)
                     .toLocaleString("vi-VN", {
                       style: "currency",

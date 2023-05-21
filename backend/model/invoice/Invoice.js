@@ -25,6 +25,7 @@ const serviceSchema = new mongoose.Schema({
   measurement: { type: String },
   isSelected: { type: Boolean },
   _id: Number,
+  isApplied: { type: Boolean, default: false },
 });
 const invoiceSchema = new mongoose.Schema(
   {
