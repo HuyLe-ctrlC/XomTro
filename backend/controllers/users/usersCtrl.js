@@ -242,7 +242,16 @@ const userProfileCtrl = expressAsyncHandler(async (req, res) => {
     } else {
       const profile = await User.findByIdAndUpdate(myProfile?._id, {
         $push: { viewedBy: loginUserId },
-      });
+      })
+        .select(
+          "-password -accountVerificationToken -accountVerificationTokenExpires"
+        )
+        .populate("posts")
+        .populate({
+          path: "viewedBy",
+          select:
+            "-password -accountVerificationToken -accountVerificationTokenExpires",
+        });
       res.json({
         result: true,
         data: profile,
