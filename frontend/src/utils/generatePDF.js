@@ -71,7 +71,8 @@ export const generatePDF = (data) => {
             ],
             ...data.services.map((service) => [
               service.serviceName,
-              service.serviceName == "Tiền điện"
+              service.serviceName === "Tiền điện" &&
+              service.isElectricityTariff === true
                 ? electricityTariffTier(
                     service.newValue,
                     service.oldValue,
@@ -94,7 +95,8 @@ export const generatePDF = (data) => {
                     })
                     .replace(/₫/gi, "đ")
                 : Number(
-                    service.serviceName === "Tiền điện"
+                    service.serviceName === "Tiền điện" &&
+                      service.isElectricityTariff === true
                       ? electricityTariff(
                           service.newValue,
                           service.oldValue,

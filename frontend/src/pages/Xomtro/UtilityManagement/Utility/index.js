@@ -165,6 +165,7 @@ export default function Utility() {
     const action = closeForm();
     dispatch(action);
     setIsUpdate(false);
+    dispatch(clearSelectionAction());
   };
 
   // check show form
