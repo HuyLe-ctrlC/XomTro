@@ -110,7 +110,7 @@ export const AdminNavbar = ({ isLogin }) => {
                             <span className="sr-only">Open user menu</span>
                             <img
                               className="h-8 w-8 rounded-full"
-                              src={`data:image/jpeg;base64,${isLogin.profilePhoto[0].preview}`}
+                              src={`data:image/jpeg;base64,${isLogin.profilePhoto[0]?.preview}`}
                               alt="Admin avatar"
                             />
                           </Menu.Button>
@@ -177,7 +177,7 @@ export const AdminNavbar = ({ isLogin }) => {
                   {/* Image */}
                   <img
                     className="h-10 w-10 rounded-full"
-                    src={`data:image/jpeg;base64,${isLogin.profilePhoto[0].preview}`}
+                    src={`data:image/jpeg;base64,${isLogin.profilePhoto[0]?.preview}`}
                     alt={isLogin?.firstName}
                   />
                 </div>

@@ -107,7 +107,7 @@ export const PrivateNavbar = ({ isLogin }) => {
                             <span className="sr-only">Open user menu</span>
                             <img
                               className="h-8 w-8 rounded-full"
-                              src={`data:image/jpeg;base64,${isLogin.profilePhoto[0].preview}`}
+                              src={`data:image/jpeg;base64,${isLogin.profilePhoto[0]?.preview}`}
                               alt=""
                             />
                           </Menu.Button>
@@ -204,7 +204,7 @@ export const PrivateNavbar = ({ isLogin }) => {
                   <div className="flex-shrink-0">
                     <img
                       className="h-10 w-10 rounded-full"
-                      src={`data:image/jpeg;base64,${isLogin?.profilePhoto[0].preview}`}
+                      src={`data:image/jpeg;base64,${isLogin?.profilePhoto[0]?.preview}`}
                       alt=""
                     />
                   </div>

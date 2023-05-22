@@ -309,7 +309,7 @@ export default function Profile() {
                           <div>
                             <img
                               className="h-32 w-full object-cover lg:h-48"
-                              src={`data:image/jpeg;base64,${profile?.profilePhoto[0].preview}`}
+                              src={`data:image/jpeg;base64,${profile?.profilePhoto[0]?.preview}`}
                               alt={profile?.firstName}
                             />
                           </div>
@@ -318,7 +318,7 @@ export default function Profile() {
                               <div className="flex -mt-20">
                                 <img
                                   className="h-24 w-24 rounded-full ring-4 ring-white lg:h-32 lg:w-32"
-                                  src={`data:image/jpeg;base64,${profile?.profilePhoto[0].preview}`}
+                                  src={`data:image/jpeg;base64,${profile?.profilePhoto[0]?.preview}`}
                                   alt={profile?.firstName}
                                 />
                               </div>
@@ -398,9 +398,9 @@ export default function Profile() {
                                             aria-hidden="true"
                                           />
                                           <span>Follow </span>
-                                          <span className="pl-2">
+                                          {/* <span className="pl-2">
                                             {profile?.followers?.length}
-                                          </span>
+                                          </span> */}
                                         </button>
                                       )}
 
@@ -472,7 +472,7 @@ export default function Profile() {
                                       <div className="flex mb-2 items-center space-x-4 lg:space-x-6">
                                         <img
                                           className="w-16 h-16 rounded-full lg:w-20 lg:h-20"
-                                          src={`data:image/jpeg;base64,${user?.profilePhoto[0].preview}`}
+                                          src={`data:image/jpeg;base64,${user?.profilePhoto[0]?.preview}`}
                                           alt={user?.firstName}
                                         />
                                         <div className="font-medium text-lg leading-6 space-y-1">

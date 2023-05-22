@@ -105,7 +105,7 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
               <div className="flex-shrink-0 h-10 w-10">
                 <img
                   className="h-10 w-10 rounded-full"
-                  src={`data:image/jpeg;base64,${item?.user?.profilePhoto[0].preview}`}
+                  src={`data:image/jpeg;base64,${item?.user?.profilePhoto[0]?.preview}`}
                   alt="item profile"
                 />
               </div>

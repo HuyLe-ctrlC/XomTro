@@ -63,7 +63,7 @@ export const ListItem = ({ data, openFormUpdate, openFormSendEmail }) => {
               <div className="flex-shrink-0 h-10 w-10">
                 <img
                   className="h-10 w-10 rounded-full"
-                  src={`data:image/jpeg;base64,${item?.profilePhoto[0].preview}`}
+                  src={`data:image/jpeg;base64,${item?.profilePhoto[0]?.preview}`}
                   alt="item profile"
                 />
               </div>

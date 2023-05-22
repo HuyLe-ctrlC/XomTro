@@ -73,7 +73,7 @@ export default function ListItem({ data, openFormUpdate }) {
               >
                 <img
                   className="mr-2 w-6 h-6 rounded-full"
-                  src={`data:image/jpeg;base64,${comment?.user?.profilePhoto[0].preview}`}
+                  src={`data:image/jpeg;base64,${comment?.user?.profilePhoto[0]?.preview}`}
                   alt={comment?.user?.firstName}
                 />
                 <span>
@@ -91,7 +91,7 @@ export default function ListItem({ data, openFormUpdate }) {
               </p>
             </div>
 
-            {isLoginUser && (
+            {userAuth?._id === comment?.user?._id && (
               <div className="md:ml-4 md:flex-shrink-0 md:flex md:items-center">
                 {/* Profile dropdown */}
                 <Menu as="div" className="ml-3 relative z-10">
@@ -122,14 +122,14 @@ export default function ListItem({ data, openFormUpdate }) {
                               <div>
                                 <div
                                   onClick={() =>
-                                    handleOpenFormUpdate(comment._id)
+                                    handleOpenFormUpdate(comment?._id)
                                   }
                                   className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
                                 >
                                   Chỉnh sửa
                                 </div>
                                 <div
-                                  onClick={() => handleDelete(comment._id)}
+                                  onClick={() => handleDelete(comment?._id)}
                                   className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
                                 >
                                   Xóa

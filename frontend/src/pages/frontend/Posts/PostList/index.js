@@ -318,7 +318,7 @@ export default function PostsList() {
                               <Link>
                                 <img
                                   className="h-10 w-10 rounded-full"
-                                  src={`data:image/jpeg;base64,${post?.user?.profilePhoto[0].preview}`}
+                                  src={`data:image/jpeg;base64,${post?.user?.profilePhoto[0]?.preview}`}
                                   alt=""
                                 />
                               </Link>

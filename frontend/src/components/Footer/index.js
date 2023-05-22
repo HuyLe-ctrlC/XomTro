@@ -26,6 +26,8 @@ const Footer = () => {
             <a
               className="bg-red-500 justify-center text-center text-white rounded-lg shadow px-10 py-3 flex items-center hover:text-black"
               href="https://zalo.me/0778625813"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Liên hệ ngay
             </a>

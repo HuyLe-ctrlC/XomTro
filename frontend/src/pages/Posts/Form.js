@@ -690,7 +690,7 @@ export const Form = (props) => {
                   htmlFor="floating_phoneNumber"
                   className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
                 >
-                  Số điện thoại <span className="text-red-500">*</span>
+                  Số zalo <span className="text-red-500">*</span>
                 </label>
               </div>
               <div className="text-red-400 mb-2">

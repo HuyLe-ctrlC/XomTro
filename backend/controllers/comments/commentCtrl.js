@@ -124,7 +124,7 @@ const updateCommentCtrl = expressAsyncHandler(async (req, res) => {
       },
       { new: true, runValidators: true }
     ).select(
-      "user.firstName user.lastName user.profilePhoto description post createdAt updatedAt"
+      "user.firstName user.lastName user.profilePhoto user._id description post createdAt updatedAt"
     );
     if (updateComment) {
       res.json({
