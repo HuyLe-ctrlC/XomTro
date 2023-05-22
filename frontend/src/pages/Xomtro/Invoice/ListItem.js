@@ -1,134 +1,28 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 import { HiPencilAlt } from "react-icons/hi";
 import { FaDollarSign } from "react-icons/fa";
-import {
-  BsChevronUp,
-  BsCloudDownload,
-  BsPeopleFill,
-  BsThreeDotsVertical,
-  BsTrash,
-} from "react-icons/bs";
-import { useDispatch } from "react-redux";
-import Swal from "sweetalert2";
-import {
-  deleteAction,
-  updateDataAction,
-} from "../../../redux/slices/invoices/invoicesSlices";
-import { updateDataAction as updateRoomAction } from "../../../redux/slices/rooms/roomsSlices";
-import { DateConverter } from "../../../utils/DateFormatter";
-import houseStatus from "../../../img/house-status.png";
+import { BsCloudDownload, BsThreeDotsVertical, BsTrash } from "react-icons/bs";
 
-import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Menu, Transition } from "@headlessui/react";
 import { generatePDF } from "../../../utils/generatePDF";
-import { clearRoomAction } from "../../../redux/slices/rooms/roomsSlices";
 
 export const ListItem = ({
   data,
   maxService,
   openFormUpdate,
-  openFormAddInvoice,
+  chargeRent,
+  deleteInvoice,
 }) => {
-  const dispatch = useDispatch();
   const handleOpenFormUpdate = (roomId, invoiceId) => {
     openFormUpdate(roomId, invoiceId);
   };
   // delete data event
   const handleDelete = (id) => {
-    Swal.fire({
-      title: "Bạn có chắc muốn xóa dữ liệu này không?",
-      showDenyButton: true,
-      confirmButtonText: "Yes",
-      denyButtonText: `No`,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const action = await dispatch(deleteAction(id));
-        await dispatch(clearRoomAction());
-        const message = action.payload;
-        // console.log("msg", message);
-        if (deleteAction.fulfilled.match(action)) {
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: message?.message,
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        } else {
-          const Toast = Swal.mixin({
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 1500,
-            timerProgressBar: true,
-            width: 500,
-          });
-
-          Toast.fire({
-            icon: "error",
-            title: message?.message,
-          });
-        }
-      } else if (result.isDenied) {
-        Swal.fire("Bạn vẫn chưa xóa!", "", "info");
-      }
-    });
+    deleteInvoice(id);
   };
   // update invoice status
   const handleStatus = (id, services, roomId, isOtherInvoice) => {
-    const dataServiceRoom = { services: services };
-    const dataRoomUpdate = {
-      id: roomId,
-      data: dataServiceRoom,
-    };
-    let data = {
-      invoiceStatus: "Chờ chu kỳ tới",
-    };
-    const dataUpdate = {
-      id: id,
-      data,
-    };
-
-    Swal.fire({
-      title: "Bạn đã thu tiền dịch vụ này rồi phải không?",
-      showDenyButton: true,
-      confirmButtonText: "Yes",
-      denyButtonText: `No`,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const action = await dispatch(updateDataAction(dataUpdate));
-        if (isOtherInvoice === false) {
-          await dispatch(updateRoomAction(dataRoomUpdate));
-        }
-        await dispatch(clearRoomAction());
-        const message = action.payload;
-        // console.log("msg", message);
-        if (updateDataAction.fulfilled.match(action)) {
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: message?.message,
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        } else {
-          const Toast = Swal.mixin({
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 1500,
-            timerProgressBar: true,
-            width: 500,
-          });
-
-          Toast.fire({
-            icon: "error",
-            title: message?.message,
-          });
-        }
-      } else if (result.isDenied) {
-        Swal.fire("Vẫn chưa có gì thay đổi!", "", "info");
-      }
-    });
+    chargeRent(id, services, roomId, isOtherInvoice);
   };
 
   const handleDownloadInvoice = (invoice) => {

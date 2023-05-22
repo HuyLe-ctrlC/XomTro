@@ -25,6 +25,7 @@ import {
   getByIdAction as getInvoiceByIdAction,
   getInvoiceByXomtroIdAction,
   addMultiDataAction,
+  deleteAction,
 } from "../../../redux/slices/invoices/invoicesSlices";
 import Footer from "../../../components/Footer";
 import { selectXomtro } from "../../../redux/slices/xomtros/xomtrosSlices";
@@ -96,9 +97,7 @@ export default function Invoice() {
     maxService,
     dataUpdate: invoiceUpdate,
   } = getInvoice;
-
-  //
-  useEffect(() => {
+  const getInvoiceByXomtroHandler = () => {
     let xomtroId = Cookies.get("xomtroIDCookie");
     const newParams = {
       ...params,
@@ -106,7 +105,10 @@ export default function Invoice() {
     };
     dispatch(getInvoiceByXomtroIdAction(newParams));
     dispatch(getByXomtroIdAction(newParams));
-    document.title = title;
+  };
+  //
+  useEffect(() => {
+    getInvoiceByXomtroHandler();
   }, [Cookies.get("xomtroIDCookie")]);
 
   // search data
@@ -136,6 +138,7 @@ export default function Invoice() {
     const action = await dispatch(addMultiDataAction(data));
     dispatch(clearSelectionAction());
     dispatch(clearRoomAction());
+    getInvoiceByXomtroHandler();
     const msg = action.payload;
     // console.log("msg", msg);
     if (addMultiDataAction.fulfilled.match(action)) {
@@ -229,6 +232,106 @@ export default function Invoice() {
     }
   };
 
+  const handleChargeRent = (id, services, roomId, isOtherInvoice) => {
+    const dataServiceRoom = { services: services };
+    const dataRoomUpdate = {
+      id: roomId,
+      data: dataServiceRoom,
+    };
+    let data = {
+      invoiceStatus: "Chờ chu kỳ tới",
+    };
+    const dataUpdate = {
+      id: id,
+      data,
+    };
+
+    Swal.fire({
+      title: "Bạn đã thu tiền dịch vụ này rồi phải không?",
+      showDenyButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: `No`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const action = await dispatch(updateDataAction(dataUpdate));
+        if (isOtherInvoice === false) {
+          await dispatch(updateRoomDataAction(dataRoomUpdate));
+        }
+        await dispatch(clearRoomAction());
+        getInvoiceByXomtroHandler();
+        const message = action.payload;
+        // console.log("msg", message);
+        if (updateDataAction.fulfilled.match(action)) {
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: message?.message,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } else {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            width: 500,
+          });
+
+          Toast.fire({
+            icon: "error",
+            title: message?.message,
+          });
+        }
+      } else if (result.isDenied) {
+        Swal.fire("Vẫn chưa có gì thay đổi!", "", "info");
+      }
+    });
+  };
+
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "Bạn có chắc muốn xóa dữ liệu này không?",
+      showDenyButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: `No`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const action = await dispatch(deleteAction(id));
+        await dispatch(clearRoomAction());
+        getInvoiceByXomtroHandler();
+        const message = action.payload;
+        // console.log("msg", message);
+        if (deleteAction.fulfilled.match(action)) {
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: message?.message,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } else {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            width: 500,
+          });
+
+          Toast.fire({
+            icon: "error",
+            title: message?.message,
+          });
+        }
+      } else if (result.isDenied) {
+        Swal.fire("Bạn vẫn chưa xóa!", "", "info");
+      }
+    });
+  };
+
   // open update form event
   const handleOpenFormUpdate = (roomId, invoiceId) => {
     setFormStatusState(true);
@@ -319,6 +422,10 @@ export default function Invoice() {
                         maxService={maxService}
                         openFormUpdate={(roomId, invoiceId) =>
                           handleOpenFormUpdate(roomId, invoiceId)
+                        }
+                        deleteInvoice={(id) => handleDelete(id)}
+                        chargeRent={(id, services, roomId, isOtherInvoice) =>
+                          handleChargeRent(id, services, roomId, isOtherInvoice)
                         }
                       />
                     )}
