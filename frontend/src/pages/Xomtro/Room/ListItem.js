@@ -129,6 +129,7 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
         rooms,
       }))
     );
+    console.log(123);
   }, [data]);
   // console.log("groupByFloor", groupByFloor);
   const isNotPaid = (currentValue) =>
@@ -136,8 +137,9 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
   const isNotPaidAndIsOtherInvoice = (currentValue) =>
     currentValue.invoiceStatus === "Chưa thu tiền" &&
     currentValue.isOtherInvoice === false;
-  const isPaid = (currentValue) => currentValue.invoiceStatus === "Chờ chu kỳ tới";
-
+  const isPaid = (currentValue) =>
+    currentValue.invoiceStatus === "Chờ chu kỳ tới";
+  console.log("groupByFloor", groupByFloor);
   return (
     <>
       {groupByFloor?.map((item, index) => (
@@ -215,7 +217,8 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                       <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-white flex items-center ">
                         <span
                           className={`p-2 rounded-lg text-center ${
-                            item.renters?.length === 0
+                            item.renters?.length === 0 ||
+                            item.renter?.length === 0
                               ? "bg-red-500 min-w-full"
                               : item.renters?.length > 0
                               ? "bg-green-500 min-w-full"
@@ -230,13 +233,17 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                           // }`}
                         >
                           {/* {item.rentalStatus} */}
-                          {item.renters?.length <= 0 ? "Đang trống" : "Đang ở"}
+                          {item.renters?.length === 0 ||
+                          item.renter?.length === 0
+                            ? "Đang trống"
+                            : "Đang ở"}
                         </span>
                       </div>
                       <div className="p-4 border border-slate-400 whitespace-nowrap text-sm text-white flex items-center ">
                         <span
                           className={`p-2 rounded-lg text-center ${
-                            item.renters?.length <= 0
+                            item.renters?.length === 0 ||
+                            item.renter?.length === 0
                               ? "bg-green-500 min-w-full"
                               : item.invoices?.find(isNotPaid)
                               ? "bg-red-500 min-w-full"
@@ -245,7 +252,8 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                               : "bg-green-500 min-w-full"
                           }`}
                         >
-                          {item.renters?.length <= 0
+                          {item.renters?.length === 0 ||
+                          item.renter?.length === 0
                             ? "Chờ chu kỳ tới"
                             : item.invoices?.find(isNotPaid)
                             ? "Chưa thu tiền"
@@ -297,7 +305,8 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                                         {item.invoices?.find(
                                           isNotPaidAndIsOtherInvoice
                                         ) ||
-                                        item.renters?.length <= 0 ? null : (
+                                        item.renters?.length === 0 ||
+                                        item.renter?.length === 0 ? null : (
                                           <>
                                             <div
                                               onClick={() =>
@@ -315,7 +324,8 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
                                           </>
                                         )}
 
-                                        {item.renters?.length <= 0 ||
+                                        {item.renters?.length === 0 ||
+                                        item.renter?.length === 0 ||
                                         item.invoices?.find(
                                           isNotPaid
                                         ) ? null : (

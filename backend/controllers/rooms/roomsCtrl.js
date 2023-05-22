@@ -619,7 +619,7 @@ const checkOutOfTheRoomCtrl = expressAsyncHandler(async (req, res) => {
   try {
     const roomUpdated = await Room.findByIdAndUpdate(
       id,
-      { $set: { renters: [] } },
+      { $set: { renterIds: [] } },
       { new: true, runValidators: true }
     );
     await Renter.deleteMany({ room: id });
