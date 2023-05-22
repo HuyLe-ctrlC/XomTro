@@ -181,7 +181,7 @@ export default function PostsList() {
                   </ul>
                 </div>
               </div>
-              <div className="w-full lg:w-3/4 px-3">
+              <div className="w-full lg:w-3/4 px-3 h-screen">
                 {/* Post goes here */}
                 {loading ? (
                   <Skeleton />
