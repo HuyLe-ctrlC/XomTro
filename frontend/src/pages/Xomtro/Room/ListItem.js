@@ -129,7 +129,6 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
         rooms,
       }))
     );
-    console.log(123);
   }, [data]);
   // console.log("groupByFloor", groupByFloor);
   const isNotPaid = (currentValue) =>
@@ -139,7 +138,6 @@ export const ListItem = ({ data, openFormUpdate, openFormAddInvoice }) => {
     currentValue.isOtherInvoice === false;
   const isPaid = (currentValue) =>
     currentValue.invoiceStatus === "Chờ chu kỳ tới";
-  console.log("groupByFloor", groupByFloor);
   return (
     <>
       {groupByFloor?.map((item, index) => (

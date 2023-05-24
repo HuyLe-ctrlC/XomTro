@@ -17,7 +17,27 @@ import {
 } from "../../../../redux/slices/selectedSlices";
 
 const addSchema = Yup.object().shape({
-  price: Yup.string().required("*Dữ liệu bắt buộc!"),
+  price: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  priceTier2: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
+  priceTier3: Yup.string()
+    .required("*Dữ liệu bắt buộc!")
+    .test(
+      "Is positive?",
+      "Giá trị phải lớn hơn 0!",
+      (value) => parseFloat(value) > 0
+    ),
   measurement: Yup.string().required("*Dữ liệu bắt buộc!"),
   serviceName: Yup.string().required("*Dữ liệu bắt buộc!"),
 });
@@ -29,6 +49,9 @@ export const Form = (props) => {
   const [serviceName, setServiceName] = useState("");
   //service names
   const [price, setPrice] = useState("");
+  const [priceTier2, setPriceTier2] = useState("");
+  const [priceTier3, setPriceTier3] = useState("");
+  const [isElectricityTariff, setIsElectricityTariff] = useState(false);
   const [roomApplied, setRoomApplied] = useState(null);
   // get props to index components
   const {
@@ -70,14 +93,47 @@ export const Form = (props) => {
   //useRef
   const inputRef = useRef();
 
-  //get dataUpdate
+  const addSchemaHandler = (schemaArray) => {
+    const hasPriceTier2 = schemaArray.includes("priceTier2");
+    const hasPriceTier3 = schemaArray.includes("priceTier3");
 
+    if (!hasPriceTier2) {
+      schemaArray.push("priceTier2");
+    }
+
+    if (!hasPriceTier3) {
+      schemaArray.push("priceTier3");
+    }
+  };
+  const deleteSchemaHandler = (schemaArray) => {
+    const hasPriceTier2 = schemaArray.includes("priceTier2");
+    const hasPriceTier3 = schemaArray.includes("priceTier3");
+
+    if (hasPriceTier2) {
+      schemaArray.splice(schemaArray.indexOf("priceTier2"), 1);
+    }
+
+    if (hasPriceTier3) {
+      schemaArray.splice(schemaArray.indexOf("priceTier3"), 1);
+    }
+  };
+
+  //get dataUpdate
   useEffect(() => {
     focus();
     if (isUpdate) {
       if (dataUpdate) {
         if (dataUpdate.price !== undefined) {
           setPrice(dataUpdate.price);
+          if (dataUpdate.isElectricityTariff === true) {
+            setPriceTier2(dataUpdate.priceTier2);
+            setPriceTier3(dataUpdate.priceTier3);
+            setIsElectricityTariff(true);
+            addSchemaHandler(addSchema._nodes);
+          } else {
+            setIsElectricityTariff(false);
+            deleteSchemaHandler(addSchema._nodes);
+          }
         }
         if (dataUpdate.nameService !== undefined) {
           setServiceName(dataUpdate.nameService);
@@ -86,31 +142,71 @@ export const Form = (props) => {
           setMeasurement(dataUpdate.measurement);
         }
       }
+    } else {
+      deleteSchemaHandler(addSchema._nodes);
     }
   }, [dataUpdate]);
+
+  // useEffect(() => {
+  //   if (!isUpdate) {
+  //     addSchemaHandler(addSchema._nodes);
+  //   } else {
+  //     deleteSchemaHandler(addSchema._nodes);
+  //   }
+  // }, [isUpdate]);
+
+  // console.log("addSchema._nodes", addSchema._nodes);
 
   // close form event
   const handleCloseForm = () => {
     closeForm();
+    setIsElectricityTariff(false);
   };
 
   // update data event
   const handleUpdateData = async (event) => {
     event.preventDefault();
     let data = {};
-    data["xomtroId"] = xomtroId;
-    data["dataUpdated"] = {
-      serviceName: formik.values.serviceName,
-      measurement: formik.values.measurement,
-      price:
-        typeof formik.values.price == "string"
-          ? formik.values.price.replace(/,/g, "")
-          : formik.values.price,
-      _id: dataUpdate._id,
-    };
-    data["listRoomId"] = selected?.map((item) => item._id);
-    data["selectedOld"] = selectedOld;
-    updateData(data);
+    if (isElectricityTariff) {
+      data["xomtroId"] = xomtroId;
+      data["dataUpdated"] = {
+        serviceName: formik.values.serviceName,
+        measurement: formik.values.measurement,
+        price:
+          typeof formik.values.price == "string"
+            ? formik.values.price.replace(/,/g, "")
+            : formik.values.price,
+        priceTier2:
+          typeof formik.values.priceTier2 == "string"
+            ? formik.values.priceTier2.replace(/,/g, "")
+            : formik.values.priceTier2,
+        priceTier3:
+          typeof formik.values.priceTier3 == "string"
+            ? formik.values.priceTier3.replace(/,/g, "")
+            : formik.values.priceTier3,
+        _id: dataUpdate._id,
+      };
+      data["listRoomId"] = selected?.map((item) => item._id);
+      data["selectedOld"] = selectedOld;
+
+      deleteSchemaHandler(addSchema._nodes);
+
+      updateData(data);
+    } else {
+      data["xomtroId"] = xomtroId;
+      data["dataUpdated"] = {
+        serviceName: formik.values.serviceName,
+        measurement: formik.values.measurement,
+        price:
+          typeof formik.values.price == "string"
+            ? formik.values.price.replace(/,/g, "")
+            : formik.values.price,
+        _id: dataUpdate._id,
+      };
+      data["listRoomId"] = selected?.map((item) => item._id);
+      data["selectedOld"] = selectedOld;
+      updateData(data);
+    }
   };
   // create data event
   const handleAddData = (e) => {
@@ -165,6 +261,8 @@ export const Form = (props) => {
     initialValues: {
       serviceName,
       price,
+      priceTier2,
+      priceTier3,
       measurement,
     },
     validationSchema: addSchema,
@@ -224,7 +322,7 @@ export const Form = (props) => {
             </div>
           </div>
 
-          <div className="flex lg:flex-row flex-col h-[118px] justify-between items-center mt-8 lg:mt-0 mb-10 lg:mb-0">
+          <div className="flex lg:flex-row flex-col h-[118px] justify-between items-center mt-8 lg:mt-0 mb-2 lg:mb-0">
             <div className="flex flex-col justify-center h-[118px] w-full lg:mr-2 lg:-mt-2">
               <div className="relative z-0 group border border-gray-300 rounded-md -mt-2">
                 <NumericFormat
@@ -278,6 +376,60 @@ export const Form = (props) => {
               </div>
             </div>
           </div>
+          {isUpdate === true && isElectricityTariff === true && (
+            <div className="flex lg:flex-row flex-col justify-between mb-8 ">
+              <div className="flex flex-col w-full lg:mr-1 lg:mt-0">
+                <div className="relative z-0 group border border-gray-300 rounded-md ">
+                  <NumericFormat
+                    thousandsGroupStyle="thousand"
+                    thousandSeparator=","
+                    type="text"
+                    name="floating_priceTier2"
+                    id="floating_priceTier2"
+                    className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=" "
+                    value={formik.values.priceTier2}
+                    onChange={formik.handleChange("priceTier2")}
+                    onBlur={formik.handleBlur("priceTier2")}
+                  />
+                  <label
+                    htmlFor="floating_priceTier2"
+                    className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
+                  >
+                    Giá điện loại 2 <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                <div className="text-red-400 mb-2">
+                  {formik.touched.priceTier2 && formik.errors.priceTier2}
+                </div>
+              </div>
+              <div className="flex flex-col w-full lg:ml-1 mt-6 lg:mt-0">
+                <div className="relative z-0 group border border-gray-300 rounded-md">
+                  <NumericFormat
+                    thousandsGroupStyle="thousand"
+                    thousandSeparator=","
+                    type="text"
+                    name="floating_priceTier3"
+                    id="floating_priceTier3"
+                    className="block ml-2 py-2.5 px-0 w-full text-sm border-transparent text-gray-500 bg-transparent appearance-none dark:text-gray-500 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=" "
+                    value={formik.values.priceTier3}
+                    onChange={formik.handleChange("priceTier3")}
+                    onBlur={formik.handleBlur("priceTier3")}
+                  />
+                  <label
+                    htmlFor="floating_priceTier3"
+                    className="peer-focus:font-medium ml-2 absolute text-sm text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-9 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-9 "
+                  >
+                    Giá điện loại 3 <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                <div className="text-red-400 mb-2">
+                  {formik.touched.priceTier3 && formik.errors.priceTier3}
+                </div>
+              </div>
+            </div>
+          )}
           <LabelXomTro
             label="Chọn phòng áp dụng:"
             subLabel="Danh sách phòng hiện có"

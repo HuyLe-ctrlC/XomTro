@@ -671,6 +671,9 @@ const getUtilityByIdCtrl = expressAsyncHandler(async (req, res) => {
       measurement: found.measurement,
       paymentMethod: found.paymentMethod,
       _id: found._id,
+      priceTier2: found.priceTier2,
+      priceTier3: found.priceTier3,
+      isElectricityTariff: found.isElectricityTariff,
     };
     res.json({ result: true, dataUpdate });
   } catch (error) {

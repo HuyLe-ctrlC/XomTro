@@ -124,6 +124,7 @@ export default function Utility() {
     setIsUpdate(false);
     // console.log("dataUpdate", dataUpdate);
     const updateAction = await dispatch(updateMultiDataAction(data));
+    dispatch(clearSelectionAction());
     const msg = updateAction.payload;
     // console.log("msg", msg);
 
@@ -273,6 +274,14 @@ export default function Utility() {
                 <span className="font-semibold">{item.serviceName}</span>
                 <span>
                   {new Intl.NumberFormat("de-DE").format(item.price)}đ
+                  {item?.isElectricityTariff
+                    ? " | " +
+                      new Intl.NumberFormat("de-DE").format(item.priceTier2) + "đ " 
+                    : null}
+                  {item?.isElectricityTariff
+                    ? " | " +
+                      new Intl.NumberFormat("de-DE").format(item.priceTier3) + "đ " 
+                    : null}
                   {item.measurement ? "/" + item.measurement : ""}
                 </span>
               </div>
