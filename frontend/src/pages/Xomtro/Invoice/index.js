@@ -32,6 +32,7 @@ import { selectXomtro } from "../../../redux/slices/xomtros/xomtrosSlices";
 import Cookies from "js-cookie";
 import { updateDataAction } from "../../../redux/slices/invoices/invoicesSlices";
 import { clearSelectionAction } from "../../../redux/slices/selectedSlices";
+import { Paging } from "../../../components/Paging/Paging";
 
 export default function Invoice() {
   //redux
@@ -48,7 +49,7 @@ export default function Invoice() {
   const title = "Quản lý hóa đơn";
   const [currentPage, setCurrentPage] = useState(1);
   const [active, setActive] = useState("");
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(10);
   const [keyword, setKeyword] = useState("");
   const [xomtroId, setXomtroId] = useState("");
   //set offset
@@ -96,6 +97,7 @@ export default function Invoice() {
     dataInvoice,
     maxService,
     dataUpdate: invoiceUpdate,
+    totalPage,
   } = getInvoice;
   const getInvoiceByXomtroHandler = () => {
     let xomtroId = Cookies.get("xomtroIDCookie");
@@ -109,6 +111,7 @@ export default function Invoice() {
   //
   useEffect(() => {
     getInvoiceByXomtroHandler();
+    document.title = title;
   }, [Cookies.get("xomtroIDCookie")]);
 
   // search data
@@ -195,6 +198,9 @@ export default function Invoice() {
     const updateRoomAction = await dispatch(
       updateRoomDataAction(roomUpdateData)
     );
+    dispatch(clearSelectionAction());
+    dispatch(clearRoomAction());
+    getInvoiceByXomtroHandler();
     const msg = updateAction.payload;
     // console.log("msg", msg);
     if (
@@ -332,6 +338,48 @@ export default function Invoice() {
     });
   };
 
+  // ==== paging ==== //
+  // prev page events
+  const handlePrevClick = () => {
+    let xomtroId = Cookies.get("xomtroIDCookie");
+    if (currentPage > 1) {
+      let prevPage = currentPage - 1;
+      const newParams = {
+        ...params,
+        offset: (prevPage - 1) * limit,
+        xomtroId,
+      };
+      setCurrentPage(prevPage);
+      getData(newParams);
+    }
+  };
+  // next page events
+  const handleNextClick = () => {
+    let xomtroId = Cookies.get("xomtroIDCookie");
+    if (currentPage < totalPage) {
+      let nextPage = currentPage + 1;
+      const newParams = {
+        ...params,
+        offset: (nextPage - 1) * limit,
+        xomtroId,
+      };
+      setCurrentPage(nextPage);
+      getData(newParams);
+    }
+  };
+  // change page event
+  const handleChangePage = (page) => {
+    let xomtroId = Cookies.get("xomtroIDCookie");
+
+    const newParams = {
+      ...params,
+      offset: (page - 1) * limit,
+      xomtroId,
+    };
+    setCurrentPage(page);
+    getData(newParams);
+  };
+
   // open update form event
   const handleOpenFormUpdate = (roomId, invoiceId) => {
     setFormStatusState(true);
@@ -406,7 +454,7 @@ export default function Invoice() {
           </div>
           <Search handleSearch={handleSearch} />
 
-          <div>
+          <div className="mb-4">
             <div className="flex flex-col overflow-hidden">
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -434,6 +482,18 @@ export default function Invoice() {
               </div>
             </div>
           </div>
+          {/* paging */}
+          {totalPage > 1 ? (
+            <Paging
+              totalPage={totalPage}
+              onchangePage={handleChangePage}
+              onPrevClickPage={handlePrevClick}
+              onNextClickPage={handleNextClick}
+              currentPage={currentPage}
+            />
+          ) : (
+            ""
+          )}
         </div>
         <Footer />
       </div>

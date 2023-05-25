@@ -197,7 +197,7 @@ const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
     });
 
     const updatedPipeline = pipeline.filter((element) => {
-      return !("$limit" in element);
+      return !("$limit" in element) && !("$skip" in element);
     });
     const [result] = await Post.aggregate(pipeline);
     const [resultNoLimit] = await Post.aggregate(updatedPipeline);
@@ -352,7 +352,7 @@ const fetchPostByUserCtrl = expressAsyncHandler(async (req, res) => {
     });
 
     const updatedPipeline = pipeline.filter((element) => {
-      return !("$limit" in element);
+      return !("$limit" in element) && !("$skip" in element);
     });
     const [result] = await Post.aggregate(pipeline);
     const [resultNoLimit] = await Post.aggregate(updatedPipeline);

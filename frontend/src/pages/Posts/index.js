@@ -38,7 +38,7 @@ export default function CreatePost() {
   const [isUpdate, setIsUpdate] = useState(false);
   const title = "Quản lý bài viết";
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit] = useState(5);
   const [keyword, setKeyword] = useState("");
 
   //set offset
@@ -304,7 +304,7 @@ export default function CreatePost() {
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                   <div className="shadow overflow-hidden border border-gray-200 sm:rounded-lg ">
-                    <table className="min-w-full divide-y divide-gray-200 table-auto border border-slate-500 border-collapse">
+                    <table className="min-w-full divide-y divide-gray-200 table-auto border border-slate-500 border-collapse mb-4">
                       <thead className="bg-gray-50">
                         <tr>
                           <th

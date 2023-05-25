@@ -74,8 +74,9 @@ export default function PostsList() {
 
   const handleGetAllCate = () => {
     // bookmark
-    dispatch(getCategories({ ...params, keyword: "" }));
+    dispatch(getCategories({ ...params, keyword: "", limit: 100 }));
   };
+
   const handleTop100 = () => {
     const newParams = { ...params, limit: 100 };
     getData(newParams);
@@ -92,7 +93,7 @@ export default function PostsList() {
       let prevPage = currentPage - 1;
       params.offset = (prevPage - 1) * limit;
       setCurrentPage(prevPage);
-      getData();
+      getData(params);
     }
   };
   // next page events
@@ -345,26 +346,26 @@ export default function PostsList() {
                           </div>
                         </div>
                       </div>
-                      {/* insert below there */}
                     </div>
                   ))
                 )}
               </div>
             </div>
+            {/* paging */}
+            {totalPage > 1 ? (
+              <Paging
+                totalPage={totalPage}
+                onchangePage={handleChangePage}
+                onPrevClickPage={handlePrevClick}
+                onNextClickPage={handleNextClick}
+                currentPage={currentPage}
+              />
+            ) : (
+              ""
+            )}
           </div>
         </div>
-        {/* paging */}
-        {totalPage > 1 ? (
-          <Paging
-            totalPage={totalPage}
-            onchangePage={handleChangePage}
-            onPrevClickPage={handlePrevClick}
-            onNextClickPage={handleNextClick}
-            currentPage={currentPage}
-          />
-        ) : (
-          ""
-        )}
+
         {/* <div className="bg-gray-900">
           <div className="skew bg-green-500 skew-bottom mr-for-radius">
             <svg
