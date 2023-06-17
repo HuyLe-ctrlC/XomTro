@@ -182,7 +182,7 @@ export default function PostsList() {
                   </ul>
                 </div>
               </div>
-              <div className="w-full lg:w-3/4 px-3 h-screen">
+              <div className="w-full lg:w-3/4 px-3 h-full mb-8">
                 {/* Post goes here */}
                 {loading ? (
                   <Skeleton />
@@ -349,20 +349,21 @@ export default function PostsList() {
                     </div>
                   ))
                 )}
+                <div>
+                  {totalPage > 1 ? (
+                    <Paging
+                      totalPage={totalPage}
+                      onchangePage={handleChangePage}
+                      onPrevClickPage={handlePrevClick}
+                      onNextClickPage={handleNextClick}
+                      currentPage={currentPage}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </div>
               </div>
             </div>
-            {/* paging */}
-            {totalPage > 1 ? (
-              <Paging
-                totalPage={totalPage}
-                onchangePage={handleChangePage}
-                onPrevClickPage={handlePrevClick}
-                onNextClickPage={handleNextClick}
-                currentPage={currentPage}
-              />
-            ) : (
-              ""
-            )}
           </div>
         </div>
 

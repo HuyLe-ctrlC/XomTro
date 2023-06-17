@@ -26,7 +26,7 @@ export const UserList = () => {
   const [isSentEmail, setIsSendEmail] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [active, setActive] = useState("");
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(5);
   const [keyword, setKeyword] = useState("");
   //set offset
   let offset = currentPage - 1;

@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 export default function PostList({ post, isLoginUser }) {
   return (
     <div className="flex flex-wrap -mx-3 mt-3 lg:mb-6 border-2 rounded-lg" key={post._id}>
-      <div className="mb-2  w-full lg:w-1/4 px-3">
+      <div className="mb-2 w-full lg:w-1/4 px-3">
         <Link>
           <img
-            className="object-cover h-40 rounded"
+            className="object-cover h-40 rounded mt-2"
             // src={post?.image}
             src={`data:image/jpeg;base64,${post?.image[0].preview}`}
             alt="poster"
