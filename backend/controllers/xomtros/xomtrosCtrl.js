@@ -213,7 +213,7 @@ const fetchXomtroByUserCtrl = expressAsyncHandler(async (req, res) => {
     } else if (publish === "false") {
       pipeline.push({ $match: { isPublish: false } });
     }
-    
+
     pipeline.push({
       $lookup: {
         from: "users",
@@ -287,8 +287,44 @@ const fetchXomtroByUserCtrl = expressAsyncHandler(async (req, res) => {
             ],
           ],
         },
+        renters: {
+          $map: {
+            input: "$renters",
+            as: "renter",
+            in: {
+              renterName: "$$renter.renterName",
+              roomName: "$$renter.roomName",
+            },
+          },
+        },
       },
     });
+
+    // Add the $lookup stage to get invoices from rooms
+    pipeline.push({
+      $lookup: {
+        from: "renters",
+        let: { xomtroId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [{ $eq: ["$xomtro", "$$xomtroId"] }],
+              },
+            },
+          },
+          // project invoice fields
+          {
+            $project: {
+              renterName: 1,
+              roomName: 1,
+            },
+          },
+        ],
+        as: "renters",
+      },
+    });
+
     pipeline.push({ $skip: parseInt(offset) });
     pipeline.push({ $limit: parseInt(limit) });
     pipeline.push({

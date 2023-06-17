@@ -276,7 +276,8 @@ export const Form = (props) => {
           disabled={
             !formik.isValid ||
             files[0]?.size > 1800000 ||
-            files[1]?.size > 1800000
+            files[1]?.size > 1800000 ||
+            selected.length === 0
           }
         >
           Cập nhật
@@ -291,7 +292,8 @@ export const Form = (props) => {
           disabled={
             !formik.isValid ||
             files[0]?.size > 1800000 ||
-            files[1]?.size > 1800000
+            files[1]?.size > 1800000 ||
+            selected.length === 0
           }
         >
           Lưu

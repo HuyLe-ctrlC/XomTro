@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AiOutlineArrowRight, AiOutlineClose } from "react-icons/ai";
 import LabelXomTro from "../../../components/LabelXomTro";
-import { closeForm, openForm } from "../../../redux/slices/formSlices";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteAction,
-  getAllAction,
-  getByIdAction,
   selectXomtro,
   setCookieXomtroIdAction,
   statusPublishAction,
 } from "../../../redux/slices/xomtros/xomtrosSlices";
 import { selectUser } from "../../../redux/slices/users/usersSlice";
 import { HiPencilAlt } from "react-icons/hi";
-import { BsTrash, BsTrashFill } from "react-icons/bs";
+import { BsTrash } from "react-icons/bs";
 import {
   getByXomtroIdAction,
-  selectRooms,
 } from "../../../redux/slices/rooms/roomsSlices";
 import Swal from "sweetalert2";
 import { resetInvoiceAction } from "../../../redux/slices/invoices/invoicesSlices";
@@ -28,7 +24,6 @@ export default function XomtroManagement({
   const dispatch = useDispatch();
   //set form status
   // const [formStatusState, setFormStatusState] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false);
   const [limit, setLimit] = useState(20);
   const [keyword, setKeyword] = useState("");
   const [xomtroId, setXomtroId] = useState("");
@@ -42,15 +37,8 @@ export default function XomtroManagement({
   };
   //get data from store
   const getXomtro = useSelector(selectXomtro);
-  const { data, loading, serverError, appError, searchCount } = getXomtro;
+  const { data } = getXomtro;
   const { userAuth } = useSelector(selectUser);
-
-  const getRooms = useSelector(selectRooms);
-  const { dataRoom } = getRooms;
-
-  const dataRenters = dataRoom
-    ?.map((item) => item.renters)
-    .some((item) => item.length > 0);
 
   const handleOpenFormUpdate = (id) => {
     openFormUpdate(id);
@@ -202,14 +190,8 @@ export default function XomtroManagement({
                       </span>
                     </label>
                   </div>
-                ) : !dataRenters ? (
+                ) : item.renters?.length > 0 ? (
                   <div className="flex space-x-4">
-                    <div className="bg-gray-500 hover:bg-gray-400 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
-                      <BsTrash
-                        className="text-3xl text-white rounded-full "
-                        onClick={() => handleDelete(item._id)}
-                      />
-                    </div>
                     <div className="bg-gray-200 hover:bg-gray-100 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
                       <HiPencilAlt
                         className="text-3xl rounded-full "
@@ -225,6 +207,18 @@ export default function XomtroManagement({
                   </div>
                 ) : (
                   <div className="flex space-x-4">
+                    <div className="bg-gray-500 hover:bg-gray-400 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
+                      <BsTrash
+                        className="text-3xl text-white rounded-full "
+                        onClick={() => handleDelete(item._id)}
+                      />
+                    </div>
+                    <div className="bg-gray-200 hover:bg-gray-100 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
+                      <HiPencilAlt
+                        className="text-3xl rounded-full "
+                        onClick={() => handleOpenFormUpdate(item._id)}
+                      />
+                    </div>
                     <div className="bg-gray-200 hover:bg-gray-100 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
                       <AiOutlineArrowRight
                         className="text-3xl  rounded-full "
