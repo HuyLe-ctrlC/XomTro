@@ -35,6 +35,10 @@ const xomtroApi = {
     const url = `/${module}/get-utility-applied`;
     return axiosClient.get(url, { params });
   },
+  status: (id, body) => {
+    const url = `/${module}/update-publish/${id}`;
+    return axiosClient.put(url, body);
+  },
 };
 
 export default xomtroApi;

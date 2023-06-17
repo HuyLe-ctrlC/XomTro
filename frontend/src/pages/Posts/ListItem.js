@@ -184,17 +184,22 @@ export const ListItem = ({ data, openFormUpdate, openSlide }) => {
               <DateFormatter date={item?.createdAt} />
             </time>
           </td>
-          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 border border-slate-500">
-            <button
-              className="text-4xl"
-              onClick={() => handleOpenFormUpdate(item._id)}
-            >
-              <HiPencilAlt className="h-6 text-blue-500 text-center" />
-            </button>
-            <button className="text-4xl" onClick={() => handleDelete(item._id)}>
-              <BsTrash className="h-6 text-red-500 text-center" />
-            </button>
-          </td>
+          {!userAuth?.isAdmin && (
+            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 border border-slate-500">
+              <button
+                className="text-4xl"
+                onClick={() => handleOpenFormUpdate(item._id)}
+              >
+                <HiPencilAlt className="h-6 text-blue-500 text-center" />
+              </button>
+              <button
+                className="text-4xl"
+                onClick={() => handleDelete(item._id)}
+              >
+                <BsTrash className="h-6 text-red-500 text-center" />
+              </button>
+            </td>
+          )}
         </tr>
       ))}
     </>

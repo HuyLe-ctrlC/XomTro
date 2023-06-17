@@ -154,6 +154,38 @@ export const deleteAction = createAsyncThunk(
   }
 );
 
+//update status by id
+export const statusPublishAction = createAsyncThunk(
+  "post/status",
+  async (dataUpdate, { rejectWithValue, getState, dispatch }) => {
+    const id = await dataUpdate?.id;
+    const publish = await dataUpdate?.publish;
+    try {
+      const data = {
+        publish: publish,
+      };
+      const body = JSON.stringify(data);
+      const response = await xomtroApi.status(id, body);
+      if (response.result) {
+        const results = {
+          msg: response.message,
+          isPublish: publish,
+          _id: id,
+        };
+        return results;
+      } else {
+        return rejectWithValue(response.message);
+      }
+    } catch (error) {
+      // console.log('Failed to fetch data list: ', error);
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
 export const removeCookieXomtroIdAction = createAction("xomtro/get-cookie");
 export const setCookieXomtroIdAction = createAction("xomtro/set-cookie");
 //slices = reducer
@@ -282,6 +314,24 @@ const xomtroSlices = createSlice({
       })
       .addCase(deleteAction.rejected, (state, action) => {
         // state.loading = false;
+        state.appError = action?.payload;
+        state.serverError = action?.error?.message;
+      });
+    //publish data by id
+    builder
+      .addCase(statusPublishAction.fulfilled, (state, action) => {
+        // find and update row data in store
+        const checkIndex = state.data.findIndex(
+          (row) => row._id.toString() === action?.payload?._id.toString()
+        );
+        if (checkIndex >= 0) {
+          state.data[checkIndex].isPublish = action?.payload?.isPublish;
+        }
+        state.msgSuccess = action?.payload?.message;
+        state.appError = undefined;
+        state.serverError = undefined;
+      })
+      .addCase(statusPublishAction.rejected, (state, action) => {
         state.appError = action?.payload;
         state.serverError = action?.error?.message;
       });

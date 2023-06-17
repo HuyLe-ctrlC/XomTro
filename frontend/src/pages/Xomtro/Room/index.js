@@ -25,7 +25,10 @@ import {
   addDataAction as addInvoiceAction,
 } from "../../../redux/slices/invoices/invoicesSlices";
 import Footer from "../../../components/Footer";
-import { selectXomtro } from "../../../redux/slices/xomtros/xomtrosSlices";
+import {
+  selectXomtro,
+  getByIdAction as getXomtroById,
+} from "../../../redux/slices/xomtros/xomtrosSlices";
 import Cookies from "js-cookie";
 import { clearSelectionAction } from "../../../redux/slices/selectedSlices";
 
@@ -79,13 +82,28 @@ export default function Room() {
     nameAndServicesXomtro,
     dataUpdate,
   } = getRoom;
+  const [checkPublish, setCheckPublish] = useState();
+  const getRoomByXomtroIdHandler = async () => {
+    if (Cookies.get("xomtroIDCookie")) {
+      const action = await dispatch(
+        getXomtroById(Cookies.get("xomtroIDCookie"))
+      );
+      if (getXomtroById.fulfilled.match(action)) {
+        if (getXomtro?.dataUpdate?.isPublish) {
+          setCheckPublish(true)
 
-  const getRoomByXomtroIdHandler = () => {
-    const newParams = {
-      ...params,
-      xomtroId: Cookies.get("xomtroIDCookie"),
-    };
-    dispatch(getByXomtroIdAction(newParams));
+          const newParams = {
+            ...params,
+            xomtroId: Cookies.get("xomtroIDCookie"),
+          };
+          dispatch(getByXomtroIdAction(newParams));
+        }
+         else {
+          // Cookies.remove("xomtroIDCookie");
+          setCheckPublish(false)
+        }
+      }
+    }
   };
 
   //
@@ -101,7 +119,7 @@ export default function Room() {
     // }
     getRoomByXomtroIdHandler();
     document.title = title;
-  }, [Cookies.get("xomtroIDCookie")]);
+  }, [Cookies.get("xomtroIDCookie"), checkPublish]);
 
   // search data
   const handleSearch = (isEmpty, keyword) => {

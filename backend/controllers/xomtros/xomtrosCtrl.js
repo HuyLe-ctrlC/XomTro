@@ -130,6 +130,7 @@ const fetchXomtrosCtrl = expressAsyncHandler(async (req, res) => {
         invoiceDate: 1,
         paymentDeadline: 1,
         roomCount: 1,
+        isPublish: 1,
         user: {
           $arrayToObject: [
             [
@@ -204,9 +205,15 @@ const fetchXomtroByUserCtrl = expressAsyncHandler(async (req, res) => {
   blockUser(req.user);
   const { _id } = req.user;
 
-  const { keyword = "", offset = 0, limit = 10 } = req.query;
+  const { keyword = "", offset = 0, limit = 10, publish } = req.query;
   let pipeline = [];
   try {
+    if (publish === "true") {
+      pipeline.push({ $match: { isPublish: true } });
+    } else if (publish === "false") {
+      pipeline.push({ $match: { isPublish: false } });
+    }
+    
     pipeline.push({
       $lookup: {
         from: "users",
@@ -260,6 +267,7 @@ const fetchXomtroByUserCtrl = expressAsyncHandler(async (req, res) => {
         invoiceDate: 1,
         paymentDeadline: 1,
         roomCount: 1,
+        isPublish: 1,
         user: {
           $arrayToObject: [
             [
@@ -480,6 +488,35 @@ const getUtilityAppliedByIdCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
+const updateStatusCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const { publish } = req.body;
+    const xomtro = await Xomtro.findByIdAndUpdate(
+      id,
+      {
+        isPublish: publish,
+      },
+      { new: true }
+    );
+    if (xomtro) {
+      res.json({
+        result: true,
+        data: xomtro,
+        message: MESSAGE.UPDATE_SUCCESS,
+      });
+    } else {
+      res.json({
+        result: false,
+        message: MESSAGE.UPDATE_SUCCESS,
+      });
+    }
+  } catch (error) {
+    res.json(error);
+  }
+});
+
 module.exports = {
   createXomtroCtrl,
   fetchXomtrosCtrl,
@@ -489,4 +526,5 @@ module.exports = {
   fetchXomtroCtrl,
   fetchXomtroByUserCtrl,
   getUtilityAppliedByIdCtrl,
+  updateStatusCtrl,
 };

@@ -108,6 +108,10 @@ const xomtroSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    isPublish: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     toJSON: {

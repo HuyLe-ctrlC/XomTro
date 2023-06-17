@@ -66,11 +66,20 @@ export default function Xomtro() {
   const { data: dataCategories } = getCategory;
   const getData = () => {
     document.title = title;
-    // console.log("keyword", params.keyword);
+
     //get Xomtro by User
-    userAuth?.isAdmin
-      ? dispatch(getAllAction(params))
-      : dispatch(getByUserAction(params));
+    // userAuth?.isAdmin
+    //   ? dispatch(getAllAction(params))
+    //   : dispatch(getByUserAction(params));
+    if (userAuth?.isAdmin) {
+      dispatch(getAllAction(params));
+    } else {
+      const newParams = {
+        ...params,
+        publish: true,
+      };
+      dispatch(getByUserAction(newParams));
+    }
     dispatch(getCity());
     dispatch(getAllCategoryAction(params));
   };

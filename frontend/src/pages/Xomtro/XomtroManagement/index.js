@@ -9,10 +9,15 @@ import {
   getByIdAction,
   selectXomtro,
   setCookieXomtroIdAction,
+  statusPublishAction,
 } from "../../../redux/slices/xomtros/xomtrosSlices";
+import { selectUser } from "../../../redux/slices/users/usersSlice";
 import { HiPencilAlt } from "react-icons/hi";
 import { BsTrash, BsTrashFill } from "react-icons/bs";
-import { getByXomtroIdAction } from "../../../redux/slices/rooms/roomsSlices";
+import {
+  getByXomtroIdAction,
+  selectRooms,
+} from "../../../redux/slices/rooms/roomsSlices";
 import Swal from "sweetalert2";
 import { resetInvoiceAction } from "../../../redux/slices/invoices/invoicesSlices";
 export default function XomtroManagement({
@@ -38,6 +43,14 @@ export default function XomtroManagement({
   //get data from store
   const getXomtro = useSelector(selectXomtro);
   const { data, loading, serverError, appError, searchCount } = getXomtro;
+  const { userAuth } = useSelector(selectUser);
+
+  const getRooms = useSelector(selectRooms);
+  const { dataRoom } = getRooms;
+
+  const dataRenters = dataRoom
+    ?.map((item) => item.renters)
+    .some((item) => item.length > 0);
 
   const handleOpenFormUpdate = (id) => {
     openFormUpdate(id);
@@ -98,15 +111,42 @@ export default function XomtroManagement({
     });
   };
 
-  // // open update form event
-  // const handleOpenFormUpdate = (id) => {
-  //   setFormStatusState(true);
-  //   const action = openForm();
-  //   dispatch(action);
-  //   setIsUpdate(true);
-  //   // get data by ID
-  //   dispatch(getByIdAction(id));
-  // };
+  const handleStatus = async (e, id) => {
+    const publish = e.target.checked;
+    const resultAction = await dispatch(statusPublishAction({ id, publish }));
+    if (statusPublishAction.fulfilled.match(resultAction)) {
+      // const msg = resultAction.payload;
+      // console.log(msg);
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        width: 500,
+      });
+
+      Toast.fire({
+        icon: "success",
+        title: "Cập nhật dữ liệu thành công!",
+      });
+    } else {
+      // console.log(resultAction.payload);
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        width: 500,
+      });
+
+      Toast.fire({
+        icon: "error",
+        title: "Cập nhật dữ liệu thất bại!",
+      });
+    }
+  };
 
   return (
     <>
@@ -142,26 +182,57 @@ export default function XomtroManagement({
                   <div className="font-semibold text-lg">{item.nameXomtro}</div>
                   <div>{item.addressDetail}</div>
                 </div>
-                <div className="flex space-x-4">
-                  <div className="bg-gray-500 hover:bg-gray-400 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
-                    <BsTrash
-                      className="text-3xl text-white rounded-full "
-                      onClick={() => handleDelete(item._id)}
-                    />
+                {userAuth?.isAdmin ? (
+                  <div className="px-4 py-4 whitespace-nowrap text-sm text-white min-w-[200px]">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={item.isPublish}
+                        onChange={(e) => handleStatus(e, item._id)}
+                        id={`publish_${item._id}`}
+                      />
+                      <div
+                        htmlFor={`publish_${item._id}`}
+                        className="w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+                      ></div>
+
+                      <span className="ml-3 text-sm font-bold text-white">
+                        {item.isPublish ? "Hợp lệ" : "Không hợp lệ"}
+                      </span>
+                    </label>
                   </div>
-                  <div className="bg-gray-200 hover:bg-gray-100 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
-                    <HiPencilAlt
-                      className="text-3xl rounded-full "
-                      onClick={() => handleOpenFormUpdate(item._id)}
-                    />
+                ) : !dataRenters ? (
+                  <div className="flex space-x-4">
+                    <div className="bg-gray-500 hover:bg-gray-400 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
+                      <BsTrash
+                        className="text-3xl text-white rounded-full "
+                        onClick={() => handleDelete(item._id)}
+                      />
+                    </div>
+                    <div className="bg-gray-200 hover:bg-gray-100 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
+                      <HiPencilAlt
+                        className="text-3xl rounded-full "
+                        onClick={() => handleOpenFormUpdate(item._id)}
+                      />
+                    </div>
+                    <div className="bg-gray-200 hover:bg-gray-100 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
+                      <AiOutlineArrowRight
+                        className="text-3xl  rounded-full "
+                        onClick={() => handleGetRoom(item._id)}
+                      />
+                    </div>
                   </div>
-                  <div className="bg-gray-200 hover:bg-gray-100 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
-                    <AiOutlineArrowRight
-                      className="text-3xl  rounded-full "
-                      onClick={() => handleGetRoom(item._id)}
-                    />
+                ) : (
+                  <div className="flex space-x-4">
+                    <div className="bg-gray-200 hover:bg-gray-100 rounded-full h-14 w-14 flex items-center justify-center cursor-pointer">
+                      <AiOutlineArrowRight
+                        className="text-3xl  rounded-full "
+                        onClick={() => handleGetRoom(item._id)}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             ))}
           </div>

@@ -25,7 +25,10 @@ import {
   addDataAction as addInvoiceAction,
 } from "../../../redux/slices/invoices/invoicesSlices";
 import Footer from "../../../components/Footer";
-import { selectXomtro } from "../../../redux/slices/xomtros/xomtrosSlices";
+import {
+  selectXomtro,
+  getByIdAction as getXomtroById,
+} from "../../../redux/slices/xomtros/xomtrosSlices";
 import Cookies from "js-cookie";
 import { clearSelectionAction } from "../../../redux/slices/selectedSlices";
 import { getAllAction } from "../../../redux/slices/renters/rentersSlices";
@@ -103,26 +106,35 @@ export default function Renter() {
     };
     dispatch(getByXomtroIdAction(newParams));
   };
+
+  const [checkPublish, setCheckPublish] = useState();
+  const getRenterByXomtroIdHandler = async () => {
+    if (Cookies.get("xomtroIDCookie")) {
+      const action = await dispatch(
+        getXomtroById(Cookies.get("xomtroIDCookie"))
+      );
+      if (getXomtroById.fulfilled.match(action)) {
+        if (getXomtro?.dataUpdate?.isPublish) {
+          setCheckPublish(true);
+          const newParams = {
+            ...params,
+            xomtroId: Cookies.get("xomtroIDCookie"),
+          };
+          dispatch(getAllAction(newParams));
+          dispatch(getByXomtroIdAction(newParams));
+        } else {
+          // Cookies.remove("xomtroIDCookie");
+          setCheckPublish(false);
+        }
+      }
+    }
+  };
   //
   useEffect(() => {
-    //check if in the store have date then not call api
-    // if (!dataRenter?.length) {
-    //   const newParams = {
-    //     ...params,
-    //     xomtroId: Cookies.get("xomtroIDCookie"),
-    //   };
-    //   dispatch(getAllAction(newParams));
-    //   dispatch(getByXomtroIdAction(newParams));
-    // }
-    const newParams = {
-      ...params,
-      xomtroId: Cookies.get("xomtroIDCookie"),
-    };
-    dispatch(getAllAction(newParams));
-    dispatch(getByXomtroIdAction(newParams));
+    getRenterByXomtroIdHandler();
 
     document.title = title;
-  }, [Cookies.get("xomtroIDCookie")]);
+  }, [Cookies.get("xomtroIDCookie"), checkPublish]);
 
   // search data
   const handleSearch = (keyword) => {

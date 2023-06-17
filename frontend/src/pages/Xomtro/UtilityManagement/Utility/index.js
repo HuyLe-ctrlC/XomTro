@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import LabelXomTro from "../../../../components/LabelXomTro";
 import { HiOutlinePlusSm, HiPencilAlt } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
-import { selectXomtro } from "../../../../redux/slices/xomtros/xomtrosSlices";
+import {
+  selectXomtro,
+  getByIdAction as getXomtroById,
+} from "../../../../redux/slices/xomtros/xomtrosSlices";
 import { MdLabelImportantOutline } from "react-icons/md";
 import { BsTrash } from "react-icons/bs";
 import { openForm, closeForm } from "../../../../redux/slices/formSlices";
@@ -26,6 +29,7 @@ import {
   getUtilityAppliedAction,
 } from "../../../../redux/slices/selectedSlices";
 import { updateMultiDataAction } from "../../../../redux/slices/rooms/roomsSlices";
+
 export default function Utility() {
   const title = "Quản lý tiện ích";
   //redux
@@ -45,15 +49,38 @@ export default function Utility() {
     dataUpdate,
   } = getRoom;
 
+  const getXomtro = useSelector(selectXomtro);
+  
+  const [checkPublish, setCheckPublish] = useState();
+  const getUtilitiesByXomtroIdHandler = async () => {
+    if (Cookies.get("xomtroIDCookie")) {
+      const action = await dispatch(
+        getXomtroById(Cookies.get("xomtroIDCookie"))
+      );
+      if (getXomtroById.fulfilled.match(action)) {
+        if (getXomtro?.dataUpdate?.isPublish) {
+          setCheckPublish(true);
+          dispatch(
+            getByXomtroIdAction({ xomtroId: Cookies.get("xomtroIDCookie") })
+          );
+        } else {
+          // Cookies.remove("xomtroIDCookie");
+          setCheckPublish(false);
+        }
+      }
+    }
+  };
+
   useEffect(() => {
     // Check if rooms data is already available in the store
-    if (!dataRoom?.length) {
-      dispatch(
-        getByXomtroIdAction({ xomtroId: Cookies.get("xomtroIDCookie") })
-      );
-    }
+    // if (!dataRoom?.length) {
+    //   dispatch(
+    //     getByXomtroIdAction({ xomtroId: Cookies.get("xomtroIDCookie") })
+    //   );
+    // }
+    getUtilitiesByXomtroIdHandler();
     document.title = title;
-  }, []);
+  }, [Cookies.get("xomtroIDCookie"), checkPublish]);
 
   // open create form event
   const handleOpenFormAdd = () => {
@@ -276,11 +303,13 @@ export default function Utility() {
                   {new Intl.NumberFormat("de-DE").format(item.price)}đ
                   {item?.isElectricityTariff
                     ? " | " +
-                      new Intl.NumberFormat("de-DE").format(item.priceTier2) + "đ " 
+                      new Intl.NumberFormat("de-DE").format(item.priceTier2) +
+                      "đ "
                     : null}
                   {item?.isElectricityTariff
                     ? " | " +
-                      new Intl.NumberFormat("de-DE").format(item.priceTier3) + "đ " 
+                      new Intl.NumberFormat("de-DE").format(item.priceTier3) +
+                      "đ "
                     : null}
                   {item.measurement ? "/" + item.measurement : ""}
                 </span>

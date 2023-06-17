@@ -1,9 +1,13 @@
 import Utility from "./Utility";
 import TenantMonthlyUtilities from "./TenantMonthlyUtilities";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { getInvoiceByXomtroIdAction } from "../../../redux/slices/invoices/invoicesSlices";
+import {
+  selectXomtro,
+  getByIdAction as getXomtroById,
+} from "../../../redux/slices/xomtros/xomtrosSlices";
 export default function UtilityManagement() {
   const title = "Quản lý dịch vụ";
   const dispatch = useDispatch();
@@ -28,16 +32,41 @@ export default function UtilityManagement() {
     month: getCurrentMonthAndYear(),
   };
 
-  useEffect(() => {
-    let xomtroId = Cookies.get("xomtroIDCookie");
-    const newParams = {
-      ...params,
-      xomtroId,
-    };
-    dispatch(getInvoiceByXomtroIdAction(newParams));
+  const getXomtro = useSelector(selectXomtro);
 
+  const [checkPublish, setCheckPublish] = useState();
+  const getInvoiceByXomtroIdHandler = async () => {
+    if (Cookies.get("xomtroIDCookie")) {
+      const action = await dispatch(
+        getXomtroById(Cookies.get("xomtroIDCookie"))
+      );
+      if (getXomtroById.fulfilled.match(action)) {
+        if (getXomtro?.dataUpdate?.isPublish) {
+          setCheckPublish(true);
+          const newParams = {
+            ...params,
+            xomtroId: Cookies.get("xomtroIDCookie"),
+          };
+          dispatch(getInvoiceByXomtroIdAction(newParams));
+        }
+         else {
+          // Cookies.remove("xomtroIDCookie");
+          setCheckPublish(false);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    // let xomtroId = Cookies.get("xomtroIDCookie");
+    // const newParams = {
+    //   ...params,
+    //   xomtroId,
+    // };
+    // dispatch(getInvoiceByXomtroIdAction(newParams));
+    getInvoiceByXomtroIdHandler();
     document.title = title;
-  }, [Cookies.get("xomtroIDCookie")]);
+  }, [Cookies.get("xomtroIDCookie"), checkPublish]);
   return (
     <>
       <div className="flex flex-col md:flex-row space-x-2 bg-slate-50 mx-2 rounded-xl p-4 drop-shadow-sm">

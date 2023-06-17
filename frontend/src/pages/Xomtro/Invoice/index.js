@@ -28,7 +28,10 @@ import {
   deleteAction,
 } from "../../../redux/slices/invoices/invoicesSlices";
 import Footer from "../../../components/Footer";
-import { selectXomtro } from "../../../redux/slices/xomtros/xomtrosSlices";
+import {
+  selectXomtro,
+  getByIdAction as getXomtroById,
+} from "../../../redux/slices/xomtros/xomtrosSlices";
 import Cookies from "js-cookie";
 import { updateDataAction } from "../../../redux/slices/invoices/invoicesSlices";
 import { clearSelectionAction } from "../../../redux/slices/selectedSlices";
@@ -99,20 +102,33 @@ export default function Invoice() {
     dataUpdate: invoiceUpdate,
     totalPage,
   } = getInvoice;
-  const getInvoiceByXomtroHandler = () => {
-    let xomtroId = Cookies.get("xomtroIDCookie");
-    const newParams = {
-      ...params,
-      xomtroId,
-    };
-    dispatch(getInvoiceByXomtroIdAction(newParams));
-    dispatch(getByXomtroIdAction(newParams));
+  const [checkPublish, setCheckPublish] = useState();
+  const getInvoiceByXomtroHandler = async () => {
+    if (Cookies.get("xomtroIDCookie")) {
+      const action = await dispatch(
+        getXomtroById(Cookies.get("xomtroIDCookie"))
+      );
+      if (getXomtroById.fulfilled.match(action)) {
+        if (getXomtro?.dataUpdate?.isPublish) {
+          setCheckPublish(true);
+          const newParams = {
+            ...params,
+            xomtroId: Cookies.get("xomtroIDCookie"),
+          };
+          dispatch(getInvoiceByXomtroIdAction(newParams));
+          dispatch(getByXomtroIdAction(newParams));
+        } else {
+          // Cookies.remove("xomtroIDCookie");
+          setCheckPublish(false);
+        }
+      }
+    }
   };
   //
   useEffect(() => {
     getInvoiceByXomtroHandler();
     document.title = title;
-  }, [Cookies.get("xomtroIDCookie")]);
+  }, [Cookies.get("xomtroIDCookie"), checkPublish]);
 
   // search data
   const handleSearch = (isNotPaid, keyword, month) => {

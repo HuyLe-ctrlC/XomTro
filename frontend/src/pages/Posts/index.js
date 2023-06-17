@@ -355,12 +355,14 @@ export default function CreatePost() {
                           >
                             Ngày tạo
                           </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500"
-                          >
-                            Hành động
-                          </th>
+                          {!userAuth?.isAdmin && (
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border border-slate-500"
+                            >
+                              Hành động
+                            </th>
+                          )}
                         </tr>
                       </thead>
                       <tbody>

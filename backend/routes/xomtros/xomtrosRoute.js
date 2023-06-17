@@ -8,6 +8,7 @@ const {
   fetchXomtroCtrl,
   fetchXomtroByUserCtrl,
   getUtilityAppliedByIdCtrl,
+  updateStatusCtrl,
 } = require("../../controllers/xomtros/xomtrosCtrl");
 const authMiddleware = require("../../middlewares/auth/authMiddleware");
 
@@ -20,5 +21,6 @@ xomtroRoutes.get("/get-utility-applied", authMiddleware, getUtilityAppliedByIdCt
 xomtroRoutes.get("/:id", authMiddleware, fetchXomtroCtrl);
 xomtroRoutes.delete("/:id", authMiddleware, deleteXomtroCtrl);
 xomtroRoutes.put("/:id", authMiddleware, updateXomtroCtrl);
+xomtroRoutes.put("/update-publish/:id", authMiddleware, updateStatusCtrl);
 
 module.exports = xomtroRoutes;
