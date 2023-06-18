@@ -12,6 +12,7 @@ import {
 } from "../../redux/slices/posts/postsSlices";
 import { selectUser } from "../../redux/slices/users/usersSlice";
 import { HiOutlinePlusSm } from "react-icons/hi";
+import { AiFillWarning } from "react-icons/ai";
 import { openForm, closeForm } from "../../redux/slices/formSlices";
 import { ListItem } from "./ListItem";
 import { Paging } from "../../components/Paging/Paging";
@@ -52,7 +53,7 @@ export default function CreatePost() {
 
   //get data from redux
   const posts = useSelector(selectPosts);
-  const { data, loading, totalPage, serverError } = posts;
+  const { data, loading, totalPage, serverError, appError } = posts;
   //get user to check isAdmin
   const user = useSelector(selectUser);
   const { userAuth } = user;
@@ -370,6 +371,17 @@ export default function CreatePost() {
                           <tr>
                             <td colSpan={9} className="text-center">
                               Đang tải dữ liệu...
+                            </td>
+                          </tr>
+                        ) : appError?.includes("đã bị chặn") ? (
+                          <tr>
+                            <td colSpan={9} className="text-center">
+                              <div className="bg-red-500 text-white rounded-lg text-2xl p-4 flex">
+                                <AiFillWarning className="text-7xl w-32 mr-2" />
+                                <p>
+                                  {serverError && "Thông báo:"} {appError}
+                                </p>
+                              </div>
                             </td>
                           </tr>
                         ) : (data && data?.length <= 0) || data == null ? (

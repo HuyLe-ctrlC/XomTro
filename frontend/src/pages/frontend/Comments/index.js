@@ -1,5 +1,5 @@
 import { Transition } from "@headlessui/react";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, {useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -214,7 +214,7 @@ export default function Comments() {
           />
           {loading ? (
             <LoadingComponent />
-          ) : appError || serverError ? (
+          ) : appError?.includes("đã bị chặn") ? (
             <div className="bg-red-500 text-white rounded-lg text-2xl p-4 flex">
               <AiFillWarning className="text-7xl w-32 mr-2" />
               <p>
